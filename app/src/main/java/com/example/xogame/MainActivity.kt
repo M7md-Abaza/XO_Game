@@ -33,19 +33,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        // to get the Button position
-        for (i in 0..2) {
-            for (j in 0..2) {
-                /*
-                Notice that the "btn_$i$j" is as same as my images id in xml File without numbers
-                as numbers will be add thanks to the next three lines of code
-                */
-                val imageID = "btn_$i$j"
-                val resID = resources.getIdentifier(imageID, "id", packageName)
-                buttons[i][j] = findViewById<View>(resID) as Button?
-                buttons[i][j]?.setOnClickListener(this)
-            }
-        }
+        handelToolbar()
+        getButtonPosition()
 
         // btn_reset for rest Buttons without change players points
         btn_reset.setOnClickListener {
@@ -54,15 +43,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             Toast.makeText(this, "Reset Performed", Toast.LENGTH_SHORT).show()
             btn_reset.visibility = View.GONE
         }
-        /*
-        // btn_playAgain for rest Buttons and change players points to zero
-        btn_playAgain.setOnClickListener {
-            resetBoard()
-            player1Points = 0
-            player2Points = 0
-            updatePointsText()
-            Toast.makeText(this, "New Game Started", Toast.LENGTH_SHORT).show()
-        }*/
+
 
     }
 
@@ -190,24 +171,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         player1Turn = true
     }
 
-    //onSaveInstanceState() to save data during rotate the screen till do not lose it
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        outState.putInt("roundCount", roundCount)
-        outState.putInt("player1Points", player1Points)
-        outState.putInt("player2Points", player2Points)
-        outState.putBoolean("player1Turn", player1Turn)
-    }
-
-    //onRestoreInstanceState() to restore data which saved by onSaveInstanceState() after rotate the screen
-    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
-        super.onRestoreInstanceState(savedInstanceState)
-        roundCount = savedInstanceState.getInt("roundCount")
-        player1Points = savedInstanceState.getInt("player1Points")
-        player2Points = savedInstanceState.getInt("player2Points")
-        player1Turn = savedInstanceState.getBoolean("player1Turn")
-    }
-
     // Handle toolbar style, colors and Buttons
     private fun handelToolbar() {
         toolbar.title = "X-O Game"
@@ -243,65 +206,44 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         menuInflater.inflate(R.menu.menu_main, menu)
         return true
     }
+
+    // to get the Button position
+    private fun getButtonPosition() {
+        for (i in 0..2) {
+            for (j in 0..2) {
+                /*
+                Notice that the "btn_$i$j" is as same as my images id in xml File without numbers
+                as numbers will be add thanks to the next three lines of code
+                */
+                val imageID = "btn_$i$j"
+                val resID = resources.getIdentifier(imageID, "id", packageName)
+                buttons[i][j] = findViewById<View>(resID) as Button?
+                buttons[i][j]?.setOnClickListener(this)
+            }
+        }
+    }
+
+
+    //onSaveInstanceState() to save data during rotate the screen till do not lose it
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putInt("roundCount", roundCount)
+        outState.putInt("player1Points", player1Points)
+        outState.putInt("player2Points", player2Points)
+        outState.putBoolean("player1Turn", player1Turn)
+    }
+
+    //onRestoreInstanceState() to restore data which saved by onSaveInstanceState() after rotate the screen
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+        roundCount = savedInstanceState.getInt("roundCount")
+        player1Points = savedInstanceState.getInt("player1Points")
+        player2Points = savedInstanceState.getInt("player2Points")
+        player1Turn = savedInstanceState.getBoolean("player1Turn")
+    }
 }
 
 /*
-// This IfInternetAvailable() to display Views if there is internet
-private fun ifInternetAvailable() {
-progressBar.visibility = View.VISIBLE
-if (checkConnectivity()) {
-progressBar.visibility = View.GONE
-noInternet.visibility = View.GONE
-tabLayout.visibility = View.VISIBLE
-viewPager.visibility = View.VISIBLE
-} else
-// if no internet
-{
-progressBar.visibility = View.GONE
-noInternet.visibility = View.VISIBLE
-tabLayout.visibility = View.INVISIBLE
-viewPager.visibility = View.INVISIBLE
-}
-// for try to check internet again
-noInternet.setOnClickListener {
-progressBar.visibility = View.VISIBLE
-if (checkConnectivity()) {
-progressBar.visibility = View.GONE
-noInternet.visibility = View.GONE
-tabLayout.visibility = View.VISIBLE
-viewPager.visibility = View.VISIBLE
-} else
-// if no internet
-{
-progressBar.visibility = View.GONE
-noInternet.visibility = View.VISIBLE
-tabLayout.visibility = View.INVISIBLE
-viewPager.visibility = View.INVISIBLE
-}
-}
 
-}
-
-// This checkConnectivity() for Check if third is internet or not
-private fun checkConnectivity(): Boolean {
-//boolean enabled = true;
-
-val connectivityManager =
-this.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-
-if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-connectivityManager.run {
-connectivityManager.getNetworkCapabilities(connectivityManager.activeNetwork)?.run {
-if (hasTransport(NetworkCapabilities.TRANSPORT_WIFI)) {
-return true
-} else if (hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)) {
-return true
-}
-}
-}
-}
-return false
-
-}
  */
 
