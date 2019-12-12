@@ -3,5 +3,5 @@
     <string name="player_one_score">player 1 : 0</string>
     <string name="player_two_score">player 2 : 0</string>
     <string name="reset">New Round</string>
-    <string name="play_again">New Game</string>
+    <string name="play_again">Start New Game</string>
 </resources>

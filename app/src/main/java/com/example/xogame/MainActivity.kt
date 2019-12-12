@@ -2,11 +2,16 @@ package com.example.xogame
 
 
 import android.annotation.SuppressLint
+import android.graphics.Color
+import android.os.Build
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import kotlinx.android.synthetic.main.activity_main.*
 
 
@@ -32,11 +37,11 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         for (i in 0..2) {
             for (j in 0..2) {
                 /*
-                Notice that the "btn_$i$j" is as same as my buttons id in xml File without numbers
+                Notice that the "btn_$i$j" is as same as my images id in xml File without numbers
                 as numbers will be add thanks to the next three lines of code
                 */
-                val buttonID = "btn_$i$j"
-                val resID = resources.getIdentifier(buttonID, "id", packageName)
+                val imageID = "btn_$i$j"
+                val resID = resources.getIdentifier(imageID, "id", packageName)
                 buttons[i][j] = findViewById<View>(resID) as Button?
                 buttons[i][j]?.setOnClickListener(this)
             }
@@ -48,29 +53,33 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             updatePointsText()
             Toast.makeText(this, "Reset Performed", Toast.LENGTH_SHORT).show()
             btn_reset.visibility = View.GONE
-
         }
+        /*
         // btn_playAgain for rest Buttons and change players points to zero
         btn_playAgain.setOnClickListener {
             resetBoard()
             player1Points = 0
             player2Points = 0
             updatePointsText()
-            Toast.makeText(this, "Reset Performed", Toast.LENGTH_SHORT).show()
-        }
+            Toast.makeText(this, "New Game Started", Toast.LENGTH_SHORT).show()
+        }*/
 
     }
 
-
+    @SuppressLint("ObsoleteSdkInt", "NewApi")
     override fun onClick(v: View) {
         if ((v as Button).text.toString() != "") {
             return
         }
         if (player1Turn) {
-            v.text = "X"
+            v.background = ContextCompat.getDrawable(this, R.drawable.x)
+            v.text = "x"
         } else {
-            v.text = "O"
+            v.background = ContextCompat.getDrawable(this, R.drawable.o)
+            //setBackgroundResource(R.drawable.o)
+            v.text = "o"
         }
+
         roundCount++
 
         if (checkForWin()) {
@@ -92,8 +101,10 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun checkForWin(): Boolean {
+
         val field = Array(3) { arrayOfNulls<String>(3) }
         // Next for_loop using for put buttons[][] array values to field[][] array
+
         for (i in 0..2) {
             for (j in 0..2) {
                 field[i][j] = buttons[i][j]!!.text.toString()
@@ -131,6 +142,11 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         Toast.makeText(this, "Player 1 wins!", Toast.LENGTH_SHORT).show()
         updatePointsText()
         btn_reset.visibility = View.VISIBLE
+        for (i in 0..2) {
+            for (j in 0..2) {
+                buttons[i][j]?.text = "-"
+            }
+        }
     }
 
     private fun player2Wins() {
@@ -138,11 +154,15 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         Toast.makeText(this, "Player 2 wins!", Toast.LENGTH_SHORT).show()
         updatePointsText()
         btn_reset.visibility = View.VISIBLE
+        for (i in 0..2) {
+            for (j in 0..2) {
+                buttons[i][j]?.text = "-"
+            }
+        }
     }
 
     private fun draw() {
         Toast.makeText(this, "Draw!", Toast.LENGTH_SHORT).show()
-        resetBoard()
         btn_reset.visibility = View.VISIBLE
     }
 
@@ -153,17 +173,24 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     // to clear Buttons screen
+    @SuppressLint("NewApi")
     private fun resetBoard() {
         for (i in 0..2) {
             for (j in 0..2) {
-                buttons[i][j]!!.text = ""
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    //buttons[i][j]!!.setBackgroundResource(R.drawable.empty)
+                    buttons[i][j]?.setBackgroundResource(R.drawable.empty)
+                } else {
+                    buttons[i][j]!!.setBackgroundResource(R.drawable.empty)
+                }
+                buttons[i][j]?.text = ""
             }
         }
         roundCount = 0
         player1Turn = true
     }
 
-
+    //onSaveInstanceState() to save data during rotate the screen till do not lose it
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putInt("roundCount", roundCount)
@@ -172,6 +199,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         outState.putBoolean("player1Turn", player1Turn)
     }
 
+    //onRestoreInstanceState() to restore data which saved by onSaveInstanceState() after rotate the screen
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
         roundCount = savedInstanceState.getInt("roundCount")
@@ -179,5 +207,101 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         player2Points = savedInstanceState.getInt("player2Points")
         player1Turn = savedInstanceState.getBoolean("player1Turn")
     }
+
+    // Handle toolbar style, colors and Buttons
+    private fun handelToolbar() {
+        toolbar.title = "X-O Game"
+        toolbar.setTitleTextColor(Color.WHITE)
+        setSupportActionBar(toolbar)
+        assert(supportActionBar != null)
+        supportActionBar!!.setDisplayHomeAsUpEnabled(false)
+        supportActionBar!!.setDisplayShowHomeEnabled(false)
+
+
+    }
+
+    // Handle item selection from menu
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            // menu_newGame for rest the game and change players points to zero
+            R.id.menu_newGame -> {
+                resetBoard()
+                player1Points = 0
+                player2Points = 0
+                updatePointsText()
+                Toast.makeText(this, "New Game Started", Toast.LENGTH_SHORT).show()
+
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+    // Handle menu to display on toolbar
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        menuInflater.inflate(R.menu.menu_main, menu)
+        return true
+    }
 }
+
+/*
+// This IfInternetAvailable() to display Views if there is internet
+private fun ifInternetAvailable() {
+progressBar.visibility = View.VISIBLE
+if (checkConnectivity()) {
+progressBar.visibility = View.GONE
+noInternet.visibility = View.GONE
+tabLayout.visibility = View.VISIBLE
+viewPager.visibility = View.VISIBLE
+} else
+// if no internet
+{
+progressBar.visibility = View.GONE
+noInternet.visibility = View.VISIBLE
+tabLayout.visibility = View.INVISIBLE
+viewPager.visibility = View.INVISIBLE
+}
+// for try to check internet again
+noInternet.setOnClickListener {
+progressBar.visibility = View.VISIBLE
+if (checkConnectivity()) {
+progressBar.visibility = View.GONE
+noInternet.visibility = View.GONE
+tabLayout.visibility = View.VISIBLE
+viewPager.visibility = View.VISIBLE
+} else
+// if no internet
+{
+progressBar.visibility = View.GONE
+noInternet.visibility = View.VISIBLE
+tabLayout.visibility = View.INVISIBLE
+viewPager.visibility = View.INVISIBLE
+}
+}
+
+}
+
+// This checkConnectivity() for Check if third is internet or not
+private fun checkConnectivity(): Boolean {
+//boolean enabled = true;
+
+val connectivityManager =
+this.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+
+if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+connectivityManager.run {
+connectivityManager.getNetworkCapabilities(connectivityManager.activeNetwork)?.run {
+if (hasTransport(NetworkCapabilities.TRANSPORT_WIFI)) {
+return true
+} else if (hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)) {
+return true
+}
+}
+}
+}
+return false
+
+}
+ */
 
