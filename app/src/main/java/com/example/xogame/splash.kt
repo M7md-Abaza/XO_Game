@@ -20,7 +20,8 @@ class splash : AppCompatActivity() {
                 try {
                     sleep(2500)
 
-                    ifInternetAvailable()
+                    val intent = Intent(applicationContext, EasyLevel::class.java)
+                    startActivity(intent)
 
                     finish()
                 } catch (e: InterruptedException) {
@@ -38,8 +39,7 @@ class splash : AppCompatActivity() {
 
         //progressBar.visibility = View.VISIBLE
         if (checkConnectivity()) {
-            val intent = Intent(applicationContext, MainActivity::class.java)
-            startActivity(intent)
+
         } else
         // if no internet
         {

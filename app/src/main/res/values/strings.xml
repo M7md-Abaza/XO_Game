@@ -4,4 +4,7 @@
     <string name="player_two_score">player 2 : 0</string>
     <string name="reset">New Round</string>
     <string name="play_again">Start New Game</string>
+    <string name="easy_level">Easy Level</string>
+    <string name="medium_level">Medium Level</string>
+    <string name="hard_level">Hard Level</string>
 </resources>

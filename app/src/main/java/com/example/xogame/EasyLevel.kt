@@ -2,6 +2,7 @@ package com.example.xogame
 
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
@@ -12,10 +13,10 @@ import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.easy_level.*
 
 
-class MainActivity : AppCompatActivity(), View.OnClickListener {
+class EasyLevel : AppCompatActivity(), View.OnClickListener {
 
     private val buttons: Array<Array<Button?>> =
         Array(3) { arrayOfNulls<Button>(3) }
@@ -28,10 +29,10 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     private var player2Points = 0
 
 
-    @SuppressLint("SetTextI18n")
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        setContentView(R.layout.easy_level)
 
         handelToolbar()
         getButtonPosition()
@@ -40,7 +41,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         btn_reset.setOnClickListener {
             resetBoard()
             updatePointsText()
-            Toast.makeText(this, "Reset Performed", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "New Round Started", Toast.LENGTH_SHORT).show()
             btn_reset.visibility = View.GONE
         }
 
@@ -194,6 +195,26 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                 updatePointsText()
                 Toast.makeText(this, "New Game Started", Toast.LENGTH_SHORT).show()
 
+                true
+            }
+            R.id.menu_easy -> {
+                val intent = Intent(applicationContext, EasyLevel::class.java)
+                startActivity(intent)
+                Toast.makeText(this, "Easy Level Started", Toast.LENGTH_SHORT).show()
+                true
+            }
+
+            R.id.menu_medium -> {
+                val intent = Intent(applicationContext, MediumLevel::class.java)
+                startActivity(intent)
+                Toast.makeText(this, "Medium Level Started", Toast.LENGTH_SHORT).show()
+                true
+            }
+
+            R.id.menu_hard -> {
+                val intent = Intent(applicationContext, HardLevel::class.java)
+                startActivity(intent)
+                Toast.makeText(this, "Hard Level Started", Toast.LENGTH_SHORT).show()
                 true
             }
             else -> super.onOptionsItemSelected(item)
