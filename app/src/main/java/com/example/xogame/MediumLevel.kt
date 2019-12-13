@@ -42,7 +42,6 @@ class MediumLevel : AppCompatActivity(), View.OnClickListener {
         }
     }
 
-    @SuppressLint("ObsoleteSdkInt", "NewApi")
     override fun onClick(v: View) {
         if ((v as Button).text.toString() != "") {
             return
