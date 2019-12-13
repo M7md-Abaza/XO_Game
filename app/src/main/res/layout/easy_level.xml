@@ -19,7 +19,7 @@
 
 
     <TextView
-        android:id="@+id/txt_player_1"
+        android:id="@+id/txt_player_2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -29,14 +29,14 @@
         android:freezesText="true"
         android:gravity="center"
         android:padding="5dp"
-        android:text="@string/player_one_score"
+        android:text="@string/player_two_score"
         android:textColor="@color/playerTextColor"
         android:textSize="30sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/toolbar" />
 
     <TextView
-        android:id="@+id/txt_player_2"
+        android:id="@+id/txt_player_1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -46,7 +46,7 @@
         android:freezesText="true"
         android:gravity="center"
         android:padding="5dp"
-        android:text="@string/player_two_score"
+        android:text="@string/player_one_score"
         android:textColor="@color/playerTextColor"
         android:textSize="30sp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -60,7 +60,7 @@
         android:layout_marginEnd="16dp"
         android:layout_marginRight="16dp"
         android:text="@string/reset"
-        android:textSize="20sp"
+        android:textSize="18sp"
         android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/toolbar" />
@@ -83,7 +83,7 @@
         app:layout_constraintBottom_toTopOf="@+id/viewH"
         app:layout_constraintEnd_toStartOf="@+id/viewV"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/txt_player_1"
+        app:layout_constraintTop_toBottomOf="@+id/txt_player_2"
         tools:ignore="ContentDescription,SmallSp" />
 
     <Button
@@ -102,7 +102,7 @@
         app:layout_constraintBottom_toTopOf="@+id/viewH"
         app:layout_constraintEnd_toStartOf="@+id/view2V"
         app:layout_constraintStart_toEndOf="@+id/viewV"
-        app:layout_constraintTop_toBottomOf="@+id/txt_player_1"
+        app:layout_constraintTop_toBottomOf="@+id/txt_player_2"
         tools:ignore="ContentDescription,SmallSp" />
 
     <Button
@@ -121,7 +121,7 @@
         app:layout_constraintBottom_toTopOf="@+id/viewH"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/view2V"
-        app:layout_constraintTop_toBottomOf="@+id/txt_player_1"
+        app:layout_constraintTop_toBottomOf="@+id/txt_player_2"
         tools:ignore="ContentDescription,SmallSp" />
 
     <Button
@@ -195,7 +195,7 @@
         android:background="@drawable/empty"
         android:freezesText="true"
         android:textSize="1sp"
-        app:layout_constraintBottom_toTopOf="@id/txt_player_2"
+        app:layout_constraintBottom_toTopOf="@id/txt_player_1"
         app:layout_constraintEnd_toStartOf="@+id/viewV"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/view2H"
@@ -214,7 +214,7 @@
         android:background="@drawable/empty"
         android:freezesText="true"
         android:textSize="1sp"
-        app:layout_constraintBottom_toTopOf="@id/txt_player_2"
+        app:layout_constraintBottom_toTopOf="@id/txt_player_1"
         app:layout_constraintEnd_toStartOf="@+id/view2V"
         app:layout_constraintStart_toEndOf="@+id/viewV"
         app:layout_constraintTop_toBottomOf="@+id/view2H"
@@ -233,7 +233,7 @@
         android:background="@drawable/empty"
         android:freezesText="true"
         android:textSize="1sp"
-        app:layout_constraintBottom_toTopOf="@id/txt_player_2"
+        app:layout_constraintBottom_toTopOf="@id/txt_player_1"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/view2V"
         app:layout_constraintTop_toBottomOf="@+id/view2H"
@@ -278,7 +278,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/btn_01"
         app:layout_constraintStart_toEndOf="@+id/btn_00"
-        app:layout_constraintTop_toBottomOf="@+id/txt_player_1" />
+        app:layout_constraintTop_toBottomOf="@+id/txt_player_2" />
 
     <View
         android:id="@+id/view2V"
@@ -290,6 +290,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/btn_02"
         app:layout_constraintStart_toEndOf="@+id/btn_01"
-        app:layout_constraintTop_toBottomOf="@+id/txt_player_1" />
+        app:layout_constraintTop_toBottomOf="@+id/txt_player_2" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
