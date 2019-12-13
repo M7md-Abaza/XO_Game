@@ -20,14 +20,12 @@ class HardLevel : AppCompatActivity() {
 
     // Handle toolbar style, colors and Buttons
     private fun handelToolbar() {
-        toolbar.title = "X-O Game"
+        toolbar.title = "X-O Hard Level"
         toolbar.setTitleTextColor(Color.WHITE)
         setSupportActionBar(toolbar)
         assert(supportActionBar != null)
         supportActionBar!!.setDisplayHomeAsUpEnabled(false)
         supportActionBar!!.setDisplayShowHomeEnabled(false)
-
-
     }
 
     // Handle item selection from menu

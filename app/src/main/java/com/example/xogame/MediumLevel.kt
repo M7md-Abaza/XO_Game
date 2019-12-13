@@ -167,7 +167,7 @@ class MediumLevel : AppCompatActivity(), View.OnClickListener {
 
     // Handle toolbar style, colors and Buttons
     private fun handelToolbar() {
-        toolbar.title = "X-O Game"
+        toolbar.title = "X-O Medium Level"
         toolbar.setTitleTextColor(Color.WHITE)
         setSupportActionBar(toolbar)
         assert(supportActionBar != null)
