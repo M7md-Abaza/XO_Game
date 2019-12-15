@@ -51,7 +51,6 @@ class MediumLevel : AppCompatActivity(), View.OnClickListener {
             v.text = "x"
         } else {
             v.background = ContextCompat.getDrawable(this, R.drawable.o)
-            //setBackgroundResource(R.drawable.o)
             v.text = "o"
         }
 
@@ -99,7 +98,7 @@ class MediumLevel : AppCompatActivity(), View.OnClickListener {
             }
         }
         // Next for_loop using to check the buttons from top_left to bottom_right are equal or not
-        if (field[0][0] == field[1][1] && field[0][0] == field[2][2] && field[0][0] == field[3][3]  && field[0][0] != ""
+        if (field[0][0] == field[1][1] && field[0][0] == field[2][2] && field[0][0] == field[3][3] && field[0][0] != ""
         ) {
             return true
         }

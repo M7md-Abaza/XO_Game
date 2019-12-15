@@ -29,7 +29,6 @@ class EasyLevel : AppCompatActivity(), View.OnClickListener {
     private var player2Points = 0
 
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.easy_level)
@@ -58,7 +57,6 @@ class EasyLevel : AppCompatActivity(), View.OnClickListener {
             v.text = "x"
         } else {
             v.background = ContextCompat.getDrawable(this, R.drawable.o)
-            //setBackgroundResource(R.drawable.o)
             v.text = "o"
         }
 
@@ -244,7 +242,6 @@ class EasyLevel : AppCompatActivity(), View.OnClickListener {
         }
     }
 
-
     //onSaveInstanceState() to save data during rotate the screen till do not lose it
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
@@ -264,7 +261,4 @@ class EasyLevel : AppCompatActivity(), View.OnClickListener {
     }
 }
 
-/*
-
- */
 

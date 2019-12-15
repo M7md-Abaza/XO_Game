@@ -51,12 +51,15 @@ class HardLevel : AppCompatActivity(), View.OnClickListener {
             v.text = "x"
         } else {
             v.background = ContextCompat.getDrawable(this, R.drawable.o)
-            //setBackgroundResource(R.drawable.o)
             v.text = "o"
         }
 
         roundCount++
 
+        /*
+        if checkForWin() return true which mean that there is
+        a player win then we check who player turn to decide the winner
+        */
         if (checkForWin()) {
             if (player1Turn) {
                 player1Wins()
@@ -86,14 +89,20 @@ class HardLevel : AppCompatActivity(), View.OnClickListener {
         }
         // Next for_loop using to check the only first five buttons in one row "horizontal" are equal or not
         for (i in 0..7) {
-            if (field[i][0] == field[i][1] && field[i][0] == field[i][2] && field[i][0] == field[i][3] && field[i][0] == field[i][4] && field[i][0] != ""
+            if (field[i][3] == field[i][0] && field[i][3] == field[i][1] && field[i][3] == field[i][2] && field[i][3] == field[i][4] && field[i][3] != ""
+                || field[i][3] == field[i][1] && field[i][3] == field[i][2] && field[i][3] == field[i][4] && field[i][3] == field[i][5] && field[i][3] != ""
+                || field[i][3] == field[i][2] && field[i][3] == field[i][4] && field[i][3] == field[i][5] && field[i][3] == field[i][6] && field[i][3] != ""
+                || field[i][3] == field[i][4] && field[i][3] == field[i][5] && field[i][3] == field[i][6] && field[i][3] == field[i][7] && field[i][3] != ""
             ) {
                 return true
             }
         }
         // Next for_loop using to check the only first five buttons in each column "vertical" are equal or not
         for (i in 0..7) {
-            if (field[0][i] == field[1][i] && field[0][i] == field[2][i] && field[0][i] == field[3][i] && field[0][i] == field[4][i] && field[0][i] != ""
+            if (field[3][i] == field[0][i] && field[3][i] == field[1][i] && field[3][i] == field[2][i] && field[3][i] == field[4][i] && field[3][i] != ""
+                || field[3][i] == field[1][i] && field[3][i] == field[2][i] && field[3][i] == field[4][i] && field[3][i] == field[5][i] && field[3][i] != ""
+                || field[3][i] == field[2][i] && field[3][i] == field[4][i] && field[3][i] == field[5][i] && field[3][i] == field[6][i] && field[3][i] != ""
+                || field[3][i] == field[4][i] && field[3][i] == field[5][i] && field[3][i] == field[6][i] && field[3][i] == field[7][i] && field[3][i] != ""
             ) {
                 return true
             }
@@ -119,7 +128,22 @@ class HardLevel : AppCompatActivity(), View.OnClickListener {
             return true
         }
         // Next last return using to check the buttons from top_right to bottom_left are equal or not
-        if (field[0][3] == field[1][2] && field[0][3] == field[2][1] && field[0][3] == field[3][0] && field[0][3] != ""
+        if (field[3][4] == field[0][7] && field[3][4] == field[1][6] && field[3][4] == field[2][5] && field[3][4] == field[4][3] && field[3][4] != ""
+            || field[3][4] == field[1][6] && field[3][4] == field[2][5] && field[3][4] == field[4][3] && field[3][4] == field[5][2] && field[3][4] != ""
+            || field[3][4] == field[2][5] && field[3][4] == field[4][3] && field[3][4] == field[5][2] && field[3][4] == field[6][1] && field[3][4] != ""
+            || field[3][4] == field[4][3] && field[3][4] == field[5][2] && field[3][4] == field[6][1] && field[3][4] == field[7][0] && field[3][4] != ""
+            || field[2][4] == field[0][6] && field[2][4] == field[1][5] && field[2][4] == field[3][3] && field[2][4] == field[4][2] && field[2][4] != ""
+            || field[2][4] == field[1][5] && field[2][4] == field[3][3] && field[2][4] == field[4][2] && field[2][4] == field[5][1] && field[2][4] != ""
+            || field[2][4] == field[3][3] && field[2][4] == field[4][2] && field[2][4] == field[5][1] && field[2][4] == field[6][0] && field[2][4] != ""
+            || field[1][4] == field[0][5] && field[1][4] == field[2][3] && field[1][4] == field[3][2] && field[1][4] == field[4][1] && field[1][4] != ""
+            || field[1][4] == field[2][3] && field[1][4] == field[3][2] && field[1][4] == field[4][1] && field[1][4] == field[5][0] && field[1][4] != ""
+            || field[0][4] == field[1][3] && field[0][4] == field[2][2] && field[0][4] == field[3][1] && field[0][4] == field[4][0] && field[0][4] != ""
+            || field[3][7] == field[4][6] && field[3][7] == field[5][5] && field[3][7] == field[6][4] && field[3][7] == field[7][3] && field[3][7] != ""
+            || field[3][6] == field[2][7] && field[3][6] == field[4][5] && field[3][6] == field[5][4] && field[3][6] == field[6][3] && field[3][6] != ""
+            || field[3][6] == field[4][5] && field[3][6] == field[5][4] && field[3][6] == field[6][3] && field[3][6] == field[7][2] && field[3][6] != ""
+            || field[3][5] == field[1][7] && field[3][5] == field[2][6] && field[3][5] == field[4][4] && field[3][5] == field[5][3] && field[3][5] != ""
+            || field[3][5] == field[2][6] && field[3][5] == field[4][4] && field[3][5] == field[5][3] && field[3][5] == field[6][2] && field[3][5] != ""
+            || field[3][5] == field[4][4] && field[3][5] == field[5][3] && field[3][5] == field[6][2] && field[3][5] == field[7][1] && field[3][5] != ""
         ) {
             return true
         }
@@ -131,8 +155,8 @@ class HardLevel : AppCompatActivity(), View.OnClickListener {
         Toast.makeText(this, "Player 1 wins!", Toast.LENGTH_SHORT).show()
         updatePointsText()
         btn_reset.visibility = View.VISIBLE
-        for (i in 0..3) {
-            for (j in 0..3) {
+        for (i in 0..7) {
+            for (j in 0..7) {
                 buttons[i][j]?.text = "-"
             }
         }
@@ -143,8 +167,8 @@ class HardLevel : AppCompatActivity(), View.OnClickListener {
         Toast.makeText(this, "Player 2 wins!", Toast.LENGTH_SHORT).show()
         updatePointsText()
         btn_reset.visibility = View.VISIBLE
-        for (i in 0..3) {
-            for (j in 0..3) {
+        for (i in 0..7) {
+            for (j in 0..7) {
                 buttons[i][j]?.text = "-"
             }
         }
@@ -164,8 +188,8 @@ class HardLevel : AppCompatActivity(), View.OnClickListener {
     // to clear Buttons screen
     @SuppressLint("NewApi")
     private fun resetBoard() {
-        for (i in 0..3) {
-            for (j in 0..3) {
+        for (i in 0..7) {
+            for (j in 0..7) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     //buttons[i][j]!!.setBackgroundResource(R.drawable.empty)
                     buttons[i][j]?.setBackgroundResource(R.drawable.empty)
@@ -195,10 +219,10 @@ class HardLevel : AppCompatActivity(), View.OnClickListener {
         return when (item.itemId) {
             // menu_newGame for rest the game and change players points to zero
             R.id.menu_newGame -> {
-                /* resetBoard()
-                 player1Points = 0
-                 player2Points = 0
-                 updatePointsText()*/
+                resetBoard()
+                player1Points = 0
+                player2Points = 0
+                updatePointsText()
                 Toast.makeText(this, "New Game Started", Toast.LENGTH_SHORT).show()
                 true
             }
@@ -237,8 +261,8 @@ class HardLevel : AppCompatActivity(), View.OnClickListener {
 
     // to get the Button position
     private fun getButtonPosition() {
-        for (i in 0..3) {
-            for (j in 0..3) {
+        for (i in 0..7) {
+            for (j in 0..7) {
                 /*
                 Notice that the "btn_$i$j" is as same as my images id in xml File without numbers
                 as numbers will be add thanks to the next three lines of code
