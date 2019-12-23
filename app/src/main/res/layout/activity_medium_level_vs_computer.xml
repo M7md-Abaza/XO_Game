@@ -5,11 +5,11 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/screen1"
-    tools:context=".TwoPlayers.MediumLevel">
+    tools:context=".OnePlayer.MediumLevelVsComputer">
 
 
     <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbar"
+        android:id="@+id/toolbarM"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:background="@drawable/screen"
@@ -20,7 +20,7 @@
 
 
     <TextView
-        android:id="@+id/txt_player_2"
+        android:id="@+id/txt_player_2M"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -30,14 +30,14 @@
         android:freezesText="true"
         android:gravity="center"
         android:padding="5dp"
-        android:text="@string/player_one_score"
+        android:text="@string/phone_score"
         android:textColor="@color/playerTextColor"
         android:textSize="30sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/toolbar" />
+        app:layout_constraintTop_toBottomOf="@id/toolbarM" />
 
     <TextView
-        android:id="@+id/txt_player_1"
+        android:id="@+id/txt_player_1M"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -47,14 +47,14 @@
         android:freezesText="true"
         android:gravity="center"
         android:padding="5dp"
-        android:text="@string/player_two_score"
+        android:text="@string/your_score"
         android:textColor="@color/playerTextColor"
         android:textSize="30sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
     <Button
-        android:id="@+id/btn_reset"
+        android:id="@+id/btn_resetM"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
@@ -64,7 +64,7 @@
         android:textSize="20sp"
         android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/toolbar" />
+        app:layout_constraintTop_toBottomOf="@+id/toolbarM" />
 
 
     <Button
@@ -84,7 +84,7 @@
         app:layout_constraintBottom_toTopOf="@+id/viewH"
         app:layout_constraintEnd_toStartOf="@+id/viewV"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/txt_player_2"
+        app:layout_constraintTop_toBottomOf="@+id/txt_player_2M"
         tools:ignore="ContentDescription,SmallSp" />
 
     <Button
@@ -103,7 +103,7 @@
         app:layout_constraintBottom_toTopOf="@+id/viewH"
         app:layout_constraintEnd_toStartOf="@+id/view2V"
         app:layout_constraintStart_toEndOf="@+id/viewV"
-        app:layout_constraintTop_toBottomOf="@+id/txt_player_2"
+        app:layout_constraintTop_toBottomOf="@+id/txt_player_2M"
         tools:ignore="ContentDescription,SmallSp" />
 
     <Button
@@ -122,7 +122,7 @@
         app:layout_constraintBottom_toTopOf="@+id/viewH"
         app:layout_constraintEnd_toStartOf="@+id/view3V"
         app:layout_constraintStart_toEndOf="@+id/view2V"
-        app:layout_constraintTop_toBottomOf="@+id/txt_player_2"
+        app:layout_constraintTop_toBottomOf="@+id/txt_player_2M"
         tools:ignore="ContentDescription,SmallSp" />
 
     <Button
@@ -141,7 +141,7 @@
         app:layout_constraintBottom_toTopOf="@+id/viewH"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/view3V"
-        app:layout_constraintTop_toBottomOf="@+id/txt_player_2"
+        app:layout_constraintTop_toBottomOf="@+id/txt_player_2M"
         app:layout_constraintVertical_bias="0.0"
         tools:ignore="ContentDescription,SmallSp" />
 
@@ -312,7 +312,7 @@
         android:background="@drawable/empty"
         android:freezesText="true"
         android:textSize="1sp"
-        app:layout_constraintBottom_toTopOf="@id/txt_player_1"
+        app:layout_constraintBottom_toTopOf="@id/txt_player_1M"
         app:layout_constraintEnd_toStartOf="@+id/viewV"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/view3H"
@@ -331,7 +331,7 @@
         android:background="@drawable/empty"
         android:freezesText="true"
         android:textSize="1sp"
-        app:layout_constraintBottom_toTopOf="@id/txt_player_1"
+        app:layout_constraintBottom_toTopOf="@id/txt_player_1M"
         app:layout_constraintEnd_toStartOf="@+id/view2V"
         app:layout_constraintStart_toEndOf="@+id/viewV"
         app:layout_constraintTop_toBottomOf="@+id/view3H"
@@ -350,7 +350,7 @@
         android:background="@drawable/empty"
         android:freezesText="true"
         android:textSize="1sp"
-        app:layout_constraintBottom_toTopOf="@id/txt_player_1"
+        app:layout_constraintBottom_toTopOf="@id/txt_player_1M"
         app:layout_constraintEnd_toStartOf="@+id/view3V"
         app:layout_constraintStart_toEndOf="@+id/view2V"
         app:layout_constraintTop_toBottomOf="@+id/view3H"
@@ -369,7 +369,7 @@
         android:background="@drawable/empty"
         android:freezesText="true"
         android:textSize="1sp"
-        app:layout_constraintBottom_toTopOf="@+id/txt_player_1"
+        app:layout_constraintBottom_toTopOf="@+id/txt_player_1M"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/view3V"
         app:layout_constraintTop_toBottomOf="@+id/view3H"
@@ -426,10 +426,10 @@
         android:layout_marginTop="64dp"
         android:layout_marginBottom="64dp"
         android:background="@color/linesAccent"
-        app:layout_constraintBottom_toTopOf="@+id/txt_player_1"
+        app:layout_constraintBottom_toTopOf="@+id/txt_player_1M"
         app:layout_constraintEnd_toStartOf="@+id/btn_01"
         app:layout_constraintStart_toEndOf="@+id/btn_00"
-        app:layout_constraintTop_toBottomOf="@+id/txt_player_2" />
+        app:layout_constraintTop_toBottomOf="@+id/txt_player_2M" />
 
     <View
         android:id="@+id/view2V"
@@ -438,10 +438,10 @@
         android:layout_marginTop="64dp"
         android:layout_marginBottom="64dp"
         android:background="@color/linesAccent"
-        app:layout_constraintBottom_toTopOf="@+id/txt_player_1"
+        app:layout_constraintBottom_toTopOf="@+id/txt_player_1M"
         app:layout_constraintEnd_toStartOf="@+id/btn_02"
         app:layout_constraintStart_toEndOf="@+id/btn_01"
-        app:layout_constraintTop_toBottomOf="@+id/txt_player_2" />
+        app:layout_constraintTop_toBottomOf="@+id/txt_player_2M" />
 
 
     <View
@@ -451,9 +451,8 @@
         android:layout_marginTop="64dp"
         android:layout_marginBottom="64dp"
         android:background="@color/linesAccent"
-        app:layout_constraintBottom_toTopOf="@+id/txt_player_1"
+        app:layout_constraintBottom_toTopOf="@+id/txt_player_1M"
         app:layout_constraintEnd_toStartOf="@+id/btn_23"
         app:layout_constraintStart_toEndOf="@+id/btn_02"
-        app:layout_constraintTop_toBottomOf="@+id/txt_player_2" />
-
+        app:layout_constraintTop_toBottomOf="@+id/txt_player_2M" />
 </androidx.constraintlayout.widget.ConstraintLayout>

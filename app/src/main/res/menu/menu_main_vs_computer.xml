@@ -16,12 +16,4 @@
         android:id="@+id/menu_medium"
         app:showAsAction="never"
         android:title="@string/medium_level" />
-
-    <item
-        android:id="@+id/menu_hard"
-        app:showAsAction="never"
-        android:title="@string/hard_level" />
-
-
-
 </menu>

@@ -14,17 +14,29 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="AllowBackup,GoogleAppIndexingWarning">
-        <activity android:name=".HardLevel"></activity>
-        <activity android:name=".MediumLevel" />
-        <activity android:name=".NoInternet" />
-        <activity android:name=".splash">
+        <activity android:name=".OnePlayer.HardLevelVsComputer"
+            tools:ignore="InnerclassSeparator" />
+        <activity android:name=".OnePlayer.MediumLevelVsComputer"
+            tools:ignore="InnerclassSeparator"/>
+        <activity android:name=".OnePlayer.EasyLevelVsComputer"
+            tools:ignore="InnerclassSeparator"/>
+        <activity android:name=".TwoPlayers.HardLevel"
+            tools:ignore="InnerclassSeparator"/>
+        <activity android:name=".TwoPlayers.MediumLevel"
+            tools:ignore="InnerclassSeparator"/>
+        <activity android:name=".TwoPlayers.EasyLevel"
+            tools:ignore="InnerclassSeparator"/>
+        <activity android:name=".StartActivities.MainActivity"
+            tools:ignore="InnerclassSeparator"/>
+        <activity android:name=".StartActivities.splash"
+            tools:ignore="InnerclassSeparator">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".EasyLevel" />
+
     </application>
 
 </manifest>

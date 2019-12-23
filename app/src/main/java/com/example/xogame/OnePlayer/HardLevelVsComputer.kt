@@ -1,4 +1,4 @@
-package com.example.xogame
+package com.example.xogame.OnePlayer
 
 import android.annotation.SuppressLint
 import android.content.Intent
@@ -12,9 +12,15 @@ import android.view.View
 import android.widget.Button
 import android.widget.Toast
 import androidx.core.content.ContextCompat
+import com.example.xogame.R
+import com.example.xogame.TwoPlayers.EasyLevel
+import com.example.xogame.TwoPlayers.HardLevel
+import com.example.xogame.TwoPlayers.MediumLevel
+import kotlinx.android.synthetic.main.activity_hard_level_vs_computer.*
 import kotlinx.android.synthetic.main.easy_level.*
+import kotlinx.android.synthetic.main.easy_level.btn_reset
 
-class HardLevel : AppCompatActivity(), View.OnClickListener {
+class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener {
 
     private val buttons: Array<Array<Button?>> =
         Array(8) { arrayOfNulls<Button>(8) }
@@ -26,14 +32,15 @@ class HardLevel : AppCompatActivity(), View.OnClickListener {
     private var player1Points = 0
     private var player2Points = 0
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.hard_level)
+        setContentView(R.layout.activity_hard_level_vs_computer)
 
         handelToolbar()
         getButtonPosition()
         // btn_reset for rest Buttons without change players points
-        btn_reset.setOnClickListener {
+        btn_resetH.setOnClickListener {
             resetBoard()
             updatePointsText()
             Toast.makeText(this, "New Round Started", Toast.LENGTH_SHORT).show()
@@ -41,32 +48,34 @@ class HardLevel : AppCompatActivity(), View.OnClickListener {
         }
     }
 
-
     override fun onClick(v: View) {
         if ((v as Button).text.toString() != "") {
             return
         }
-        if (player1Turn) {
+        v.background = ContextCompat.getDrawable(
+            this,
+            R.drawable.x
+        )
+        v.text = "x"
+        /*if (player1Turn) {
             v.background = ContextCompat.getDrawable(this, R.drawable.x)
             v.text = "x"
-        } else {
+            computerTurn()
+        }
+         else {
             v.background = ContextCompat.getDrawable(this, R.drawable.o)
             v.text = "o"
-        }
 
+        }*/
         roundCount++
 
-        /*
-        if checkForWin() return true which mean that there is
-        a player win then we check who player turn to decide the winner
-        */
         if (checkForWin()) {
             if (player1Turn) {
                 player1Wins()
             } else {
                 player2Wins()
             }
-        } else if (roundCount == 64) {
+        } else if (roundCount == 5) {
             draw()
         } else {
             /*
@@ -75,7 +84,21 @@ class HardLevel : AppCompatActivity(), View.OnClickListener {
             that is mean there in more places"Button" to play
             */
             player1Turn = !player1Turn
+            computerTurn()
+            if (checkForWin()) {
+                if (player1Turn) {
+                    player1Wins()
+                } else {
+                    player2Wins()
+                }
+            } else if (roundCount == 5) {
+                draw()
+            } else {
+                player1Turn = !player1Turn
+
+            }
         }
+
     }
 
     private fun checkForWin(): Boolean {
@@ -154,7 +177,7 @@ class HardLevel : AppCompatActivity(), View.OnClickListener {
         player1Points++
         Toast.makeText(this, "Player 1 wins!", Toast.LENGTH_SHORT).show()
         updatePointsText()
-        btn_reset.visibility = View.VISIBLE
+        btn_resetH.visibility = View.VISIBLE
         for (i in 0..7) {
             for (j in 0..7) {
                 buttons[i][j]?.text = "-"
@@ -166,7 +189,7 @@ class HardLevel : AppCompatActivity(), View.OnClickListener {
         player2Points++
         Toast.makeText(this, "Player 2 wins!", Toast.LENGTH_SHORT).show()
         updatePointsText()
-        btn_reset.visibility = View.VISIBLE
+        btn_resetH.visibility = View.VISIBLE
         for (i in 0..7) {
             for (j in 0..7) {
                 buttons[i][j]?.text = "-"
@@ -176,13 +199,199 @@ class HardLevel : AppCompatActivity(), View.OnClickListener {
 
     private fun draw() {
         Toast.makeText(this, "Draw!", Toast.LENGTH_SHORT).show()
-        btn_reset.visibility = View.VISIBLE
+        btn_resetH.visibility = View.VISIBLE
+    }
+
+    private fun computerTurn() {
+
+        if ((buttons[1][0]!!.text.toString() == buttons[1][2]!!.text.toString() && buttons[1][2]!!.text.toString() != ""
+                    || buttons[0][1]!!.text.toString() == buttons[2][1]!!.text.toString() && buttons[2][1]!!.text.toString() != ""
+                    || buttons[0][0]!!.text.toString() == buttons[2][2]!!.text.toString() && buttons[2][2]!!.text.toString() != ""
+                    || buttons[0][2]!!.text.toString() == buttons[2][0]!!.text.toString() && buttons[2][0]!!.text.toString() != "")
+            && buttons[1][1]!!.text.toString() == ""
+            && buttons[1][1]!!.text.toString() != "x"
+        ) {
+
+            buttons[1][1]?.background = ContextCompat.getDrawable(
+                this,
+                R.drawable.o
+            )
+            buttons[1][1]?.setText("o")!!
+
+        } else if ((buttons[0][0]!!.text.toString() == buttons[0][1]!!.text.toString() && buttons[0][1]!!.text.toString() != ""
+                    || buttons[1][1]!!.text.toString() == buttons[2][0]!!.text.toString() && buttons[2][0]!!.text.toString() != ""
+                    || buttons[1][2]!!.text.toString() == buttons[2][2]!!.text.toString() && buttons[2][2]!!.text.toString() != "")
+            && buttons[0][2]!!.text.toString() == ""
+            && buttons[0][2]!!.text.toString() != "x"
+        ) {
+
+            buttons[0][2]?.background = ContextCompat.getDrawable(
+                this,
+                R.drawable.o
+            )
+            buttons[0][2]?.setText("o")!!
+
+        } else if ((buttons[2][0]!!.text.toString() == buttons[2][1]!!.text.toString() && buttons[2][1]!!.text.toString() != ""
+                    || buttons[0][0]!!.text.toString() == buttons[1][1]!!.text.toString() && buttons[1][1]!!.text.toString() != ""
+                    || buttons[0][2]!!.text.toString() == buttons[1][2]!!.text.toString() && buttons[1][2]!!.text.toString() != "")
+            && buttons[2][2]!!.text.toString() == ""
+            && buttons[2][2]!!.text.toString() != "x"
+        ) {
+
+            buttons[2][2]?.background = ContextCompat.getDrawable(
+                this,
+                R.drawable.o
+            )
+            buttons[2][2]?.setText("o")!!
+
+        } else if ((buttons[0][1]!!.text.toString() == buttons[0][2]!!.text.toString() && buttons[0][2]!!.text.toString() != ""
+                    || buttons[2][2]!!.text.toString() == buttons[1][1]!!.text.toString() && buttons[1][1]!!.text.toString() != ""
+                    || buttons[1][0]!!.text.toString() == buttons[2][0]!!.text.toString() && buttons[2][0]!!.text.toString() != "")
+            && buttons[0][0]!!.text.toString() == ""
+            && buttons[0][0]!!.text.toString() != "x"
+        ) {
+
+            buttons[0][0]?.background = ContextCompat.getDrawable(
+                this,
+                R.drawable.o
+            )
+            buttons[0][0]?.setText("o")!!
+
+        } else if ((buttons[2][1]!!.text.toString() == buttons[2][2]!!.text.toString() && buttons[2][2]!!.text.toString() != ""
+                    || buttons[0][0]!!.text.toString() == buttons[1][0]!!.text.toString() && buttons[1][0]!!.text.toString() != ""
+                    || buttons[0][2]!!.text.toString() == buttons[1][1]!!.text.toString() && buttons[1][1]!!.text.toString() != "")
+            && buttons[2][0]!!.text.toString() == ""
+            && buttons[2][0]!!.text.toString() != "x"
+        ) {
+
+            buttons[2][0]?.background = ContextCompat.getDrawable(
+                this,
+                R.drawable.o
+            )
+            buttons[2][0]?.setText("o")!!
+
+        } else if ((buttons[1][0]!!.text.toString() == buttons[1][1]!!.text.toString() && buttons[1][1]!!.text.toString() != ""
+                    || buttons[0][2]!!.text.toString() == buttons[2][2]!!.text.toString() && buttons[2][2]!!.text.toString() != "")
+            && buttons[1][2]!!.text.toString() == ""
+            && buttons[1][2]!!.text.toString() != "x"
+        ) {
+
+            buttons[1][2]?.background = ContextCompat.getDrawable(
+                this,
+                R.drawable.o
+            )
+            buttons[1][2]?.setText("o")!!
+
+        } else if ((buttons[0][0]!!.text.toString() == buttons[0][2]!!.text.toString() && buttons[0][2]!!.text.toString() != ""
+                    || buttons[1][1]!!.text.toString() == buttons[2][1]!!.text.toString() && buttons[2][1]!!.text.toString() != "")
+            && buttons[0][1]!!.text.toString() == ""
+            && buttons[0][1]!!.text.toString() != "x"
+        ) {
+
+            buttons[0][1]?.background = ContextCompat.getDrawable(
+                this,
+                R.drawable.o
+            )
+            buttons[0][1]?.setText("o")!!
+
+        } else if ((buttons[2][0]!!.text.toString() == buttons[2][2]!!.text.toString() && buttons[2][2]!!.text.toString() != ""
+                    || buttons[0][1]!!.text.toString() == buttons[1][1]!!.text.toString() && buttons[1][1]!!.text.toString() != "")
+            && buttons[2][1]!!.text.toString() == ""
+            && buttons[2][1]!!.text.toString() != "x"
+        ) {
+
+            buttons[2][1]?.background = ContextCompat.getDrawable(
+                this,
+                R.drawable.o
+            )
+            buttons[2][1]?.setText("o")!!
+
+        } else if ((buttons[1][1]!!.text.toString() == buttons[1][2]!!.text.toString() && buttons[1][2]!!.text.toString() != ""
+                    || buttons[0][0]!!.text.toString() == buttons[2][0]!!.text.toString() && buttons[2][0]!!.text.toString() != "")
+            && buttons[1][0]!!.text.toString() == ""
+            && buttons[1][0]!!.text.toString() != "x"
+        ) {
+
+            buttons[1][0]?.background = ContextCompat.getDrawable(
+                this,
+                R.drawable.o
+            )
+            buttons[1][0]?.setText("o")!!
+        } else {
+
+            when {
+                buttons[1][2]!!.text.toString() == "" -> {
+                    buttons[1][2]?.background = ContextCompat.getDrawable(
+                        this,
+                        R.drawable.o
+                    )
+                    buttons[1][2]?.setText("o")!!
+                }
+                buttons[0][2]!!.text.toString() == "" -> {
+                    buttons[0][2]?.background = ContextCompat.getDrawable(
+                        this,
+                        R.drawable.o
+                    )
+                    buttons[0][2]?.setText("o")!!
+                }
+                buttons[2][1]!!.text.toString() == "" -> {
+                    buttons[2][1]?.background = ContextCompat.getDrawable(
+                        this,
+                        R.drawable.o
+                    )
+                    buttons[2][1]?.setText("o")!!
+                }
+                buttons[0][0]!!.text.toString() == "" -> {
+                    buttons[0][0]?.background = ContextCompat.getDrawable(
+                        this,
+                        R.drawable.o
+                    )
+                    buttons[0][0]?.setText("o")!!
+                }
+                buttons[1][1]!!.text.toString() != "" -> {
+                    buttons[1][1]?.background = ContextCompat.getDrawable(
+                        this,
+                        R.drawable.o
+                    )
+                    buttons[1][1]?.setText("o")!!
+                }
+                buttons[2][2]!!.text.toString() != "" -> {
+                    buttons[2][2]?.background = ContextCompat.getDrawable(
+                        this,
+                        R.drawable.o
+                    )
+                    buttons[2][2]?.setText("o")!!
+                }
+                buttons[2][0]!!.text.toString() != "" -> {
+                    buttons[2][0]?.background = ContextCompat.getDrawable(
+                        this,
+                        R.drawable.o
+                    )
+                    buttons[2][0]?.setText("o")!!
+                }
+                buttons[0][1]!!.text.toString() != "" -> {
+                    buttons[0][1]?.background = ContextCompat.getDrawable(
+                        this,
+                        R.drawable.o
+                    )
+                    buttons[0][1]?.setText("o")!!
+                }
+                buttons[1][0]!!.text.toString() != "" -> {
+                    buttons[1][0]?.background = ContextCompat.getDrawable(
+                        this,
+                        R.drawable.o
+                    )
+                    buttons[1][0]?.setText("o")!!
+
+                }
+            }
+        }
     }
 
     @SuppressLint("SetTextI18n")
     private fun updatePointsText() {
-        txt_player_1.text = "Player 1: $player1Points"
-        txt_player_2.text = "Player 2: $player2Points"
+        txt_player_1H.text = "Player 1: $player1Points"
+        txt_player_2H.text = "Player 2: $player2Points"
     }
 
     // to clear Buttons screen
@@ -206,9 +415,9 @@ class HardLevel : AppCompatActivity(), View.OnClickListener {
 
     // Handle toolbar style, colors and Buttons
     private fun handelToolbar() {
-        toolbar.title = "X-O Hard Level"
-        toolbar.setTitleTextColor(Color.WHITE)
-        setSupportActionBar(toolbar)
+        toolbarH.title = "X-O Hard Level"
+        toolbarH.setTitleTextColor(Color.WHITE)
+        setSupportActionBar(toolbarH)
         assert(supportActionBar != null)
         supportActionBar!!.setDisplayHomeAsUpEnabled(false)
         supportActionBar!!.setDisplayShowHomeEnabled(false)
