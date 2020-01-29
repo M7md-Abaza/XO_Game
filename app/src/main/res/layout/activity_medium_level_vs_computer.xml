@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/screen1"
+    android:background="@drawable/background"
     tools:context=".OnePlayer.MediumLevelVsComputer">
 
 
@@ -12,7 +12,7 @@
         android:id="@+id/toolbarM"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="@drawable/screen"
+        android:background="@drawable/background"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
@@ -26,7 +26,7 @@
         android:layout_marginStart="16dp"
         android:layout_marginLeft="16dp"
         android:layout_marginTop="16dp"
-        android:background="@drawable/players_background"
+        android:background="@drawable/one_player_bg"
         android:freezesText="true"
         android:gravity="center"
         android:padding="5dp"
@@ -43,7 +43,7 @@
         android:layout_marginStart="16dp"
         android:layout_marginLeft="16dp"
         android:layout_marginBottom="16dp"
-        android:background="@drawable/players_background"
+        android:background="@drawable/one_player_bg"
         android:freezesText="true"
         android:gravity="center"
         android:padding="5dp"

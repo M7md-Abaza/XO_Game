@@ -10,7 +10,8 @@
     <string name="medium_level">Medium Level</string>
     <string name="hard_level">Hard Level</string>
     <string name="two_player">Two Player</string>
-    <string name="single_player">Single Player</string>
+    <string name="one_player">One Player</string>
+    <string name="have_fun_and_enjoy">Have Fun And Enjoy</string>
 
 
     <string-array name="Levels_array">
