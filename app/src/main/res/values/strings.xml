@@ -2,8 +2,8 @@
     <string name="app_name">X-O Game</string>
     <string name="player_one_score">Player 1 : 0</string>
     <string name="player_two_score">Player 2 : 0</string>
-    <string name="phone_score">Phone : 0</string>
-    <string name="your_score">You : 0</string>
+    <string name="phone">Phone</string>
+    <string name="you">You</string>
     <string name="reset">New Round</string>
     <string name="play_again">Start New Game</string>
     <string name="easy_level">Normal Level</string>
@@ -11,7 +11,12 @@
     <string name="hard_level">Hard Level</string>
     <string name="two_player">Two Player</string>
     <string name="one_player">One Player</string>
+    <string name="player">Player</string>
     <string name="have_fun_and_enjoy">Have Fun And Enjoy</string>
+    <string name="level">Level</string>
+    <string name="easy">Easy</string>
+    <string name="_0">0</string>
+    <string name="_n">:</string>
 
 
     <string-array name="Levels_array">
