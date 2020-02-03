@@ -6,6 +6,7 @@ import android.graphics.Color
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Handler
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -16,6 +17,7 @@ import com.example.xogame.R
 import com.example.xogame.TwoPlayers.EasyLevel
 import com.example.xogame.TwoPlayers.HardLevel
 import com.example.xogame.TwoPlayers.MediumLevel
+import kotlinx.android.synthetic.main.activity_easy_level_vs_computer.*
 import kotlinx.android.synthetic.main.activity_medium_level_vs_computer.*
 import kotlinx.android.synthetic.main.easy_level.btn_reset
 
@@ -31,12 +33,17 @@ class MediumLevelVsComputer : AppCompatActivity(), View.OnClickListener {
     private var player1Points = 0
     private var player2Points = 0
 
+    private val handler: Handler = Handler()
+    private val r: Runnable = Runnable {
+        computerTurn()
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_medium_level_vs_computer)
 
-        handelToolbar()
         getButtonPosition()
+
         // btn_reset for rest Buttons without change players points
         btn_resetM.setOnClickListener {
             resetBoard()
@@ -73,7 +80,10 @@ class MediumLevelVsComputer : AppCompatActivity(), View.OnClickListener {
             that is mean there in more places"Button" to play
             */
             player1Turn = !player1Turn
-            computerTurn()
+
+            handler.postDelayed(r, 400)
+
+            /*
             if (checkForWin()) {
                 if (player1Turn) {
                     player1Wins()
@@ -85,6 +95,7 @@ class MediumLevelVsComputer : AppCompatActivity(), View.OnClickListener {
             } else {
                 player1Turn = !player1Turn
             }
+            */
         }
 
     }
@@ -127,7 +138,7 @@ class MediumLevelVsComputer : AppCompatActivity(), View.OnClickListener {
 
     private fun player1Wins() {
         player1Points++
-        Toast.makeText(this, "Player 1 wins!", Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, "Player X wins!", Toast.LENGTH_SHORT).show()
         updatePointsText()
         btn_resetM.visibility = View.VISIBLE
         for (i in 0..3) {
@@ -139,7 +150,7 @@ class MediumLevelVsComputer : AppCompatActivity(), View.OnClickListener {
 
     private fun player2Wins() {
         player2Points++
-        Toast.makeText(this, "Player 2 wins!", Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, "Player O wins!", Toast.LENGTH_SHORT).show()
         updatePointsText()
         btn_resetM.visibility = View.VISIBLE
         for (i in 0..3) {
@@ -491,15 +502,27 @@ class MediumLevelVsComputer : AppCompatActivity(), View.OnClickListener {
             }
 
         }
+
+        if (checkForWin()) {
+            if (player1Turn) {
+                player1Wins()
+            } else {
+                player2Wins()
+            }
+        } else if (roundCount == 8) {
+            draw()
+        } else {
+            player1Turn = !player1Turn
+        }
     }
 
     @SuppressLint("SetTextI18n")
     private fun updatePointsText() {
-        txt_player_1M.text = "Player 1: $player1Points"
-        txt_player_2M.text = "Player 2: $player2Points"
+        txt_player_1M.text = player1Points.toString()
+        txt_player_2M.text = player2Points.toString()
     }
 
-    // to clear Buttons screen
+    // to clear Buttons Data on screen
     @SuppressLint("NewApi")
     private fun resetBoard() {
         for (i in 0..3) {
@@ -514,57 +537,6 @@ class MediumLevelVsComputer : AppCompatActivity(), View.OnClickListener {
         }
         roundCount = 0
         player1Turn = true
-    }
-
-    // Handle toolbar style, colors and Buttons
-    private fun handelToolbar() {
-        toolbarM.title = "X-O Medium Level"
-        toolbarM.setTitleTextColor(Color.WHITE)
-        setSupportActionBar(toolbarM)
-        assert(supportActionBar != null)
-        supportActionBar!!.setDisplayHomeAsUpEnabled(false)
-        supportActionBar!!.setDisplayShowHomeEnabled(false)
-
-
-    }
-
-    // Handle item selection from menu
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            // menu_newGame for rest the game and change players points to zero
-            R.id.menu_newGame -> {
-                resetBoard()
-                player1Points = 0
-                player2Points = 0
-                updatePointsText()
-                Toast.makeText(this, "New Game Started", Toast.LENGTH_SHORT).show()
-
-                true
-            }
-
-            R.id.menu_easy -> {
-                val intent = Intent(applicationContext, EasyLevel::class.java)
-                startActivity(intent)
-                Toast.makeText(this, "Easy Level Started", Toast.LENGTH_SHORT).show()
-                true
-            }
-
-            R.id.menu_medium -> {
-                val intent = Intent(applicationContext, MediumLevel::class.java)
-                startActivity(intent)
-                Toast.makeText(this, "Medium Level Started", Toast.LENGTH_SHORT).show()
-                true
-            }
-
-            else -> super.onOptionsItemSelected(item)
-        }
-    }
-
-    // Handle menu to display on toolbar
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        menuInflater.inflate(R.menu.menu_main_vs_computer, menu)
-        return true
     }
 
     // to get the Button position

@@ -4,14 +4,15 @@ import android.annotation.SuppressLint
 import android.media.MediaPlayer
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
 import android.view.View
 import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.example.xogame.R
+import kotlinx.android.synthetic.main.activity_easy_level_vs_computer.*
 import kotlinx.android.synthetic.main.easy_level.*
-import java.util.concurrent.TimeUnit
 
 
 class EasyLevelVsComputer : AppCompatActivity(), View.OnClickListener {
@@ -26,6 +27,12 @@ class EasyLevelVsComputer : AppCompatActivity(), View.OnClickListener {
     private var player1Points = 0
     private var player2Points = 0
 
+
+    private val handler: Handler = Handler()
+    private val r: Runnable = Runnable {
+        computerTurn()
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_easy_level_vs_computer)
@@ -33,12 +40,12 @@ class EasyLevelVsComputer : AppCompatActivity(), View.OnClickListener {
         getButtonPosition()
 
         // btn_reset for rest Buttons without change players points
-        btn_reset.setOnClickListener {
+        btn_resetE.setOnClickListener {
             newGameSound()
             resetBoard()
             updatePointsText()
             Toast.makeText(this, "New Round Started", Toast.LENGTH_SHORT).show()
-            btn_reset.visibility = View.GONE
+            btn_resetE.visibility = View.GONE
         }
     }
 
@@ -66,7 +73,9 @@ class EasyLevelVsComputer : AppCompatActivity(), View.OnClickListener {
             that is mean there in more places"Button" to play
             */
             player1Turn = !player1Turn
-            computerTurn()
+
+            handler.postDelayed(r, 400)
+/*
             if (checkForWin()) {
                 if (player1Turn) {
                     player1Wins()
@@ -77,7 +86,7 @@ class EasyLevelVsComputer : AppCompatActivity(), View.OnClickListener {
                 draw()
             } else {
                 player1Turn = !player1Turn
-            }
+            }*/
         }
     }
 
@@ -136,7 +145,7 @@ class EasyLevelVsComputer : AppCompatActivity(), View.OnClickListener {
         Toast.makeText(this, "Phone wins!", Toast.LENGTH_SHORT).show()
         updatePointsText()
 
-        btn_reset.visibility = View.VISIBLE
+        btn_resetE.visibility = View.VISIBLE
         for (i in 0..2) {
             for (j in 0..2) {
                 buttons[i][j]?.text = "-"
@@ -146,7 +155,7 @@ class EasyLevelVsComputer : AppCompatActivity(), View.OnClickListener {
 
     private fun draw() {
         Toast.makeText(this, "Draw!", Toast.LENGTH_SHORT).show()
-        btn_reset.visibility = View.VISIBLE
+        btn_resetE.visibility = View.VISIBLE
     }
 
     private fun computerTurn() {
@@ -332,12 +341,24 @@ class EasyLevelVsComputer : AppCompatActivity(), View.OnClickListener {
                 }
             }
         }
+
+        if (checkForWin()) {
+            if (player1Turn) {
+                player1Wins()
+            } else {
+                player2Wins()
+            }
+        } else if (roundCount == 5) {
+            draw()
+        } else {
+            player1Turn = !player1Turn
+        }
     }
 
     @SuppressLint("SetTextI18n")
     private fun updatePointsText() {
-        txt_player_1.text = player1Points.toString()
-        txt_player_2.text = player2Points.toString()
+        txt_player_1E.text = player1Points.toString()
+        txt_player_2E.text = player2Points.toString()
     }
 
     // to clear Buttons screen

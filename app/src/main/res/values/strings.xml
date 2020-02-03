@@ -17,6 +17,7 @@
     <string name="easy">Easy</string>
     <string name="_0">0</string>
     <string name="_n">:</string>
+    <string name="medium">Medium</string>
 
 
     <string-array name="Levels_array">

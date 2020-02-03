@@ -14,6 +14,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.example.xogame.R
 import kotlinx.android.synthetic.main.easy_level.*
+import kotlinx.android.synthetic.main.medium_level.*
 
 
 class MediumLevel : AppCompatActivity(), View.OnClickListener {
@@ -34,11 +35,11 @@ class MediumLevel : AppCompatActivity(), View.OnClickListener {
 
         getButtonPosition()
         // btn_reset for rest Buttons without change players points
-        btn_reset.setOnClickListener {
+        btn_resetM.setOnClickListener {
             resetBoard()
             updatePointsText()
             Toast.makeText(this, "New Round Started", Toast.LENGTH_SHORT).show()
-            btn_reset.visibility = View.GONE
+            btn_resetM.visibility = View.GONE
         }
     }
 
@@ -118,7 +119,7 @@ class MediumLevel : AppCompatActivity(), View.OnClickListener {
         player1Points++
         Toast.makeText(this, "Player 1 wins!", Toast.LENGTH_SHORT).show()
         updatePointsText()
-        btn_reset.visibility = View.VISIBLE
+        btn_resetM.visibility = View.VISIBLE
         for (i in 0..3) {
             for (j in 0..3) {
                 buttons[i][j]?.text = "-"
@@ -130,7 +131,7 @@ class MediumLevel : AppCompatActivity(), View.OnClickListener {
         player2Points++
         Toast.makeText(this, "Player 2 wins!", Toast.LENGTH_SHORT).show()
         updatePointsText()
-        btn_reset.visibility = View.VISIBLE
+        btn_resetM.visibility = View.VISIBLE
         for (i in 0..3) {
             for (j in 0..3) {
                 buttons[i][j]?.text = "-"
@@ -140,13 +141,13 @@ class MediumLevel : AppCompatActivity(), View.OnClickListener {
 
     private fun draw() {
         Toast.makeText(this, "Draw!", Toast.LENGTH_SHORT).show()
-        btn_reset.visibility = View.VISIBLE
+        btn_resetM.visibility = View.VISIBLE
     }
 
     @SuppressLint("SetTextI18n")
     private fun updatePointsText() {
-        txt_player_1.text = "Player 1: $player1Points"
-        txt_player_2.text = "Player 2: $player2Points"
+        txt_player_1M.text = "Player 1: $player1Points"
+        txt_player_2M.text = "Player 2: $player2Points"
     }
 
     // to clear Buttons screen

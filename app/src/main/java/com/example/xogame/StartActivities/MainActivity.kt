@@ -4,8 +4,10 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.example.xogame.OnePlayer.EasyLevelVsComputer
+import com.example.xogame.OnePlayer.MediumLevelVsComputer
 import com.example.xogame.R
 import com.example.xogame.TwoPlayers.EasyLevel
+import com.example.xogame.TwoPlayers.MediumLevel
 import kotlinx.android.synthetic.main.activity_main.*
 
 
@@ -16,18 +18,15 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
 
-
-        singlePlayer.setOnClickListener {
-            val intent = Intent(applicationContext, EasyLevelVsComputer::class.java)
+        onePlayerCard.setOnClickListener {
+            val intent = Intent(applicationContext, MediumLevelVsComputer::class.java)
             startActivity(intent)
         }
 
-        multiPlayer.setOnClickListener {
-            val intent = Intent(applicationContext, EasyLevel::class.java)
+
+        twoPlayerCard.setOnClickListener {
+            val intent = Intent(applicationContext, MediumLevel::class.java)
             startActivity(intent)
         }
     }
-
-
-
 }
