@@ -1,13 +1,9 @@
 package com.example.xogame.StartActivities
 
-import android.content.Intent
+import android.graphics.Typeface
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import com.example.xogame.OnePlayer.EasyLevelVsComputer
-import com.example.xogame.OnePlayer.MediumLevelVsComputer
 import com.example.xogame.R
-import com.example.xogame.TwoPlayers.EasyLevel
-import com.example.xogame.TwoPlayers.MediumLevel
 import kotlinx.android.synthetic.main.activity_main.*
 
 
@@ -17,16 +13,20 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        val typeface = Typeface.createFromAsset(assets, "sukar.ttf")
+        haveFun.typeface = typeface
+        singlePlayer.typeface = typeface
+        multiPlayer.typeface = typeface
 
         onePlayerCard.setOnClickListener {
-            val intent = Intent(applicationContext, EasyLevelVsComputer::class.java)
-            startActivity(intent)
+
+            val onePlayerBottomSheet = OnePlayerBottomSheetDialog()
+            onePlayerBottomSheet.show(supportFragmentManager, "exampleBottomSheet")
         }
 
-
         twoPlayerCard.setOnClickListener {
-            val intent = Intent(applicationContext, MediumLevel::class.java)
-            startActivity(intent)
+            val twoPlayerBottomSheet = TwoPlayerBottomSheetDialog()
+            twoPlayerBottomSheet.show(supportFragmentManager, "exampleBottomSheet")
         }
     }
 }

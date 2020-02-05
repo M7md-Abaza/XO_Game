@@ -3,6 +3,7 @@ package com.example.xogame.OnePlayer
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.graphics.Color
+import android.graphics.Typeface
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -21,6 +22,7 @@ import kotlinx.android.synthetic.main.easy_level.*
 import kotlinx.android.synthetic.main.easy_level.btn_reset
 
 class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener {
+
 
     private val buttons: Array<Array<Button?>> =
         Array(8) { arrayOfNulls<Button>(8) }

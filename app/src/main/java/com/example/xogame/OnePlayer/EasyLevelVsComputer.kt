@@ -1,6 +1,7 @@
 package com.example.xogame.OnePlayer
 
 import android.annotation.SuppressLint
+import android.graphics.Typeface
 import android.media.MediaPlayer
 import android.os.Build
 import android.os.Bundle
@@ -11,14 +12,11 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.example.xogame.R
-import com.jakewharton.rxbinding2.view.RxView
-import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.activity_easy_level_vs_computer.*
-import kotlinx.android.synthetic.main.easy_level.*
-import java.util.concurrent.TimeUnit
 
 
 class EasyLevelVsComputer : AppCompatActivity(), View.OnClickListener {
+
 
     private val buttons: Array<Array<Button?>> =
         Array(3) { arrayOfNulls<Button>(3) }
@@ -40,6 +38,10 @@ class EasyLevelVsComputer : AppCompatActivity(), View.OnClickListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_easy_level_vs_computer)
+
+        val typeface = Typeface.createFromAsset(assets, "sukar.ttf")
+        textView2.typeface = typeface
+        text.typeface = typeface
 
         getButtonPosition()
 

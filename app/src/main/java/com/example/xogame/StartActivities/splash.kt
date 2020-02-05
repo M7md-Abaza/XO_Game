@@ -1,20 +1,20 @@
 package com.example.xogame.StartActivities
 
-import android.content.Context
 import android.content.Intent
-import android.net.ConnectivityManager
-import android.net.NetworkCapabilities
-import android.os.Build
+import android.graphics.Typeface
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.example.xogame.R
-import com.example.xogame.TwoPlayers.EasyLevel
+import kotlinx.android.synthetic.main.activity_splash.*
 
 class splash : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_splash)
+
+        val typeface = Typeface.createFromAsset(assets, "sukar.ttf")
+        textView.typeface = typeface
 
         val thread = object : Thread() {
 
