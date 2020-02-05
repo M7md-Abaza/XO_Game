@@ -19,6 +19,7 @@
     <string name="_n">:</string>
     <string name="medium">Medium</string>
     <string name="choose_the_level">Choose The Level</string>
+    <string name="hard">Hard</string>
 
 
     <string-array name="Levels_array">

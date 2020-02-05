@@ -12,7 +12,6 @@ import com.example.xogame.TwoPlayers.EasyLevel
 import com.example.xogame.TwoPlayers.HardLevel
 import com.example.xogame.TwoPlayers.MediumLevel
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import kotlinx.android.synthetic.main.one_player_bottom_sheet.*
 import kotlinx.android.synthetic.main.two_player_bottom_sheet.view.*
 
 

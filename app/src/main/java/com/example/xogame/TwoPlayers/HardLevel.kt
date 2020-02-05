@@ -14,6 +14,7 @@ import android.widget.Toast
 import androidx.core.content.ContextCompat
 import com.example.xogame.R
 import kotlinx.android.synthetic.main.easy_level.*
+import kotlinx.android.synthetic.main.hard_level.*
 
 class HardLevel : AppCompatActivity(), View.OnClickListener {
 
@@ -32,12 +33,13 @@ class HardLevel : AppCompatActivity(), View.OnClickListener {
         setContentView(R.layout.hard_level)
 
         getButtonPosition()
+
         // btn_reset for rest Buttons without change players points
-        btn_reset.setOnClickListener {
+        btn_resetH.setOnClickListener {
             resetBoard()
             updatePointsText()
             Toast.makeText(this, "New Round Started", Toast.LENGTH_SHORT).show()
-            btn_reset.visibility = View.GONE
+            btn_resetH.visibility = View.GONE
         }
     }
 
@@ -155,9 +157,9 @@ class HardLevel : AppCompatActivity(), View.OnClickListener {
 
     private fun player1Wins() {
         player1Points++
-        Toast.makeText(this, "Player 1 wins!", Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, "Player X wins!", Toast.LENGTH_SHORT).show()
         updatePointsText()
-        btn_reset.visibility = View.VISIBLE
+        btn_resetH.visibility = View.VISIBLE
         for (i in 0..7) {
             for (j in 0..7) {
                 buttons[i][j]?.text = "-"
@@ -167,9 +169,9 @@ class HardLevel : AppCompatActivity(), View.OnClickListener {
 
     private fun player2Wins() {
         player2Points++
-        Toast.makeText(this, "Player 2 wins!", Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, "Player O wins!", Toast.LENGTH_SHORT).show()
         updatePointsText()
-        btn_reset.visibility = View.VISIBLE
+        btn_resetH.visibility = View.VISIBLE
         for (i in 0..7) {
             for (j in 0..7) {
                 buttons[i][j]?.text = "-"
@@ -179,13 +181,13 @@ class HardLevel : AppCompatActivity(), View.OnClickListener {
 
     private fun draw() {
         Toast.makeText(this, "Draw!", Toast.LENGTH_SHORT).show()
-        btn_reset.visibility = View.VISIBLE
+        btn_resetH.visibility = View.VISIBLE
     }
 
     @SuppressLint("SetTextI18n")
     private fun updatePointsText() {
-        txt_player_1.text = "Player 1: $player1Points"
-        txt_player_2.text = "Player 2: $player2Points"
+        txt_player_1H.text = player1Points.toString()
+        txt_player_2H.text = player2Points.toString()
     }
 
     // to clear Buttons screen

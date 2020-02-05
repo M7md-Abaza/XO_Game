@@ -27,7 +27,7 @@ class MediumLevelVsComputer : AppCompatActivity(), View.OnClickListener {
         Array(4) { arrayOfNulls<Button>(4) }
 
     private var player1Turn = true
-
+    private var clickable = true
     private var roundCount = 0
 
     private var player1Points = 0
@@ -50,54 +50,54 @@ class MediumLevelVsComputer : AppCompatActivity(), View.OnClickListener {
             updatePointsText()
             Toast.makeText(this, "New Round Started", Toast.LENGTH_SHORT).show()
             btn_resetM.visibility = View.GONE
+            clickable = true
         }
     }
 
     override fun onClick(v: View) {
-        if ((v as Button).text.toString() != "") {
-            return
-        }
-        v.background = ContextCompat.getDrawable(
-            this,
-            R.drawable.x
-        )
-        v.text = "x"
-
-        roundCount++
-
-        if (checkForWin()) {
-            if (player1Turn) {
-                player1Wins()
-            } else {
-                player2Wins()
+        if (clickable) {
+            clickable = false
+            if ((v as Button).text.toString() != "") {
+                return
             }
-        } else if (roundCount == 9) {
-            draw()
-        } else {
-            /*
-            this else is for change turn from player one to player two so
-            the game check after checking that no winner and rountCount not equal 9
-            that is mean there in more places"Button" to play
-            */
-            player1Turn = !player1Turn
+            v.background = ContextCompat.getDrawable(this, R.drawable.x)
+            v.text = "x"
 
-            handler.postDelayed(r, 400)
+            roundCount++
 
-            /*
             if (checkForWin()) {
                 if (player1Turn) {
                     player1Wins()
                 } else {
                     player2Wins()
                 }
-            } else if (roundCount == 8) {
+            } else if (roundCount == 9) {
                 draw()
             } else {
+                /*
+                this else is for change turn from player one to player two so
+                the game check after checking that no winner and rountCount not equal 9
+                that is mean there in more places"Button" to play
+                */
                 player1Turn = !player1Turn
-            }
-            */
-        }
 
+                handler.postDelayed(r, 500)
+
+                /*
+                if (checkForWin()) {
+                    if (player1Turn) {
+                        player1Wins()
+                    } else {
+                        player2Wins()
+                    }
+                } else if (roundCount == 8) {
+                    draw()
+                } else {
+                    player1Turn = !player1Turn
+                }
+                */
+            }
+        }
     }
 
     private fun checkForWin(): Boolean {
@@ -514,6 +514,8 @@ class MediumLevelVsComputer : AppCompatActivity(), View.OnClickListener {
         } else {
             player1Turn = !player1Turn
         }
+
+        clickable = true
     }
 
     @SuppressLint("SetTextI18n")

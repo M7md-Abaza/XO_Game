@@ -19,7 +19,6 @@ class MainActivity : AppCompatActivity() {
         multiPlayer.typeface = typeface
 
         onePlayerCard.setOnClickListener {
-
             val onePlayerBottomSheet = OnePlayerBottomSheetDialog()
             onePlayerBottomSheet.show(supportFragmentManager, "exampleBottomSheet")
         }

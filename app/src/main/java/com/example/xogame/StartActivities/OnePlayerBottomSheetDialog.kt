@@ -11,7 +11,6 @@ import com.example.xogame.OnePlayer.EasyLevelVsComputer
 import com.example.xogame.OnePlayer.MediumLevelVsComputer
 import com.example.xogame.R
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import kotlinx.android.synthetic.main.one_player_bottom_sheet.*
 import kotlinx.android.synthetic.main.one_player_bottom_sheet.view.*
 
 
@@ -25,6 +24,7 @@ class OnePlayerBottomSheetDialog : BottomSheetDialogFragment() {
         v.textView4.typeface = typeface
         v.easy.typeface = typeface
         v.medium.typeface = typeface
+
 
         v.easy.setOnClickListener {
             dismiss()

@@ -22,6 +22,7 @@ class EasyLevelVsComputer : AppCompatActivity(), View.OnClickListener {
         Array(3) { arrayOfNulls<Button>(3) }
 
     private var player1Turn = true
+    private var clickable = true
 
     private var roundCount = 0
 
@@ -52,59 +53,40 @@ class EasyLevelVsComputer : AppCompatActivity(), View.OnClickListener {
             updatePointsText()
             Toast.makeText(this, "New Round Started", Toast.LENGTH_SHORT).show()
             btn_resetE.visibility = View.GONE
+            clickable = true
         }
     }
 
     @SuppressLint("CheckResult")
     override fun onClick(v: View) {
-
-        /*
-        RxView.clicks(v).throttleFirst(0.5.toLong(), TimeUnit.SECONDS)
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe {
-                Toast.makeText(applicationContext, "Wait for phone turn", Toast.LENGTH_SHORT).show()
+        if (clickable) {
+            clickable = false
+            if ((v as Button).text.toString() != "") {
+                return
             }
-        */
+            v.background = ContextCompat.getDrawable(this, R.drawable.x)
+            v.text = "x"
+            roundCount++
 
-        if ((v as Button).text.toString() != "") {
-            return
-        }
-        v.background = ContextCompat.getDrawable(this, R.drawable.x)
-        v.text = "x"
-        roundCount++
-
-        if (checkForWin()) {
-            if (player1Turn) {
-                player1Wins()
-            } else {
-                player2Wins()
-            }
-
-        } else if (roundCount == 5) {
-            draw()
-        } else {
-
-            /*
-            this else is for change turn from player one to player two so
-            the game check after checking that no winner and rountCount not equal 9
-            that is mean there in more places"Button" to play
-            */
-            player1Turn = !player1Turn
-
-            handler.postDelayed(r, 400)
-
-            /*
             if (checkForWin()) {
                 if (player1Turn) {
                     player1Wins()
                 } else {
                     player2Wins()
                 }
+
             } else if (roundCount == 5) {
                 draw()
             } else {
+                /*
+                this else is for change turn from player one to player two so
+                the game check after checking that no winner and rountCount not equal 9
+                that is mean there in more places"Button" to play
+                */
                 player1Turn = !player1Turn
-            }*/
+
+                handler.postDelayed(r, 1000)
+            }
         }
     }
 
@@ -371,6 +353,8 @@ class EasyLevelVsComputer : AppCompatActivity(), View.OnClickListener {
         } else {
             player1Turn = !player1Turn
         }
+
+        clickable = true
     }
 
     @SuppressLint("SetTextI18n")
