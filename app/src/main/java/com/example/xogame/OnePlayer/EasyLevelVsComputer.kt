@@ -11,8 +11,11 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.example.xogame.R
+import com.jakewharton.rxbinding2.view.RxView
+import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.activity_easy_level_vs_computer.*
 import kotlinx.android.synthetic.main.easy_level.*
+import java.util.concurrent.TimeUnit
 
 
 class EasyLevelVsComputer : AppCompatActivity(), View.OnClickListener {
@@ -28,6 +31,7 @@ class EasyLevelVsComputer : AppCompatActivity(), View.OnClickListener {
     private var player2Points = 0
 
 
+    // this for delay computerTurn()
     private val handler: Handler = Handler()
     private val r: Runnable = Runnable {
         computerTurn()
@@ -49,7 +53,17 @@ class EasyLevelVsComputer : AppCompatActivity(), View.OnClickListener {
         }
     }
 
+    @SuppressLint("CheckResult")
     override fun onClick(v: View) {
+
+        /*
+        RxView.clicks(v).throttleFirst(0.5.toLong(), TimeUnit.SECONDS)
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe {
+                Toast.makeText(applicationContext, "Wait for phone turn", Toast.LENGTH_SHORT).show()
+            }
+        */
+
         if ((v as Button).text.toString() != "") {
             return
         }
@@ -67,6 +81,7 @@ class EasyLevelVsComputer : AppCompatActivity(), View.OnClickListener {
         } else if (roundCount == 5) {
             draw()
         } else {
+
             /*
             this else is for change turn from player one to player two so
             the game check after checking that no winner and rountCount not equal 9
@@ -75,7 +90,8 @@ class EasyLevelVsComputer : AppCompatActivity(), View.OnClickListener {
             player1Turn = !player1Turn
 
             handler.postDelayed(r, 400)
-/*
+
+            /*
             if (checkForWin()) {
                 if (player1Turn) {
                     player1Wins()
@@ -132,7 +148,7 @@ class EasyLevelVsComputer : AppCompatActivity(), View.OnClickListener {
         Toast.makeText(this, "You wins!", Toast.LENGTH_SHORT).show()
         updatePointsText()
         winSound()
-        btn_reset.visibility = View.VISIBLE
+        btn_resetE.visibility = View.VISIBLE
         for (i in 0..2) {
             for (j in 0..2) {
                 buttons[i][j]?.text = "-"
@@ -384,7 +400,7 @@ class EasyLevelVsComputer : AppCompatActivity(), View.OnClickListener {
             for (j in 0..2) {
                 /*
                 Notice that the "btn_$i$j" is as same as my images id in xml File without numbers
-                as numbers will be add thanks to the next three lines of code
+                as numbers will be add thanks to the next three lines of code in for loop
                 */
                 val imageID = "btn_$i$j"
                 val resID = resources.getIdentifier(imageID, "id", packageName)

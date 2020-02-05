@@ -19,7 +19,7 @@ class MainActivity : AppCompatActivity() {
 
 
         onePlayerCard.setOnClickListener {
-            val intent = Intent(applicationContext, MediumLevelVsComputer::class.java)
+            val intent = Intent(applicationContext, EasyLevelVsComputer::class.java)
             startActivity(intent)
         }
 
