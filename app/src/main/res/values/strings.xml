@@ -1,11 +1,8 @@
 <resources>
-    <string name="app_name">X-O Game</string>
-    <string name="player_one_score">Player 1 : 0</string>
-    <string name="player_two_score">Player 2 : 0</string>
+    <string name="app_name">XO Game</string>
     <string name="phone">Phone</string>
     <string name="you">You</string>
     <string name="reset">New Round</string>
-    <string name="play_again">Start New Game</string>
     <string name="easy_level">Easy Level</string>
     <string name="medium_level">Medium Level</string>
     <string name="hard_level">Hard Level</string>
@@ -21,12 +18,15 @@
     <string name="choose_the_level">Choose The Level</string>
     <string name="hard">Hard</string>
 
-
-    <string-array name="Levels_array">
-        <item>Level 1</item>
-        <item>Level 2</item>
-        <item>Level 3</item>
-
-    </string-array>
+    <string name="Congratulations">Congratulations!!</string>
+    <string name="you_win">Congratulations, You Wins!!</string>
+    <string name="you_win2">Keep Going Your Phone Challenge You!!</string>
+    <string name="its_draw">Hmm Its Draw Keep Going!!</string>
+    <string name="its_draw2">You Can Be The Winner!!</string>
+    <string name="player_O_win">Player O Wins!!</string>
+    <string name="player_X_win">Player X Wins!!</string>
+    <string name="phone_win">Bad News, You Lose!!</string>
+    <string name="phone_win2">Keep Going You Can Beat Him!!</string>
+    <!--**********************************************************-->
 
 </resources>

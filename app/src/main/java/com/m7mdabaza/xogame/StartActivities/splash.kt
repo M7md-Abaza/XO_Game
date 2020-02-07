@@ -1,10 +1,10 @@
-package com.example.xogame.StartActivities
+package com.m7mdabaza.xogame.StartActivities
 
 import android.content.Intent
 import android.graphics.Typeface
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import com.example.xogame.R
+import com.m7mdabaza.xogame.R
 import kotlinx.android.synthetic.main.activity_splash.*
 
 class splash : AppCompatActivity() {

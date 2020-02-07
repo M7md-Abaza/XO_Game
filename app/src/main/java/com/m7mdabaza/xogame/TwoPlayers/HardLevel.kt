@@ -1,22 +1,24 @@
-package com.example.xogame.TwoPlayers
+package com.m7mdabaza.xogame.TwoPlayers
 
 import android.annotation.SuppressLint
-import android.content.Intent
-import android.graphics.Color
+import android.media.MediaPlayer
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.Menu
-import android.view.MenuItem
+import android.util.Log
 import android.view.View
 import android.widget.Button
-import android.widget.Toast
 import androidx.core.content.ContextCompat
-import com.example.xogame.R
-import kotlinx.android.synthetic.main.easy_level.*
+import com.m7mdabaza.xogame.R
+import com.google.android.gms.ads.*
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import kotlinx.android.synthetic.main.hard_level.*
 
 class HardLevel : AppCompatActivity(), View.OnClickListener {
+
+    private lateinit var mInterstitialAd: InterstitialAd
+
+    private var mBottomSheetBehavior: BottomSheetBehavior<*>? = null
 
     private val buttons: Array<Array<Button?>> =
         Array(8) { arrayOfNulls<Button>(8) }
@@ -28,18 +30,36 @@ class HardLevel : AppCompatActivity(), View.OnClickListener {
     private var player1Points = 0
     private var player2Points = 0
 
+    private var draw: String = ""
+    private var draw2: String = ""
+    private var xWin: String = ""
+    private var oWin: String = ""
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.hard_level)
 
+        draw = getString(R.string.its_draw)
+        draw2 = getString(R.string.its_draw2)
+        xWin = getString(R.string.player_X_win)
+        oWin = getString(R.string.player_O_win)
+
         getButtonPosition()
+        bannerAds()
+        interstitialAd()
 
         // btn_reset for rest Buttons without change players points
         btn_resetH.setOnClickListener {
             resetBoard()
+            resetGameSound()
             updatePointsText()
-            Toast.makeText(this, "New Round Started", Toast.LENGTH_SHORT).show()
             btn_resetH.visibility = View.GONE
+
+            if (mInterstitialAd.isLoaded) {
+                mInterstitialAd.show()
+            } else {
+                Log.d("TAG", "The interstitial wasn't loaded yet.")
+            }
         }
     }
 
@@ -48,12 +68,14 @@ class HardLevel : AppCompatActivity(), View.OnClickListener {
             return
         }
         if (player1Turn) {
-            v.background = ContextCompat.getDrawable(this,
+            v.background = ContextCompat.getDrawable(
+                this,
                 R.drawable.x
             )
             v.text = "x"
         } else {
-            v.background = ContextCompat.getDrawable(this,
+            v.background = ContextCompat.getDrawable(
+                this,
                 R.drawable.o
             )
             v.text = "o"
@@ -74,6 +96,12 @@ class HardLevel : AppCompatActivity(), View.OnClickListener {
         } else if (roundCount == 64) {
             draw()
         } else {
+
+            if (player1Turn) {
+                clickSound()
+            } else {
+                clickSound1()
+            }
             /*
             this else is for change turn from player one to player two so
             the game check after checking that no winner and rountCount not equal 9
@@ -155,9 +183,9 @@ class HardLevel : AppCompatActivity(), View.OnClickListener {
         return false
     }
 
+    @SuppressLint("SetTextI18n")
     private fun player1Wins() {
         player1Points++
-        Toast.makeText(this, "Player X wins!", Toast.LENGTH_SHORT).show()
         updatePointsText()
         btn_resetH.visibility = View.VISIBLE
         for (i in 0..7) {
@@ -165,11 +193,22 @@ class HardLevel : AppCompatActivity(), View.OnClickListener {
                 buttons[i][j]?.text = "-"
             }
         }
+
+        mBottomSheetBehavior = BottomSheetBehavior.from(bottom_sheetH)
+        winSound()
+        xWinH.text = xWin
+        mBottomSheetBehavior?.state = BottomSheetBehavior.STATE_EXPANDED
+
+        if (mInterstitialAd.isLoaded) {
+            mInterstitialAd.show()
+        } else {
+            Log.d("TAG", "The interstitial wasn't loaded yet.")
+        }
     }
 
+    @SuppressLint("SetTextI18n")
     private fun player2Wins() {
         player2Points++
-        Toast.makeText(this, "Player O wins!", Toast.LENGTH_SHORT).show()
         updatePointsText()
         btn_resetH.visibility = View.VISIBLE
         for (i in 0..7) {
@@ -177,11 +216,34 @@ class HardLevel : AppCompatActivity(), View.OnClickListener {
                 buttons[i][j]?.text = "-"
             }
         }
+
+        mBottomSheetBehavior = BottomSheetBehavior.from(bottom_sheetH)
+        winSound()
+        xWinH.text = oWin
+        mBottomSheetBehavior?.state = BottomSheetBehavior.STATE_EXPANDED
+
+        if (mInterstitialAd.isLoaded) {
+            mInterstitialAd.show()
+        } else {
+            Log.d("TAG", "The interstitial wasn't loaded yet.")
+        }
     }
 
+    @SuppressLint("SetTextI18n")
     private fun draw() {
-        Toast.makeText(this, "Draw!", Toast.LENGTH_SHORT).show()
         btn_resetH.visibility = View.VISIBLE
+
+        mBottomSheetBehavior = BottomSheetBehavior.from(bottom_sheetH)
+        drawSound()
+        congratulateH.text = draw
+        xWinH.text = draw2
+        mBottomSheetBehavior?.state = BottomSheetBehavior.STATE_EXPANDED
+
+        if (mInterstitialAd.isLoaded) {
+            mInterstitialAd.show()
+        } else {
+            Log.d("TAG", "The interstitial wasn't loaded yet.")
+        }
     }
 
     @SuppressLint("SetTextI18n")
@@ -196,7 +258,6 @@ class HardLevel : AppCompatActivity(), View.OnClickListener {
         for (i in 0..7) {
             for (j in 0..7) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    //buttons[i][j]!!.setBackgroundResource(R.drawable.empty)
                     buttons[i][j]?.setBackgroundResource(R.drawable.empty)
                 } else {
                     buttons[i][j]!!.setBackgroundResource(R.drawable.empty)
@@ -206,6 +267,9 @@ class HardLevel : AppCompatActivity(), View.OnClickListener {
         }
         roundCount = 0
         player1Turn = true
+
+        mBottomSheetBehavior = BottomSheetBehavior.from(bottom_sheetH)
+        mBottomSheetBehavior?.state = BottomSheetBehavior.STATE_COLLAPSED
     }
 
     // to get the Button position
@@ -240,5 +304,76 @@ class HardLevel : AppCompatActivity(), View.OnClickListener {
         player1Points = savedInstanceState.getInt("player1Points")
         player2Points = savedInstanceState.getInt("player2Points")
         player1Turn = savedInstanceState.getBoolean("player1Turn")
+    }
+
+    private fun winSound() {
+        val mediaPlayer: MediaPlayer = MediaPlayer.create(this, R.raw.win)
+        mediaPlayer.start()
+    }
+
+    private fun drawSound() {
+        val mediaPlayer: MediaPlayer = MediaPlayer.create(this, R.raw.draw)
+        mediaPlayer.start()
+    }
+
+    private fun clickSound() {
+        val mediaPlayer: MediaPlayer = MediaPlayer.create(this, R.raw.click)
+        mediaPlayer.start()
+    }
+
+    private fun clickSound1() {
+        val mediaPlayer: MediaPlayer = MediaPlayer.create(this, R.raw.click1)
+        mediaPlayer.start()
+    }
+
+    private fun resetGameSound() {
+        val mediaPlayer: MediaPlayer = MediaPlayer.create(this, R.raw.rest)
+        mediaPlayer.start()
+    }
+
+    private fun bannerAds() {
+        MobileAds.initialize(this) {}
+        val adRequest = AdRequest.Builder().build()
+        adView.loadAd(adRequest)
+        val adView = AdView(this)
+        adView.adSize = AdSize.SMART_BANNER
+        adView.adUnitId = "ca-app-pub-4454440016331822/9625153867"
+        //for real: ca-app-pub-4454440016331822/9625153867
+    }
+
+    private fun interstitialAd() {
+        mInterstitialAd = InterstitialAd(this)
+        mInterstitialAd.adUnitId = "ca-app-pub-4454440016331822/5845690957"
+        // for real: ca-app-pub-4454440016331822/5845690957
+        mInterstitialAd.loadAd(AdRequest.Builder().build())
+
+
+        mInterstitialAd.adListener = object : AdListener() {
+            override fun onAdLoaded() {
+                // Code to be executed when an ad finishes loading.
+            }
+
+            override fun onAdFailedToLoad(errorCode: Int) {
+                // Code to be executed when an ad request fails.
+                mInterstitialAd.loadAd(AdRequest.Builder().build())
+            }
+
+            override fun onAdOpened() {
+                // Code to be executed when the ad is displayed.
+            }
+
+            override fun onAdClicked() {
+                // Code to be executed when the user clicks on an ad.
+            }
+
+            override fun onAdLeftApplication() {
+                // Code to be executed when the user has left the app.
+            }
+
+            override fun onAdClosed() {
+                // Code to be executed when the interstitial ad is closed.
+                mInterstitialAd.loadAd(AdRequest.Builder().build())
+            }
+        }
     }
 }

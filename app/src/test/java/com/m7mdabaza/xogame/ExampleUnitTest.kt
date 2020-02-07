@@ -1,4 +1,4 @@
-package com.example.xogame
+package com.m7mdabaza.xogame
 
 import org.junit.Test
 

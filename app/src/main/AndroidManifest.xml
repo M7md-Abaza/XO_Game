@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.example.xogame">
+    package="com.m7mdabaza.xogame">
 
+    <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.VIBRATE" />
 
+    <!-- ca-app-pub-4454440016331822~9464823022 -->
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -14,21 +16,34 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="AllowBackup,GoogleAppIndexingWarning">
-        <activity android:name=".OnePlayer.HardLevelVsComputer"
+
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-4454440016331822~9464823022" />
+
+        <activity
+            android:name="com.m7mdabaza.xogame.OnePlayer.HardLevelVsComputer"
             tools:ignore="InnerclassSeparator" />
-        <activity android:name=".OnePlayer.MediumLevelVsComputer"
-            tools:ignore="InnerclassSeparator"/>
-        <activity android:name=".OnePlayer.EasyLevelVsComputer"
-            tools:ignore="InnerclassSeparator"/>
-        <activity android:name=".TwoPlayers.HardLevel"
-            tools:ignore="InnerclassSeparator"/>
-        <activity android:name=".TwoPlayers.MediumLevel"
-            tools:ignore="InnerclassSeparator"/>
-        <activity android:name=".TwoPlayers.EasyLevel"
-            tools:ignore="InnerclassSeparator"/>
-        <activity android:name=".StartActivities.MainActivity"
-            tools:ignore="InnerclassSeparator"/>
-        <activity android:name=".StartActivities.splash"
+        <activity
+            android:name="com.m7mdabaza.xogame.OnePlayer.MediumLevelVsComputer"
+            tools:ignore="InnerclassSeparator" />
+        <activity
+            android:name="com.m7mdabaza.xogame.OnePlayer.EasyLevelVsComputer"
+            tools:ignore="InnerclassSeparator" />
+        <activity
+            android:name="com.m7mdabaza.xogame.TwoPlayers.HardLevel"
+            tools:ignore="InnerclassSeparator" />
+        <activity
+            android:name="com.m7mdabaza.xogame.TwoPlayers.MediumLevel"
+            tools:ignore="InnerclassSeparator" />
+        <activity
+            android:name="com.m7mdabaza.xogame.TwoPlayers.EasyLevel"
+            tools:ignore="InnerclassSeparator" />
+        <activity
+            android:name="com.m7mdabaza.xogame.StartActivities.MainActivity"
+            tools:ignore="InnerclassSeparator" />
+        <activity
+            android:name="com.m7mdabaza.xogame.StartActivities.splash"
             tools:ignore="InnerclassSeparator">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

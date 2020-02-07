@@ -1,9 +1,14 @@
-package com.example.xogame.StartActivities
+package com.m7mdabaza.xogame.StartActivities
 
 import android.graphics.Typeface
+import android.media.MediaPlayer
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import com.example.xogame.R
+import com.m7mdabaza.xogame.R
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.AdSize
+import com.google.android.gms.ads.AdView
+import com.google.android.gms.ads.MobileAds
 import kotlinx.android.synthetic.main.activity_main.*
 
 
@@ -18,14 +23,34 @@ class MainActivity : AppCompatActivity() {
         singlePlayer.typeface = typeface
         multiPlayer.typeface = typeface
 
+        bannerAds()
+
         onePlayerCard.setOnClickListener {
+            clickSound()
             val onePlayerBottomSheet = OnePlayerBottomSheetDialog()
             onePlayerBottomSheet.show(supportFragmentManager, "exampleBottomSheet")
         }
 
         twoPlayerCard.setOnClickListener {
+            clickSound()
             val twoPlayerBottomSheet = TwoPlayerBottomSheetDialog()
             twoPlayerBottomSheet.show(supportFragmentManager, "exampleBottomSheet")
         }
     }
+
+    private fun bannerAds() {
+        MobileAds.initialize(this) {}
+        val adRequest = AdRequest.Builder().build()
+        adView.loadAd(adRequest)
+        val adView = AdView(this)
+        adView.adSize = AdSize.SMART_BANNER
+        adView.adUnitId = "ca-app-pub-4454440016331822/8758794756"
+        // for test: ca-app-pub-3940256099942544/6300978111
+        // for real: ca-app-pub-4454440016331822/8758794756
+    }
+    private fun clickSound() {
+        val mediaPlayer: MediaPlayer = MediaPlayer.create(this, R.raw.click)
+        mediaPlayer.start()
+    }
+
 }
