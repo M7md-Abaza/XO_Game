@@ -1,6 +1,7 @@
 package com.m7mdabaza.xogame.TwoPlayers
 
 import android.annotation.SuppressLint
+import android.graphics.Typeface
 import android.media.MediaPlayer
 import android.os.Build
 import android.view.View
@@ -40,6 +41,17 @@ class MediumLevel : AppCompatActivity(), View.OnClickListener {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.medium_level)
 
+        val typeface = Typeface.createFromAsset(assets, "sukar.ttf")
+        textView2.typeface = typeface
+        textView.typeface = typeface
+        textView6.typeface = typeface
+        textView7.typeface = typeface
+        txt_player_1M.typeface = typeface
+        txt_player_2M.typeface = typeface
+        congratulateM2.typeface = typeface
+        xWinM2.typeface = typeface
+
+
         draw = getString(R.string.its_draw)
         draw2 = getString(R.string.its_draw2)
         xWin = getString(R.string.player_X_win)
@@ -55,12 +67,6 @@ class MediumLevel : AppCompatActivity(), View.OnClickListener {
             updatePointsText()
             //Toast.makeText(this, "New Round Started", Toast.LENGTH_SHORT).show()
             btn_resetM.visibility = View.GONE
-
-            if (mInterstitialAd.isLoaded) {
-                mInterstitialAd.show()
-            } else {
-                Log.d("TAG", "The interstitial wasn't loaded yet.")
-            }
         }
     }
 

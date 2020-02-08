@@ -1,6 +1,7 @@
 package com.m7mdabaza.xogame.TwoPlayers
 
 import android.annotation.SuppressLint
+import android.graphics.Typeface
 import android.media.MediaPlayer
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
@@ -39,6 +40,17 @@ class HardLevel : AppCompatActivity(), View.OnClickListener {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.hard_level)
 
+        val typeface = Typeface.createFromAsset(assets, "sukar.ttf")
+        textView2.typeface = typeface
+        textView9.typeface = typeface
+        textView6.typeface = typeface
+        textView7.typeface = typeface
+        txt_player_1H.typeface = typeface
+        txt_player_2H.typeface = typeface
+        congratulateH.typeface = typeface
+        xWinH.typeface = typeface
+
+
         draw = getString(R.string.its_draw)
         draw2 = getString(R.string.its_draw2)
         xWin = getString(R.string.player_X_win)
@@ -54,12 +66,6 @@ class HardLevel : AppCompatActivity(), View.OnClickListener {
             resetGameSound()
             updatePointsText()
             btn_resetH.visibility = View.GONE
-
-            if (mInterstitialAd.isLoaded) {
-                mInterstitialAd.show()
-            } else {
-                Log.d("TAG", "The interstitial wasn't loaded yet.")
-            }
         }
     }
 
