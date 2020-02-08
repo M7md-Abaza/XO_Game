@@ -52,8 +52,14 @@ class EasyLevelVsComputer : AppCompatActivity(), View.OnClickListener {
         setContentView(R.layout.activity_easy_level_vs_computer)
 
         val typeface = Typeface.createFromAsset(assets, "sukar.ttf")
+        txt_player_1E.typeface = typeface
+        txt_player_2E.typeface = typeface
         textView2.typeface = typeface
+        textView6.typeface = typeface
+        textView7.typeface = typeface
         text.typeface = typeface
+        congratulate.typeface = typeface
+        xWin.typeface = typeface
 
         draw = getString(R.string.its_draw)
         draw2 = getString(R.string.its_draw2)
@@ -75,12 +81,6 @@ class EasyLevelVsComputer : AppCompatActivity(), View.OnClickListener {
             //Toast.makeText(this, "New Round Started", Toast.LENGTH_SHORT).show()
             btn_resetE.visibility = View.GONE
             clickable = true
-
-            if (mInterstitialAd.isLoaded) {
-                mInterstitialAd.show()
-            } else {
-                Log.d("TAG", "The interstitial wasn't loaded yet.")
-            }
 
         }
     }
