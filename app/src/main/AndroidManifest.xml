@@ -23,7 +23,13 @@
 
         <activity
             android:name="com.m7mdabaza.xogame.OnePlayer.HardLevelVsComputer"
-            tools:ignore="InnerclassSeparator" />
+            tools:ignore="InnerclassSeparator" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
         <activity
             android:name="com.m7mdabaza.xogame.OnePlayer.MediumLevelVsComputer"
             tools:ignore="InnerclassSeparator" />
@@ -45,11 +51,7 @@
         <activity
             android:name="com.m7mdabaza.xogame.StartActivities.splash"
             tools:ignore="InnerclassSeparator">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
 
     </application>
