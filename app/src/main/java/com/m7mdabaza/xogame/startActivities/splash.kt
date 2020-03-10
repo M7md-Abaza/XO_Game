@@ -1,4 +1,4 @@
-package com.m7mdabaza.xogame.StartActivities
+package com.m7mdabaza.xogame.startActivities
 
 import android.content.Intent
 import android.graphics.Typeface

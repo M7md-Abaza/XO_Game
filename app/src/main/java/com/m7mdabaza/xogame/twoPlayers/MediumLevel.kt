@@ -1,7 +1,10 @@
-package com.m7mdabaza.xogame.TwoPlayers
+package com.m7mdabaza.xogame.twoPlayers
 
 import android.annotation.SuppressLint
+import android.app.Dialog
+import android.graphics.Color
 import android.graphics.Typeface
+import android.graphics.drawable.ColorDrawable
 import android.media.MediaPlayer
 import android.os.Build
 import android.view.View
@@ -10,24 +13,26 @@ import androidx.core.content.ContextCompat
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.LayoutInflater
+import android.view.Window
 import com.m7mdabaza.xogame.R
 import com.google.android.gms.ads.*
-import com.google.android.material.bottomsheet.BottomSheetBehavior
 import kotlinx.android.synthetic.main.medium_level.*
+import kotlinx.android.synthetic.main.win_pop_up_dialog.view.*
 
 
 class MediumLevel : AppCompatActivity(), View.OnClickListener {
 
     private lateinit var mInterstitialAd: InterstitialAd
 
-    private var mBottomSheetBehavior: BottomSheetBehavior<*>? = null
 
     private val buttons: Array<Array<Button?>> =
         Array(4) { arrayOfNulls<Button>(4) }
 
     private var player1Turn = true
 
-    private var roundCount = 0
+    private var roundCount = 0      // to determine Draw Case
+    private var playTimeCount = 0   // to determine the computer Turn pattern and ads time to display
 
     private var player1Points = 0
     private var player2Points = 0
@@ -41,6 +46,8 @@ class MediumLevel : AppCompatActivity(), View.OnClickListener {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.medium_level)
 
+        getButtonPosition()
+
         val typeface = Typeface.createFromAsset(assets, "sukar.ttf")
         textView2.typeface = typeface
         textView.typeface = typeface
@@ -48,26 +55,14 @@ class MediumLevel : AppCompatActivity(), View.OnClickListener {
         textView7.typeface = typeface
         txt_player_1M.typeface = typeface
         txt_player_2M.typeface = typeface
-        congratulateM2.typeface = typeface
-        xWinM2.typeface = typeface
-
 
         draw = getString(R.string.its_draw)
         draw2 = getString(R.string.its_draw2)
         xWin = getString(R.string.player_X_win)
         oWin = getString(R.string.player_O_win)
 
-        getButtonPosition()
-        bannerAds()
+        //bannerAds()
         interstitialAd()
-        // btn_reset for rest Buttons without change players points
-        btn_resetM.setOnClickListener {
-            resetBoard()
-            resetGameSound()
-            updatePointsText()
-            //Toast.makeText(this, "New Round Started", Toast.LENGTH_SHORT).show()
-            btn_resetM.visibility = View.GONE
-        }
     }
 
     override fun onClick(v: View) {
@@ -152,67 +147,37 @@ class MediumLevel : AppCompatActivity(), View.OnClickListener {
     @SuppressLint("SetTextI18n")
     private fun player1Wins() {
         player1Points++
-        //Toast.makeText(this, "Player 1 wins!", Toast.LENGTH_SHORT).show()
         updatePointsText()
-        btn_resetM.visibility = View.VISIBLE
+
         for (i in 0..3) {
             for (j in 0..3) {
                 buttons[i][j]?.text = "-"
             }
         }
 
-        mBottomSheetBehavior = BottomSheetBehavior.from(bottom_sheetM2)
-        winSound()
-        xWinM2.text = xWin
-        mBottomSheetBehavior?.state = BottomSheetBehavior.STATE_EXPANDED
-
-        if (mInterstitialAd.isLoaded) {
-            mInterstitialAd.show()
-        } else {
-            Log.d("TAG", "The interstitial wasn't loaded yet.")
-        }
+        showXWinDialog()
+        playTimeCount++
     }
 
     @SuppressLint("SetTextI18n")
     private fun player2Wins() {
         player2Points++
-        //Toast.makeText(this, "Player 2 wins!", Toast.LENGTH_SHORT).show()
         updatePointsText()
-        btn_resetM.visibility = View.VISIBLE
+
         for (i in 0..3) {
             for (j in 0..3) {
                 buttons[i][j]?.text = "-"
             }
         }
+        showOWinDialog()
+        playTimeCount++
 
-        mBottomSheetBehavior = BottomSheetBehavior.from(bottom_sheetM2)
-        winSound()
-        xWinM2.text = oWin
-        mBottomSheetBehavior?.state = BottomSheetBehavior.STATE_EXPANDED
-
-        if (mInterstitialAd.isLoaded) {
-            mInterstitialAd.show()
-        } else {
-            Log.d("TAG", "The interstitial wasn't loaded yet.")
-        }
     }
 
     @SuppressLint("SetTextI18n")
     private fun draw() {
-        //Toast.makeText(this, "Draw!", Toast.LENGTH_SHORT).show()
-        btn_resetM.visibility = View.VISIBLE
-
-        mBottomSheetBehavior = BottomSheetBehavior.from(bottom_sheetM2)
-        drawSound()
-        congratulateM2.text = draw
-        xWinM2.text = draw2
-        mBottomSheetBehavior?.state = BottomSheetBehavior.STATE_EXPANDED
-
-        if (mInterstitialAd.isLoaded) {
-            mInterstitialAd.show()
-        } else {
-            Log.d("TAG", "The interstitial wasn't loaded yet.")
-        }
+        showDrawDialog()
+        playTimeCount++
     }
 
     @SuppressLint("SetTextI18n")
@@ -237,8 +202,17 @@ class MediumLevel : AppCompatActivity(), View.OnClickListener {
         roundCount = 0
         player1Turn = true
 
-        mBottomSheetBehavior = BottomSheetBehavior.from(bottom_sheetM2)
-        mBottomSheetBehavior?.state = BottomSheetBehavior.STATE_COLLAPSED
+
+        if (playTimeCount == 1 || playTimeCount == 4 || playTimeCount == 7 || playTimeCount == 10 || playTimeCount == 13 || playTimeCount == 16) {
+        if (mInterstitialAd.isLoaded) {
+        mInterstitialAd.show()
+        } else {
+        Log.d("TAG", "The interstitial wasn't loaded yet.")
+        }
+        } else if(playTimeCount == 18){
+            playTimeCount = 0
+        }
+
     }
 
     // to get the Button position
@@ -312,7 +286,7 @@ class MediumLevel : AppCompatActivity(), View.OnClickListener {
 
     private fun interstitialAd() {
         mInterstitialAd = InterstitialAd(this)
-        mInterstitialAd.adUnitId = "ca-app-pub-4454440016331822/2369480375"
+        mInterstitialAd.adUnitId = "ca-app-pub-3940256099942544/1033173712"
         //for real: ca-app-pub-4454440016331822/2369480375
         mInterstitialAd.loadAd(AdRequest.Builder().build())
 
@@ -345,4 +319,91 @@ class MediumLevel : AppCompatActivity(), View.OnClickListener {
             }
         }
     }
+
+    @SuppressLint("InflateParams")
+    private fun showXWinDialog() {
+        val view = LayoutInflater.from(this@MediumLevel)
+            .inflate(R.layout.win_pop_up_dialog, null)
+        val dialog = Dialog(this)
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        dialog.setContentView(view)
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        dialog.setCanceledOnTouchOutside(false)
+
+        val typeface = Typeface.createFromAsset(assets, "sukar.ttf")
+        view.textView10.typeface = typeface
+        view.dialogNewRound.typeface = typeface
+
+        view.textView10.text = xWin
+
+        winSound()
+
+        view.dialogNewRound.setOnClickListener {
+            resetBoard()
+            resetGameSound()
+            updatePointsText()
+
+            dialog.dismiss()
+        }
+        dialog.show()
+    }
+
+    @SuppressLint("InflateParams")
+    private fun showOWinDialog() {
+        val view = LayoutInflater.from(this@MediumLevel)
+            .inflate(R.layout.win_pop_up_dialog, null)
+        val dialog = Dialog(this)
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        dialog.setContentView(view)
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        dialog.setCanceledOnTouchOutside(false)
+
+        val typeface = Typeface.createFromAsset(assets, "sukar.ttf")
+        view.textView10.typeface = typeface
+        view.textView11.typeface = typeface
+        view.dialogNewRound.typeface = typeface
+
+        view.textView10.text = oWin
+
+        winSound()
+
+        view.dialogNewRound.setOnClickListener {
+            resetBoard()
+            resetGameSound()
+            updatePointsText()
+
+            dialog.dismiss()
+        }
+        dialog.show()
+    }
+
+    @SuppressLint("InflateParams")
+    private fun showDrawDialog() {
+        val view = LayoutInflater.from(this@MediumLevel)
+            .inflate(R.layout.win_pop_up_dialog, null)
+        val dialog = Dialog(this)
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        dialog.setContentView(view)
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        dialog.setCanceledOnTouchOutside(false)
+
+        val typeface = Typeface.createFromAsset(assets, "sukar.ttf")
+        view.textView10.typeface = typeface
+        view.textView11.typeface = typeface
+        view.dialogNewRound.typeface = typeface
+
+        view.textView10.text = draw2
+        view.textView11.text = draw
+
+        drawSound()
+        view.dialogNewRound.setOnClickListener {
+            resetBoard()
+            resetGameSound()
+            updatePointsText()
+
+            dialog.dismiss()
+        }
+        dialog.show()
+    }
+
 }

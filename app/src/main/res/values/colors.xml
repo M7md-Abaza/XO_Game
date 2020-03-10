@@ -6,4 +6,5 @@
     <color name="linesAccent">#FFFFFF</color>
     <color name="playerTextColor">#FFFFFF</color>
     <color name="yellow">#d6bd17</color>
+    <color name="black">#000000</color>
 </resources>

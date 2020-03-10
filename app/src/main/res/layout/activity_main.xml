@@ -10,7 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@drawable/background"
-        tools:context="com.m7mdabaza.xogame.StartActivities.MainActivity">
+        tools:context="com.m7mdabaza.xogame.startActivities.MainActivity">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/constraintLayout4"

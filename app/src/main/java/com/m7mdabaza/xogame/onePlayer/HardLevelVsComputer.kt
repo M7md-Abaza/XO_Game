@@ -1,33 +1,37 @@
-package com.m7mdabaza.xogame.OnePlayer
+package com.m7mdabaza.xogame.onePlayer
 
 import android.annotation.SuppressLint
+import android.app.Dialog
+import android.graphics.Color
 import android.media.MediaPlayer
 import android.graphics.Typeface
+import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.os.Handler
 import android.util.Log
+import android.view.LayoutInflater
+import android.view.Window
 import android.widget.Button
-import android.widget.Toast
 import androidx.core.content.ContextCompat
 import com.google.android.gms.ads.*
 import com.google.android.gms.ads.reward.RewardItem
-import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.m7mdabaza.xogame.R
 import kotlinx.android.synthetic.main.activity_hard_level_vs_computer.*
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.MobileAds
 import com.google.android.gms.ads.reward.RewardedVideoAd
 import com.google.android.gms.ads.reward.RewardedVideoAdListener
+import kotlinx.android.synthetic.main.rewaed_ads_pop_up.view.*
+import kotlinx.android.synthetic.main.win_pop_up_dialog.view.*
 
-class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedVideoAdListener  {
+class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedVideoAdListener {
 
     private lateinit var mRewardedVideoAd: RewardedVideoAd
     private lateinit var mInterstitialAd: InterstitialAd
 
-    private var mBottomSheetBehavior: BottomSheetBehavior<*>? = null
 
     private val buttons: Array<Array<Button?>> =
         Array(8) { arrayOfNulls<Button>(8) }
@@ -37,8 +41,8 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
     private var adWatched1 = false
     private var adWatched2 = false
 
-    private var roundCount = 0
-    private var playTimeCount = 0 // for determin the computer Turn pattren
+    private var roundCount = 0      // to determine Draw Case
+    private var playTimeCount = 0   // to determine the computer Turn pattern
 
     private var player1Points = 0
     private var player2Points = 0
@@ -49,7 +53,10 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
     private var phoneWin: String = ""
     private var phoneWin2: String = ""
     private var youWin: String = ""
-    private var youWin2: String = ""
+    private var watchAds2: String = ""
+    private var loadingAd: String = ""
+    private var theGameBecameEasier: String = ""
+    private var canNotLoadAd: String = ""
 
     private val handler: Handler = Handler()
     private val r: Runnable = Runnable {
@@ -68,44 +75,36 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
         textView3.typeface = typeface
         textView6.typeface = typeface
         textView7.typeface = typeface
-        congratulateH.typeface = typeface
-        xWinH.typeface = typeface
+
 
         draw = getString(R.string.its_draw)
         draw2 = getString(R.string.its_draw2)
         phoneWin = getString(R.string.phone_win)
         phoneWin2 = getString(R.string.phone_win2)
         youWin = getString(R.string.you_win)
-        youWin2 = getString(R.string.you_win2)
+        watchAds2 = getString(R.string.let_s_watch_an_ad2)
+        theGameBecameEasier = getString(R.string.TheGameBecameEasier)
+        loadingAd = getString(R.string.LoadingAd)
+        canNotLoadAd = getString(R.string.CanNotLoadAd)
 
         getButtonPosition()
 
-        //bannerAds()
-        //interstitialAd()
+        bannerAds()
+        interstitialAd()
+
         loadRewardedVideoAd()
-        // btn_reset for rest Buttons without change players points
-        btn_resetH.setOnClickListener {
-            resetBoard()
-            resetGameSound()
-            updatePointsText()
-            Toast.makeText(this, "New Round Started", Toast.LENGTH_SHORT).show()
-            btn_resetH.visibility = View.GONE
 
-            clickable = true
+        txt_Help.setOnClickListener {
+            showAdsDialog()
         }
 
-        imageView3.setOnClickListener {
-            if (mRewardedVideoAd.isLoaded) {
-                mRewardedVideoAd.show()
-            }
-        }
 
     }
 
     override fun onClick(v: View) {
-        if (clickable) {
+        if (clickable && (v as Button).text.toString() == "") {
             clickable = false
-            if ((v as Button).text.toString() != "") {
+            if ((v).text.toString() != "") {
                 return
             }
             v.background = ContextCompat.getDrawable(
@@ -212,72 +211,31 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
     private fun player1Wins() {
         player1Points++
         updatePointsText()
-        btn_resetH.visibility = View.VISIBLE
         for (i in 0..7) {
             for (j in 0..7) {
                 buttons[i][j]?.text = "-"
             }
         }
-        mBottomSheetBehavior = BottomSheetBehavior.from(bottom_sheetH)
-        winSound()
-        congratulateH.text = youWin
-        xWinH.text = youWin2
-        mBottomSheetBehavior?.state = BottomSheetBehavior.STATE_EXPANDED
 
-        /**
-        if (mInterstitialAd.isLoaded) {
-        mInterstitialAd.show()
-        } else {
-        Log.d("TAG", "The interstitial wasn't loaded yet.")
-        }
-         */
-
+        showXWinDialog()
         playTimeCount = 0
     }
 
     private fun player2Wins() {
         player2Points++
         updatePointsText()
-        btn_resetH.visibility = View.VISIBLE
         for (i in 0..7) {
             for (j in 0..7) {
                 buttons[i][j]?.text = "-"
             }
         }
 
-        mBottomSheetBehavior = BottomSheetBehavior.from(bottom_sheetH)
-        loseSound()
-        congratulateH.text = phoneWin
-        xWinH.text = phoneWin2
-        mBottomSheetBehavior?.state = BottomSheetBehavior.STATE_EXPANDED
-
-        /**
-        if (mInterstitialAd.isLoaded) {
-        mInterstitialAd.show()
-        } else {
-        Log.d("TAG", "The interstitial wasn't loaded yet.")
-        }
-         */
-
+        showOWinDialog()
         playTimeCount++
     }
 
     private fun draw() {
-        btn_resetH.visibility = View.VISIBLE
-
-        mBottomSheetBehavior = BottomSheetBehavior.from(bottom_sheetH)
-        drawSound()
-        congratulateH.text = draw
-        xWinH.text = draw2
-        mBottomSheetBehavior?.state = BottomSheetBehavior.STATE_EXPANDED
-
-        /**
-        if (mInterstitialAd.isLoaded) {
-        mInterstitialAd.show()
-        } else {
-        Log.d("TAG", "The interstitial wasn't loaded yet.")
-        }
-         */
+        showDrawDialog()
 
         playTimeCount++
     }
@@ -323,6 +281,9 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
         }
         if (player1Turn) {
             oTwoByTwo()
+        }
+        if (player1Turn) {
+            xOneTrueOneFalseHorizontalVertical()
         }
 
         // for change computer turn patterns to play
@@ -426,7 +387,6 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
         for (i in 0..7) {
             for (j in 0..7) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    //buttons[i][j]!!.setBackgroundResource(R.drawable.empty)
                     buttons[i][j]?.setBackgroundResource(R.drawable.empty)
                 } else {
                     buttons[i][j]!!.setBackgroundResource(R.drawable.empty)
@@ -436,6 +396,16 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
         }
         roundCount = 0
         player1Turn = true
+
+        if (playTimeCount == 1 || playTimeCount == 3 || playTimeCount == 6 || playTimeCount == 9 || playTimeCount == 12 || playTimeCount == 15) {
+            if (mInterstitialAd.isLoaded) {
+                mInterstitialAd.show()
+            } else {
+                Log.d("TAG", "The interstitial wasn't loaded yet.")
+            }
+        } else if(playTimeCount == 16){
+            playTimeCount = 0
+        }
     }
 
     // to get the Button position
@@ -6095,7 +6065,8 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
 
                 buttons[4][i]?.background = ContextCompat.getDrawable(
                     this,
-                    R.drawable.o)
+                    R.drawable.o
+                )
                 buttons[4][i]?.setText("o")!!
                 player1Turn = !player1Turn
                 break
@@ -6129,13 +6100,155 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
 
                 buttons[6][i]?.background = ContextCompat.getDrawable(
                     this,
-                    R.drawable.o)
+                    R.drawable.o
+                )
                 buttons[6][i]?.setText("o")!!
                 player1Turn = !player1Turn
                 break
 
             }
 
+        }
+    }
+
+    private fun xOneTrueOneFalseHorizontalVertical() {
+        for (i in 0..7) {
+            /******************************* Horizontal Lines********************************/
+            if ((buttons[i][2]!!.text.toString() == buttons[i][0]!!.text.toString() && buttons[i][2]!!.text.toString() == buttons[i][4]!!.text.toString() && buttons[i][2]!!.text.toString() == buttons[i][6]!!.text.toString() && buttons[i][2]!!.text.toString() != "")
+                && buttons[i][2]!!.text.toString() == "x"
+                && buttons[i][3]!!.text.toString() == ""
+                && buttons[i][3]!!.text.toString() != "x"
+            ) {
+
+                buttons[i][3]?.background = ContextCompat.getDrawable(this, R.drawable.o)
+                buttons[i][3]?.setText("o")!!
+                player1Turn = !player1Turn
+                break
+
+            } else if ((buttons[i][3]!!.text.toString() == buttons[i][1]!!.text.toString() && buttons[i][3]!!.text.toString() == buttons[i][5]!!.text.toString() && buttons[i][3]!!.text.toString() == buttons[i][7]!!.text.toString() && buttons[i][3]!!.text.toString() != "")
+                && buttons[i][3]!!.text.toString() == "x"
+                && buttons[i][4]!!.text.toString() == ""
+                && buttons[i][4]!!.text.toString() != "x"
+            ) {
+
+                buttons[i][4]?.background = ContextCompat.getDrawable(this, R.drawable.o)
+                buttons[i][4]?.setText("o")!!
+                player1Turn = !player1Turn
+                break
+
+            }
+            /******************************* Vertical Lines ********************************/
+            else if ((buttons[2][i]!!.text.toString() == buttons[0][i]!!.text.toString() && buttons[2][i]!!.text.toString() == buttons[4][i]!!.text.toString() && buttons[2][i]!!.text.toString() != ""
+                        || buttons[2][i]!!.text.toString() == buttons[6][i]!!.text.toString() && buttons[2][i]!!.text.toString() == buttons[4][i]!!.text.toString() && buttons[2][i]!!.text.toString() != "")
+                && buttons[2][i]!!.text.toString() == "x"
+                && buttons[3][i]!!.text.toString() == ""
+                && buttons[3][i]!!.text.toString() != "x"
+            ) {
+
+                buttons[3][i]?.background = ContextCompat.getDrawable(this, R.drawable.o)
+                buttons[3][i]?.setText("o")!!
+                player1Turn = !player1Turn
+                break
+
+            } else if ((buttons[3][i]!!.text.toString() == buttons[1][i]!!.text.toString() && buttons[3][i]!!.text.toString() == buttons[5][i]!!.text.toString() && buttons[3][i]!!.text.toString() != ""
+                        || buttons[3][i]!!.text.toString() == buttons[7][i]!!.text.toString() && buttons[3][i]!!.text.toString() == buttons[5][i]!!.text.toString() && buttons[3][i]!!.text.toString() != "")
+                && buttons[3][i]!!.text.toString() == "x"
+                && buttons[4][i]!!.text.toString() == ""
+                && buttons[4][i]!!.text.toString() != "x"
+            ) {
+
+                buttons[4][i]?.background = ContextCompat.getDrawable(this, R.drawable.o)
+                buttons[4][i]?.setText("o")!!
+                player1Turn = !player1Turn
+                break
+
+            }
+        }
+        /********************************** TopRight to bottomLeft ******************************************/
+        if (player1Turn) {
+            if ((buttons[4][2]!!.text.toString() == buttons[6][0]!!.text.toString() && buttons[4][2]!!.text.toString() == buttons[2][4]!!.text.toString() && buttons[4][2]!!.text.toString() == buttons[0][6]!!.text.toString() && buttons[4][2]!!.text.toString() != "")
+                && buttons[4][2]!!.text.toString() == "x"
+                && buttons[3][3]!!.text.toString() == ""
+                && buttons[3][3]!!.text.toString() != "x"
+            ) {
+
+                buttons[3][3]?.background = ContextCompat.getDrawable(this, R.drawable.o)
+                buttons[3][3]?.setText("o")!!
+                player1Turn = !player1Turn
+
+            } else if ((buttons[5][2]!!.text.toString() == buttons[7][0]!!.text.toString() && buttons[5][2]!!.text.toString() == buttons[3][4]!!.text.toString() && buttons[5][2]!!.text.toString() == buttons[1][6]!!.text.toString() && buttons[5][2]!!.text.toString() != "")
+                && buttons[5][2]!!.text.toString() == "x"
+                && buttons[4][3]!!.text.toString() == ""
+                && buttons[4][3]!!.text.toString() != "x"
+            ) {
+
+                buttons[4][3]?.background = ContextCompat.getDrawable(this, R.drawable.o)
+                buttons[4][3]?.setText("o")!!
+                player1Turn = !player1Turn
+
+            } else if ((buttons[4][3]!!.text.toString() == buttons[6][1]!!.text.toString() && buttons[4][3]!!.text.toString() == buttons[2][5]!!.text.toString() && buttons[4][3]!!.text.toString() == buttons[0][7]!!.text.toString() && buttons[4][3]!!.text.toString() != "")
+                && buttons[4][3]!!.text.toString() == "x"
+                && buttons[3][4]!!.text.toString() == ""
+                && buttons[3][4]!!.text.toString() != "x"
+            ) {
+
+                buttons[3][4]?.background = ContextCompat.getDrawable(this, R.drawable.o)
+                buttons[3][4]?.setText("o")!!
+                player1Turn = !player1Turn
+
+            } else if ((buttons[5][3]!!.text.toString() == buttons[7][1]!!.text.toString() && buttons[5][3]!!.text.toString() == buttons[3][5]!!.text.toString() && buttons[5][3]!!.text.toString() == buttons[1][7]!!.text.toString() && buttons[5][3]!!.text.toString() != "")
+                && buttons[5][3]!!.text.toString() == "x"
+                && buttons[4][4]!!.text.toString() == ""
+                && buttons[4][4]!!.text.toString() != "x"
+            ) {
+
+                buttons[4][4]?.background = ContextCompat.getDrawable(this, R.drawable.o)
+                buttons[4][4]?.setText("o")!!
+                player1Turn = !player1Turn
+
+            }
+            /********************************** TopLeft to bottomRight ******************************************/
+            else if ((buttons[0][1]!!.text.toString() == buttons[2][3]!!.text.toString() && buttons[0][1]!!.text.toString() == buttons[4][5]!!.text.toString() && buttons[0][1]!!.text.toString() == buttons[6][7]!!.text.toString() && buttons[0][1]!!.text.toString() != "")
+                && buttons[0][1]!!.text.toString() == "x"
+                && buttons[3][4]!!.text.toString() == ""
+                && buttons[3][4]!!.text.toString() != "x"
+            ) {
+
+                buttons[3][4]?.background = ContextCompat.getDrawable(this, R.drawable.o)
+                buttons[3][4]?.setText("o")!!
+                player1Turn = !player1Turn
+
+            } else if ((buttons[0][0]!!.text.toString() == buttons[2][2]!!.text.toString() && buttons[0][0]!!.text.toString() == buttons[4][4]!!.text.toString() && buttons[0][0]!!.text.toString() == buttons[6][6]!!.text.toString() && buttons[0][0]!!.text.toString() != "")
+                && buttons[0][0]!!.text.toString() == "x"
+                && buttons[3][3]!!.text.toString() == ""
+                && buttons[3][3]!!.text.toString() != "x"
+            ) {
+
+                buttons[3][3]?.background = ContextCompat.getDrawable(this, R.drawable.o)
+                buttons[3][3]?.setText("o")!!
+                player1Turn = !player1Turn
+
+            } else if ((buttons[1][1]!!.text.toString() == buttons[3][3]!!.text.toString() && buttons[1][1]!!.text.toString() == buttons[5][5]!!.text.toString() && buttons[1][1]!!.text.toString() == buttons[7][7]!!.text.toString() && buttons[1][1]!!.text.toString() != "")
+                && buttons[1][1]!!.text.toString() == "x"
+                && buttons[4][4]!!.text.toString() == ""
+                && buttons[4][4]!!.text.toString() != "x"
+            ) {
+
+                buttons[4][4]?.background = ContextCompat.getDrawable(this, R.drawable.o)
+                buttons[4][4]?.setText("o")!!
+                player1Turn = !player1Turn
+
+            } else if ((buttons[1][0]!!.text.toString() == buttons[3][2]!!.text.toString() && buttons[1][0]!!.text.toString() == buttons[5][4]!!.text.toString() && buttons[1][0]!!.text.toString() == buttons[7][6]!!.text.toString() && buttons[1][0]!!.text.toString() != "")
+                && buttons[1][0]!!.text.toString() == "x"
+                && buttons[4][3]!!.text.toString() == ""
+                && buttons[4][3]!!.text.toString() != "x"
+            ) {
+
+                buttons[4][3]?.background = ContextCompat.getDrawable(this, R.drawable.o)
+                buttons[4][3]?.setText("o")!!
+                player1Turn = !player1Turn
+
+            }
         }
     }
 
@@ -6195,14 +6308,17 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
         mRewardedVideoAd = MobileAds.getRewardedVideoAdInstance(this)
         mRewardedVideoAd.rewardedVideoAdListener = this
 
-        mRewardedVideoAd.loadAd("ca-app-pub-3940256099942544/5224354917", AdRequest.Builder().build())
+        mRewardedVideoAd.loadAd(
+            "ca-app-pub-3940256099942544/5224354917",
+            AdRequest.Builder().build()
+        )
         // real Reward ads: ca-app-pub-4454440016331822/7531570468
     }
 
     override fun onRewarded(reward: RewardItem) {
         //Toast.makeText(this, "onRewarded! currency: ${reward.type} amount: ${reward.amount}", Toast.LENGTH_SHORT).show()
         // Reward the user.
-        if(adWatched1){
+        if (adWatched1) {
             adWatched2 = true
         } else {
             adWatched1 = true
@@ -6210,33 +6326,33 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
     }
 
     override fun onRewardedVideoAdLeftApplication() {
-        Toast.makeText(this, "onRewardedVideoAdLeftApplication", Toast.LENGTH_SHORT).show()
+        //Toast.makeText(this, "onRewardedVideoAdLeftApplication", Toast.LENGTH_SHORT).show()
     }
 
     override fun onRewardedVideoAdClosed() {
-        Toast.makeText(this, "onRewardedVideoAdClosed", Toast.LENGTH_SHORT).show()
+        //Toast.makeText(this, "onRewardedVideoAdClosed", Toast.LENGTH_SHORT).show()
         loadRewardedVideoAd()
 
     }
 
     override fun onRewardedVideoAdFailedToLoad(errorCode: Int) {
-        Toast.makeText(this, "onRewardedVideoAdFailedToLoad", Toast.LENGTH_SHORT).show()
+        //Toast.makeText(this, "onRewardedVideoAdFailedToLoad", Toast.LENGTH_SHORT).show()
     }
 
     override fun onRewardedVideoAdLoaded() {
-        Toast.makeText(this, "onRewardedVideoAdLoaded", Toast.LENGTH_SHORT).show()
+        //Toast.makeText(this, "onRewardedVideoAdLoaded", Toast.LENGTH_SHORT).show()
     }
 
     override fun onRewardedVideoAdOpened() {
-        Toast.makeText(this, "onRewardedVideoAdOpened", Toast.LENGTH_SHORT).show()
+        //Toast.makeText(this, "onRewardedVideoAdOpened", Toast.LENGTH_SHORT).show()
     }
 
     override fun onRewardedVideoStarted() {
-        Toast.makeText(this, "onRewardedVideoStarted", Toast.LENGTH_SHORT).show()
+        //Toast.makeText(this, "onRewardedVideoStarted", Toast.LENGTH_SHORT).show()
     }
 
     override fun onRewardedVideoCompleted() {
-        Toast.makeText(this, "onRewardedVideoCompleted", Toast.LENGTH_SHORT).show()
+        //Toast.makeText(this, "onRewardedVideoCompleted", Toast.LENGTH_SHORT).show()
     }
 
     override fun onPause() {
@@ -6255,5 +6371,141 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
     }
 
     /************************* End of reward ads ************************/
+    @SuppressLint("InflateParams")
+    private fun showXWinDialog() {
+        val view = LayoutInflater.from(this@HardLevelVsComputer)
+            .inflate(R.layout.win_pop_up_dialog, null)
+        val dialog = Dialog(this)
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        dialog.setContentView(view)
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        dialog.setCanceledOnTouchOutside(false)
+
+        val typeface = Typeface.createFromAsset(assets, "sukar.ttf")
+        view.textView10.typeface = typeface
+        view.dialogNewRound.typeface = typeface
+
+        view.textView10.text = youWin
+
+        winSound()
+
+        view.dialogNewRound.setOnClickListener {
+            resetBoard()
+            resetGameSound()
+            updatePointsText()
+
+            clickable = true
+            dialog.dismiss()
+        }
+        dialog.show()
+    }
+
+    @SuppressLint("InflateParams")
+    private fun showOWinDialog() {
+        val view = LayoutInflater.from(this@HardLevelVsComputer)
+            .inflate(R.layout.win_pop_up_dialog, null)
+        val dialog = Dialog(this)
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        dialog.setContentView(view)
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        dialog.setCanceledOnTouchOutside(false)
+
+        val typeface = Typeface.createFromAsset(assets, "sukar.ttf")
+        view.textView10.typeface = typeface
+        view.textView11.typeface = typeface
+        view.dialogNewRound.typeface = typeface
+
+        view.textView10.text = phoneWin
+        view.textView11.text = phoneWin2
+
+        loseSound()
+
+        view.dialogNewRound.setOnClickListener {
+            resetBoard()
+            resetGameSound()
+            updatePointsText()
+
+            clickable = true
+            dialog.dismiss()
+        }
+        dialog.show()
+    }
+
+    @SuppressLint("InflateParams")
+    private fun showDrawDialog() {
+        val view = LayoutInflater.from(this@HardLevelVsComputer)
+            .inflate(R.layout.win_pop_up_dialog, null)
+        val dialog = Dialog(this)
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        dialog.setContentView(view)
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        dialog.setCanceledOnTouchOutside(false)
+
+        val typeface = Typeface.createFromAsset(assets, "sukar.ttf")
+        view.textView10.typeface = typeface
+        view.textView11.typeface = typeface
+        view.dialogNewRound.typeface = typeface
+
+        view.textView10.text = draw
+        view.textView11.text = draw2
+
+        drawSound()
+        view.dialogNewRound.setOnClickListener {
+            resetBoard()
+            resetGameSound()
+            updatePointsText()
+
+            clickable = true
+            dialog.dismiss()
+        }
+        dialog.show()
+    }
+
+    @SuppressLint("InflateParams")
+    private fun showAdsDialog() {
+        val view = LayoutInflater.from(this@HardLevelVsComputer)
+            .inflate(R.layout.rewaed_ads_pop_up, null)
+
+        val dialog = Dialog(this)
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        dialog.setContentView(view)
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        dialog.setCanceledOnTouchOutside(false)
+
+        val typeface = Typeface.createFromAsset(assets, "sukar.ttf")
+        view.adsText.typeface = typeface
+        view.watchAd.typeface = typeface
+        view.cancel.typeface = typeface
+
+        if (adWatched1) {
+            view.adsText.text = watchAds2
+        }
+
+        view.watchAd.setOnClickListener {
+            if (mRewardedVideoAd.isLoaded) {
+                mRewardedVideoAd.show()
+                dialog.dismiss()
+            } else {
+                view.adsText.text = loadingAd
+                view.progress_circular.visibility = View.VISIBLE
+                loadRewardedVideoAd()
+
+                if (mRewardedVideoAd.isLoaded) {
+                    view.progress_circular.visibility = View.GONE
+                    mRewardedVideoAd.show()
+                    view.adsText.text = theGameBecameEasier
+                } else {
+                    view.adsText.text = canNotLoadAd
+                    view.progress_circular.visibility = View.GONE
+                }
+            }
+        }
+
+        view.cancel.setOnClickListener {
+            dialog.dismiss()
+        }
+
+        dialog.show()
+    }
 
 }

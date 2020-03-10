@@ -1,4 +1,4 @@
-package com.m7mdabaza.xogame.StartActivities
+package com.m7mdabaza.xogame.startActivities
 
 import android.graphics.Typeface
 import android.media.MediaPlayer
@@ -23,7 +23,7 @@ class MainActivity : AppCompatActivity() {
         singlePlayer.typeface = typeface
         multiPlayer.typeface = typeface
 
-        bannerAds()
+        //bannerAds()
 
         onePlayerCard.setOnClickListener {
             clickSound()

@@ -47,15 +47,30 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:layout_marginBottom="32dp"
+            android:layout_marginBottom="8dp"
             android:gravity="center"
             android:text="@string/medium_level"
+            android:textColor="#ffffff"
+            android:textSize="20sp"
+            card_view:layout_constraintBottom_toTopOf="@+id/hard"
+            card_view:layout_constraintEnd_toEndOf="parent"
+            card_view:layout_constraintStart_toStartOf="parent"
+            card_view:layout_constraintTop_toBottomOf="@+id/easy" />
+
+        <TextView
+            android:id="@+id/hard"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="32dp"
+            android:gravity="center"
+            android:text="@string/hard_level"
             android:textColor="#ffffff"
             android:textSize="20sp"
             card_view:layout_constraintBottom_toBottomOf="parent"
             card_view:layout_constraintEnd_toEndOf="parent"
             card_view:layout_constraintStart_toStartOf="parent"
-            card_view:layout_constraintTop_toBottomOf="@+id/easy" />
+            card_view:layout_constraintTop_toBottomOf="@+id/medium" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
