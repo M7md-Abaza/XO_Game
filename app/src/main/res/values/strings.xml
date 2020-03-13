@@ -40,6 +40,9 @@
     <string name="CanNotLoadAd">Can Not Load Ad, Please \n Check Your Internet Connection</string>
 
     <string name="help">HELP</string>
+    <string name="choose_who_plays_first">Choose Who Plays First</string>
+    <string name="start">Start Challenge</string>
+    <string name="required">*Required*</string>
     <!--**********************************************************-->
 
 </resources>

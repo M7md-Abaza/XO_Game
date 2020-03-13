@@ -15,10 +15,13 @@ import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.Window
+import android.widget.Toast
 import com.m7mdabaza.xogame.R
 import com.google.android.gms.ads.*
 import kotlinx.android.synthetic.main.medium_level.*
 import kotlinx.android.synthetic.main.win_pop_up_dialog.view.*
+import kotlinx.android.synthetic.main.win_pop_up_dialog.view.dialogNewRound
+import kotlinx.android.synthetic.main.x_or_o_dialog.view.*
 
 
 class MediumLevel : AppCompatActivity(), View.OnClickListener {
@@ -30,9 +33,11 @@ class MediumLevel : AppCompatActivity(), View.OnClickListener {
         Array(4) { arrayOfNulls<Button>(4) }
 
     private var player1Turn = true
+    private var xPlayFirst = true
 
     private var roundCount = 0      // to determine Draw Case
-    private var playTimeCount = 0   // to determine the computer Turn pattern and ads time to display
+    private var playTimeCount =
+        0   // to determine the computer Turn pattern and ads time to display
 
     private var player1Points = 0
     private var player2Points = 0
@@ -61,6 +66,8 @@ class MediumLevel : AppCompatActivity(), View.OnClickListener {
         xWin = getString(R.string.player_X_win)
         oWin = getString(R.string.player_O_win)
 
+        chooseFirstPlayerDialog()
+
         //bannerAds()
         interstitialAd()
     }
@@ -69,42 +76,76 @@ class MediumLevel : AppCompatActivity(), View.OnClickListener {
         if ((v as Button).text.toString() != "") {
             return
         }
-        if (player1Turn) {
-            v.background = ContextCompat.getDrawable(
-                this,
-                R.drawable.x
-            )
-            v.text = "x"
-        } else {
-            v.background = ContextCompat.getDrawable(
-                this,
-                R.drawable.o
-            )
-            v.text = "o"
-        }
-
-        roundCount++
-
-        if (checkForWin()) {
+        if (xPlayFirst) {
             if (player1Turn) {
-                player1Wins()
+                v.background = ContextCompat.getDrawable(
+                    this,
+                    R.drawable.x
+                )
+                v.text = "x"
             } else {
-                player2Wins()
+                v.background = ContextCompat.getDrawable(
+                    this,
+                    R.drawable.o
+                )
+                v.text = "o"
             }
-        } else if (roundCount == 16) {
-            draw()
-        } else {
-            if (player1Turn) {
-                clickSound()
+
+            roundCount++
+
+            if (checkForWin()) {
+                if (player1Turn) {
+                    player1Wins()
+                } else {
+                    player2Wins()
+                }
+            } else if (roundCount == 16) {
+                draw()
             } else {
-                clickSound1()
-            }
-            /*
+                if (player1Turn) {
+                    clickSound()
+                } else {
+                    clickSound1()
+                }
+                /*
             this else is for change turn from player one to player two so
             the game check after checking that no winner and rountCount not equal 9
             that is mean there in more places"Button" to play
             */
-            player1Turn = !player1Turn
+                player1Turn = !player1Turn
+            }
+        } else if (!xPlayFirst) {
+            if (!player1Turn) {
+                v.background = ContextCompat.getDrawable(this, R.drawable.o)
+                v.text = "o"
+            } else {
+                v.background = ContextCompat.getDrawable(this, R.drawable.x)
+                v.text = "x"
+            }
+            roundCount++
+
+            if (checkForWin()) {
+                if (!player1Turn) {
+                    player2Wins()
+                } else {
+                    player1Wins()
+                }
+            } else if (roundCount == 16) {
+                draw()
+            } else {
+                if (!player1Turn) {
+                    clickSound()
+                } else {
+                    clickSound1()
+                }
+                /*
+                this else is for change turn from player one to player two so
+                the game check after checking that no winner and rountCount not equal 9
+                that is mean there in more places"Button" to play
+                */
+                player1Turn = !player1Turn
+
+            }
         }
     }
 
@@ -204,12 +245,12 @@ class MediumLevel : AppCompatActivity(), View.OnClickListener {
 
 
         if (playTimeCount == 1 || playTimeCount == 4 || playTimeCount == 7 || playTimeCount == 10 || playTimeCount == 13 || playTimeCount == 16) {
-        if (mInterstitialAd.isLoaded) {
-        mInterstitialAd.show()
-        } else {
-        Log.d("TAG", "The interstitial wasn't loaded yet.")
-        }
-        } else if(playTimeCount == 18){
+            if (mInterstitialAd.isLoaded) {
+                mInterstitialAd.show()
+            } else {
+                Log.d("TAG", "The interstitial wasn't loaded yet.")
+            }
+        } else if (playTimeCount == 18) {
             playTimeCount = 0
         }
 
@@ -298,7 +339,6 @@ class MediumLevel : AppCompatActivity(), View.OnClickListener {
 
             override fun onAdFailedToLoad(errorCode: Int) {
                 // Code to be executed when an ad request fails.
-                mInterstitialAd.loadAd(AdRequest.Builder().build())
             }
 
             override fun onAdOpened() {
@@ -344,6 +384,7 @@ class MediumLevel : AppCompatActivity(), View.OnClickListener {
             updatePointsText()
 
             dialog.dismiss()
+            chooseFirstPlayerDialog()
         }
         dialog.show()
     }
@@ -373,6 +414,7 @@ class MediumLevel : AppCompatActivity(), View.OnClickListener {
             updatePointsText()
 
             dialog.dismiss()
+            chooseFirstPlayerDialog()
         }
         dialog.show()
     }
@@ -402,6 +444,53 @@ class MediumLevel : AppCompatActivity(), View.OnClickListener {
             updatePointsText()
 
             dialog.dismiss()
+            chooseFirstPlayerDialog()
+        }
+        dialog.show()
+    }
+
+    @SuppressLint("InflateParams")
+    private fun chooseFirstPlayerDialog() {
+        val view = LayoutInflater.from(this@MediumLevel)
+            .inflate(R.layout.x_or_o_dialog, null)
+        val dialog = Dialog(this)
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        dialog.setContentView(view)
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        dialog.setCanceledOnTouchOutside(false)
+
+        val typeface = Typeface.createFromAsset(assets, "sukar.ttf")
+
+        view.textView12.typeface = typeface
+        view.dialogNewRound.typeface = typeface
+
+        var playerSelected = false
+
+        view.imageX.setOnClickListener {
+            view.imageO.setImageResource(R.drawable.o1)
+            view.imageX.setImageResource(R.drawable.x_white)
+            clickSound1()
+            xPlayFirst = true
+            player1Turn = true
+            playerSelected = true
+        }
+        view.imageO.setOnClickListener {
+            view.imageO.setImageResource(R.drawable.o_white)
+            view.imageX.setImageResource(R.drawable.x)
+            clickSound1()
+            xPlayFirst = false
+            player1Turn = false
+            playerSelected = true
+
+        }
+
+        view.dialogNewRound.setOnClickListener {
+            clickSound()
+            if (playerSelected) {
+                dialog.dismiss()
+            } else if (!playerSelected) {
+                Toast.makeText(this, "Please Choose X or O", Toast.LENGTH_LONG).show()
+            }
         }
         dialog.show()
     }

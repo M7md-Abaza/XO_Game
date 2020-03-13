@@ -40,10 +40,10 @@ class EasyLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
     private var player1Turn = true
     private var clickable = true
     private var adWatched1 = false
-    private var adWatched2 = false
 
     private var roundCount = 0    // to determine Draw Case
-    private var playTimeCount = 0 // to determine the computer Turn pattern  and ads time to display
+    private var playTimeCount = 0 // to determine the computer Turn pattern
+    private var displayAdsCount = 0   // to displayAds after sertain nomber
 
     private var player1Points = 0
     private var player2Points = 0
@@ -79,6 +79,7 @@ class EasyLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
         textView6.typeface = typeface
         textView7.typeface = typeface
         text.typeface = typeface
+        txt_Help.typeface = typeface
 
         draw = getString(R.string.its_draw)
         draw2 = getString(R.string.its_draw2)
@@ -129,9 +130,8 @@ class EasyLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
                 the game check after checking that no winner and rountCount not equal 9
                 that is mean there in more places"Button" to play
                 */
-                player1Turn = !player1Turn
 
-                handler.postDelayed(r, 1000)
+                handler.postDelayed(r, 500)
             }
         }
 
@@ -174,7 +174,6 @@ class EasyLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
         return false
     }
 
-    @SuppressLint("SetTextI18n")
     private fun player1Wins() {
         player1Points++
         winSound()
@@ -186,10 +185,11 @@ class EasyLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
         }
 
         showXWinDialog()
-        playTimeCount = 0
+        playTimeCount++
+        displayAdsCount++
+        adWatched1 = false
     }
 
-    @SuppressLint("SetTextI18n")
     private fun player2Wins() {
         player2Points++
         updatePointsText()
@@ -201,15 +201,63 @@ class EasyLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
 
         showOWinDialog()
         playTimeCount++
+        displayAdsCount++
     }
 
-    @SuppressLint("SetTextI18n")
     private fun draw() {
         showDrawDialog()
         playTimeCount++
+        displayAdsCount++
     }
 
     private fun computerTurn() {
+        oMainPattern()
+        if (player1Turn) {
+            xMainPattern()
+        }
+        if (player1Turn && !adWatched1) {
+            xTwoInRaw()
+        }
+        if (player1Turn) {
+            if ((player1Turn && playTimeCount == 0) || (player1Turn && playTimeCount == 3) || (player1Turn && playTimeCount == 6)) {
+                if (player1Turn) {
+                    ifNothingToDo1()
+                }
+                if (player1Turn) {
+                    ifNothingToDo2()
+                }
+                if (player1Turn) {
+                    ifNothingToDo3()
+                }
+
+            } else if ((player1Turn && playTimeCount == 1) || (player1Turn && playTimeCount == 4) || (player1Turn && playTimeCount == 7)) {
+                if (player1Turn) {
+                    ifNothingToDo3()
+                }
+                if (player1Turn) {
+                    ifNothingToDo1()
+                }
+                if (player1Turn) {
+                    ifNothingToDo2()
+                }
+                if (playTimeCount == 7) {
+                    playTimeCount = 0
+                }
+            } else if ((player1Turn && playTimeCount == 2) || (player1Turn && playTimeCount == 5)) {
+                if (player1Turn) {
+                    ifNothingToDo2()
+                }
+                if (player1Turn) {
+                    ifNothingToDo3()
+                }
+                if (player1Turn) {
+                    ifNothingToDo1()
+                }
+
+            }
+        }
+
+        /*
         if ((buttons[1][0]!!.text.toString() == buttons[1][2]!!.text.toString() && buttons[1][2]!!.text.toString() != ""
                     || buttons[0][1]!!.text.toString() == buttons[2][1]!!.text.toString() && buttons[2][1]!!.text.toString() != ""
                     || buttons[0][0]!!.text.toString() == buttons[2][2]!!.text.toString() && buttons[2][2]!!.text.toString() != ""
@@ -323,74 +371,8 @@ class EasyLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
                 R.drawable.o
             )
             buttons[1][0]?.setText("o")!!
-        } else {
-
-            when {
-                buttons[1][2]!!.text.toString() == "" -> {
-                    buttons[1][2]?.background = ContextCompat.getDrawable(
-                        this,
-                        R.drawable.o
-                    )
-                    buttons[1][2]?.setText("o")!!
-                }
-                buttons[0][2]!!.text.toString() == "" -> {
-                    buttons[0][2]?.background = ContextCompat.getDrawable(
-                        this,
-                        R.drawable.o
-                    )
-                    buttons[0][2]?.setText("o")!!
-                }
-                buttons[2][1]!!.text.toString() == "" -> {
-                    buttons[2][1]?.background = ContextCompat.getDrawable(
-                        this,
-                        R.drawable.o
-                    )
-                    buttons[2][1]?.setText("o")!!
-                }
-                buttons[0][0]!!.text.toString() == "" -> {
-                    buttons[0][0]?.background = ContextCompat.getDrawable(
-                        this,
-                        R.drawable.o
-                    )
-                    buttons[0][0]?.setText("o")!!
-                }
-                buttons[1][1]!!.text.toString() == "" -> {
-                    buttons[1][1]?.background = ContextCompat.getDrawable(
-                        this,
-                        R.drawable.o
-                    )
-                    buttons[1][1]?.setText("o")!!
-                }
-                buttons[2][2]!!.text.toString() == "" -> {
-                    buttons[2][2]?.background = ContextCompat.getDrawable(
-                        this,
-                        R.drawable.o
-                    )
-                    buttons[2][2]?.setText("o")!!
-                }
-                buttons[2][0]!!.text.toString() == "" -> {
-                    buttons[2][0]?.background = ContextCompat.getDrawable(
-                        this,
-                        R.drawable.o
-                    )
-                    buttons[2][0]?.setText("o")!!
-                }
-                buttons[0][1]!!.text.toString() == "" -> {
-                    buttons[0][1]?.background = ContextCompat.getDrawable(
-                        this,
-                        R.drawable.o
-                    )
-                    buttons[0][1]?.setText("o")!!
-                }
-                buttons[1][0]!!.text.toString() == "" -> {
-                    buttons[1][0]?.background = ContextCompat.getDrawable(
-                        this,
-                        R.drawable.o
-                    )
-                    buttons[1][0]?.setText("o")!!
-                }
-            }
         }
+        */
 
         if (checkForWin()) {
             if (player1Turn) {
@@ -404,11 +386,10 @@ class EasyLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
             player1Turn = !player1Turn
         }
 
-        clickSound1()
         clickable = true
+        clickSound1()
     }
 
-    @SuppressLint("SetTextI18n")
     private fun updatePointsText() {
         txt_player_1E.text = player1Points.toString()
         txt_player_2E.text = player2Points.toString()
@@ -431,15 +412,15 @@ class EasyLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
         player1Turn = true
 
 
-        if (playTimeCount == 1 || playTimeCount == 4 || playTimeCount == 7 || playTimeCount == 10 || playTimeCount == 14 || playTimeCount == 18) {
+        if (displayAdsCount == 1 || displayAdsCount == 4 || displayAdsCount == 7 || displayAdsCount == 10 || displayAdsCount == 14 || displayAdsCount == 18) {
             if (mInterstitialAd.isLoaded) {
                 mInterstitialAd.show()
                 mInterstitialAd.loadAd(AdRequest.Builder().build())
             } else {
                 Log.d("TAG", "The interstitial wasn't loaded yet.")
             }
-        } else if (playTimeCount == 20) {
-            playTimeCount = 0
+        } else if (displayAdsCount == 20) {
+            displayAdsCount = 0
         }
     }
 
@@ -507,6 +488,449 @@ class EasyLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
         mediaPlayer.start()
     }
 
+    /******************** Start of Computer Turn Methods ****************************/
+
+    private fun oMainPattern() {
+        if (buttons[1][1]!!.text.toString() == "") {
+            buttons[1][1]?.background = ContextCompat.getDrawable(this, R.drawable.o)
+            buttons[1][1]?.setText("o")!!
+            player1Turn = !player1Turn
+
+        } else if ((buttons[1][0]!!.text.toString() == buttons[1][2]!!.text.toString() && buttons[1][2]!!.text.toString() != "" && buttons[1][2]!!.text.toString() == "o"
+                    || buttons[0][1]!!.text.toString() == buttons[2][1]!!.text.toString() && buttons[2][1]!!.text.toString() != "" && buttons[2][1]!!.text.toString() == "o"
+                    || buttons[0][0]!!.text.toString() == buttons[2][2]!!.text.toString() && buttons[2][2]!!.text.toString() != "" && buttons[2][2]!!.text.toString() == "o"
+                    || buttons[0][2]!!.text.toString() == buttons[2][0]!!.text.toString() && buttons[2][0]!!.text.toString() != "" && buttons[2][0]!!.text.toString() == "o")
+            && buttons[1][1]!!.text.toString() == ""
+            && buttons[1][1]!!.text.toString() != "x"
+        ) {
+
+            buttons[1][1]?.background = ContextCompat.getDrawable(
+                this,
+                R.drawable.o
+            )
+            buttons[1][1]?.setText("o")!!
+            player1Turn = !player1Turn
+
+        } else if ((buttons[0][0]!!.text.toString() == buttons[0][1]!!.text.toString() && buttons[0][1]!!.text.toString() != "" && buttons[0][1]!!.text.toString() == "o"
+                    || buttons[1][1]!!.text.toString() == buttons[2][0]!!.text.toString() && buttons[2][0]!!.text.toString() != "" && buttons[2][0]!!.text.toString() == "o"
+                    || buttons[1][2]!!.text.toString() == buttons[2][2]!!.text.toString() && buttons[2][2]!!.text.toString() != "" && buttons[2][2]!!.text.toString() == "o")
+            && buttons[0][2]!!.text.toString() == ""
+            && buttons[0][2]!!.text.toString() != "x"
+        ) {
+
+            buttons[0][2]?.background = ContextCompat.getDrawable(
+                this,
+                R.drawable.o
+            )
+            buttons[0][2]?.setText("o")!!
+            player1Turn = !player1Turn
+        } else if ((buttons[2][0]!!.text.toString() == buttons[2][1]!!.text.toString() && buttons[2][1]!!.text.toString() != "" && buttons[2][1]!!.text.toString() == "o"
+                    || buttons[0][0]!!.text.toString() == buttons[1][1]!!.text.toString() && buttons[1][1]!!.text.toString() != "" && buttons[1][1]!!.text.toString() == "o"
+                    || buttons[0][2]!!.text.toString() == buttons[1][2]!!.text.toString() && buttons[1][2]!!.text.toString() != "" && buttons[1][2]!!.text.toString() == "o")
+            && buttons[2][2]!!.text.toString() == ""
+            && buttons[2][2]!!.text.toString() != "x"
+        ) {
+
+            buttons[2][2]?.background = ContextCompat.getDrawable(
+                this,
+                R.drawable.o
+            )
+            buttons[2][2]?.setText("o")!!
+            player1Turn = !player1Turn
+        } else if ((buttons[0][1]!!.text.toString() == buttons[0][2]!!.text.toString() && buttons[0][2]!!.text.toString() != "" && buttons[0][2]!!.text.toString() == "o"
+                    || buttons[2][2]!!.text.toString() == buttons[1][1]!!.text.toString() && buttons[1][1]!!.text.toString() != "" && buttons[1][1]!!.text.toString() == "o"
+                    || buttons[1][0]!!.text.toString() == buttons[2][0]!!.text.toString() && buttons[2][0]!!.text.toString() != "" && buttons[2][0]!!.text.toString() == "o")
+            && buttons[0][0]!!.text.toString() == ""
+            && buttons[0][0]!!.text.toString() != "x"
+        ) {
+
+            buttons[0][0]?.background = ContextCompat.getDrawable(
+                this,
+                R.drawable.o
+            )
+            buttons[0][0]?.setText("o")!!
+            player1Turn = !player1Turn
+        } else if ((buttons[2][1]!!.text.toString() == buttons[2][2]!!.text.toString() && buttons[2][2]!!.text.toString() != "" && buttons[2][2]!!.text.toString() == "o"
+                    || buttons[0][0]!!.text.toString() == buttons[1][0]!!.text.toString() && buttons[1][0]!!.text.toString() != "" && buttons[1][0]!!.text.toString() == "o"
+                    || buttons[0][2]!!.text.toString() == buttons[1][1]!!.text.toString() && buttons[1][1]!!.text.toString() != "" && buttons[1][1]!!.text.toString() == "o")
+            && buttons[2][0]!!.text.toString() == ""
+            && buttons[2][0]!!.text.toString() != "x"
+        ) {
+
+            buttons[2][0]?.background = ContextCompat.getDrawable(
+                this,
+                R.drawable.o
+            )
+            buttons[2][0]?.setText("o")!!
+            player1Turn = !player1Turn
+        } else if ((buttons[1][0]!!.text.toString() == buttons[1][1]!!.text.toString() && buttons[1][1]!!.text.toString() != "" && buttons[1][1]!!.text.toString() == "o"
+                    || buttons[0][2]!!.text.toString() == buttons[2][2]!!.text.toString() && buttons[2][2]!!.text.toString() != "" && buttons[2][2]!!.text.toString() == "o")
+            && buttons[1][2]!!.text.toString() == ""
+            && buttons[1][2]!!.text.toString() != "x"
+        ) {
+
+            buttons[1][2]?.background = ContextCompat.getDrawable(
+                this,
+                R.drawable.o
+            )
+            buttons[1][2]?.setText("o")!!
+            player1Turn = !player1Turn
+        } else if ((buttons[0][0]!!.text.toString() == buttons[0][2]!!.text.toString() && buttons[0][2]!!.text.toString() != "" && buttons[0][2]!!.text.toString() == "o"
+                    || buttons[1][1]!!.text.toString() == buttons[2][1]!!.text.toString() && buttons[2][1]!!.text.toString() != "" && buttons[2][1]!!.text.toString() == "o")
+            && buttons[0][1]!!.text.toString() == ""
+            && buttons[0][1]!!.text.toString() != "x"
+        ) {
+
+            buttons[0][1]?.background = ContextCompat.getDrawable(
+                this,
+                R.drawable.o
+            )
+            buttons[0][1]?.setText("o")!!
+            player1Turn = !player1Turn
+        } else if ((buttons[2][0]!!.text.toString() == buttons[2][2]!!.text.toString() && buttons[2][2]!!.text.toString() != "" && buttons[2][2]!!.text.toString() == "o"
+                    || buttons[0][1]!!.text.toString() == buttons[1][1]!!.text.toString() && buttons[1][1]!!.text.toString() != "" && buttons[1][1]!!.text.toString() == "o")
+            && buttons[2][1]!!.text.toString() == ""
+            && buttons[2][1]!!.text.toString() != "x"
+        ) {
+
+            buttons[2][1]?.background = ContextCompat.getDrawable(
+                this,
+                R.drawable.o
+            )
+            buttons[2][1]?.setText("o")!!
+            player1Turn = !player1Turn
+        } else if ((buttons[1][1]!!.text.toString() == buttons[1][2]!!.text.toString() && buttons[1][2]!!.text.toString() != "" && buttons[1][2]!!.text.toString() == "o"
+                    || buttons[0][0]!!.text.toString() == buttons[2][0]!!.text.toString() && buttons[2][0]!!.text.toString() != "" && buttons[2][0]!!.text.toString() == "o")
+            && buttons[1][0]!!.text.toString() == ""
+            && buttons[1][0]!!.text.toString() != "x"
+        ) {
+
+            buttons[1][0]?.background = ContextCompat.getDrawable(
+                this,
+                R.drawable.o
+            )
+            buttons[1][0]?.setText("o")!!
+            player1Turn = !player1Turn
+        }
+    }
+
+    private fun xMainPattern() {
+        if ((buttons[1][0]!!.text.toString() == buttons[1][2]!!.text.toString() && buttons[1][2]!!.text.toString() != "" && buttons[1][2]!!.text.toString() == "x"
+                    || buttons[0][1]!!.text.toString() == buttons[2][1]!!.text.toString() && buttons[2][1]!!.text.toString() != "" && buttons[2][1]!!.text.toString() == "x"
+                    || buttons[0][0]!!.text.toString() == buttons[2][2]!!.text.toString() && buttons[2][2]!!.text.toString() != "" && buttons[2][2]!!.text.toString() == "x"
+                    || buttons[0][2]!!.text.toString() == buttons[2][0]!!.text.toString() && buttons[2][0]!!.text.toString() != "" && buttons[2][0]!!.text.toString() == "x")
+            && buttons[1][1]!!.text.toString() == ""
+            && buttons[1][1]!!.text.toString() != "x"
+        ) {
+
+            buttons[1][1]?.background = ContextCompat.getDrawable(this, R.drawable.o)
+            buttons[1][1]?.setText("o")!!
+            player1Turn = !player1Turn
+
+        } else if ((buttons[0][0]!!.text.toString() == buttons[0][1]!!.text.toString() && buttons[0][1]!!.text.toString() != "" && buttons[0][1]!!.text.toString() == "x"
+                    || buttons[1][1]!!.text.toString() == buttons[2][0]!!.text.toString() && buttons[2][0]!!.text.toString() != "" && buttons[2][0]!!.text.toString() == "x"
+                    || buttons[1][2]!!.text.toString() == buttons[2][2]!!.text.toString() && buttons[2][2]!!.text.toString() != "" && buttons[2][2]!!.text.toString() == "x")
+            && buttons[0][2]!!.text.toString() == ""
+            && buttons[0][2]!!.text.toString() != "x"
+        ) {
+
+            buttons[0][2]?.background = ContextCompat.getDrawable(this, R.drawable.o)
+            buttons[0][2]?.setText("o")!!
+            player1Turn = !player1Turn
+
+        } else if ((buttons[2][0]!!.text.toString() == buttons[2][1]!!.text.toString() && buttons[2][1]!!.text.toString() != "" && buttons[2][1]!!.text.toString() == "x"
+                    || buttons[0][0]!!.text.toString() == buttons[1][1]!!.text.toString() && buttons[1][1]!!.text.toString() != "" && buttons[1][1]!!.text.toString() == "x"
+                    || buttons[0][2]!!.text.toString() == buttons[1][2]!!.text.toString() && buttons[1][2]!!.text.toString() != "" && buttons[1][2]!!.text.toString() == "x")
+            && buttons[2][2]!!.text.toString() == ""
+            && buttons[2][2]!!.text.toString() != "x"
+        ) {
+
+            buttons[2][2]?.background = ContextCompat.getDrawable(this, R.drawable.o)
+            buttons[2][2]?.setText("o")!!
+            player1Turn = !player1Turn
+
+        } else if ((buttons[0][1]!!.text.toString() == buttons[0][2]!!.text.toString() && buttons[0][2]!!.text.toString() != "" && buttons[0][2]!!.text.toString() == "x"
+                    || buttons[2][2]!!.text.toString() == buttons[1][1]!!.text.toString() && buttons[1][1]!!.text.toString() != "" && buttons[1][1]!!.text.toString() == "x"
+                    || buttons[1][0]!!.text.toString() == buttons[2][0]!!.text.toString() && buttons[2][0]!!.text.toString() != "" && buttons[2][0]!!.text.toString() == "x")
+            && buttons[0][0]!!.text.toString() == ""
+            && buttons[0][0]!!.text.toString() != "x"
+        ) {
+
+            buttons[0][0]?.background = ContextCompat.getDrawable(this, R.drawable.o)
+            buttons[0][0]?.setText("o")!!
+            player1Turn = !player1Turn
+
+        } else if ((buttons[2][1]!!.text.toString() == buttons[2][2]!!.text.toString() && buttons[2][2]!!.text.toString() != "" && buttons[2][2]!!.text.toString() == "x"
+                    || buttons[0][0]!!.text.toString() == buttons[1][0]!!.text.toString() && buttons[1][0]!!.text.toString() != "" && buttons[1][0]!!.text.toString() == "x"
+                    || buttons[0][2]!!.text.toString() == buttons[1][1]!!.text.toString() && buttons[1][1]!!.text.toString() != "" && buttons[1][1]!!.text.toString() == "x")
+            && buttons[2][0]!!.text.toString() == ""
+            && buttons[2][0]!!.text.toString() != "x"
+        ) {
+
+            buttons[2][0]?.background = ContextCompat.getDrawable(this, R.drawable.o)
+            buttons[2][0]?.setText("o")!!
+            player1Turn = !player1Turn
+
+        } else if ((buttons[1][0]!!.text.toString() == buttons[1][1]!!.text.toString() && buttons[1][1]!!.text.toString() != "" && buttons[1][1]!!.text.toString() == "x"
+                    || buttons[0][2]!!.text.toString() == buttons[2][2]!!.text.toString() && buttons[2][2]!!.text.toString() != "" && buttons[2][2]!!.text.toString() == "x")
+            && buttons[1][2]!!.text.toString() == ""
+            && buttons[1][2]!!.text.toString() != "x"
+        ) {
+
+            buttons[1][2]?.background = ContextCompat.getDrawable(this, R.drawable.o)
+            buttons[1][2]?.setText("o")!!
+            player1Turn = !player1Turn
+
+        } else if ((buttons[0][0]!!.text.toString() == buttons[0][2]!!.text.toString() && buttons[0][2]!!.text.toString() != "" && buttons[0][2]!!.text.toString() == "x"
+                    || buttons[1][1]!!.text.toString() == buttons[2][1]!!.text.toString() && buttons[2][1]!!.text.toString() != "" && buttons[2][1]!!.text.toString() == "x")
+            && buttons[0][1]!!.text.toString() == ""
+            && buttons[0][1]!!.text.toString() != "x"
+        ) {
+
+            buttons[0][1]?.background = ContextCompat.getDrawable(this, R.drawable.o)
+            buttons[0][1]?.setText("o")!!
+            player1Turn = !player1Turn
+
+        } else if ((buttons[2][0]!!.text.toString() == buttons[2][2]!!.text.toString() && buttons[2][2]!!.text.toString() != "" && buttons[2][2]!!.text.toString() == "x"
+                    || buttons[0][1]!!.text.toString() == buttons[1][1]!!.text.toString() && buttons[1][1]!!.text.toString() != "" && buttons[1][1]!!.text.toString() == "x")
+            && buttons[2][1]!!.text.toString() == ""
+            && buttons[2][1]!!.text.toString() != "x"
+        ) {
+
+            buttons[2][1]?.background = ContextCompat.getDrawable(this, R.drawable.o)
+            buttons[2][1]?.setText("o")!!
+            player1Turn = !player1Turn
+
+        } else if ((buttons[1][1]!!.text.toString() == buttons[1][2]!!.text.toString() && buttons[1][2]!!.text.toString() != "" && buttons[1][2]!!.text.toString() == "x"
+                    || buttons[0][0]!!.text.toString() == buttons[2][0]!!.text.toString() && buttons[2][0]!!.text.toString() != "" && buttons[2][0]!!.text.toString() == "x")
+            && buttons[1][0]!!.text.toString() == ""
+            && buttons[1][0]!!.text.toString() != "x"
+        ) {
+
+            buttons[1][0]?.background = ContextCompat.getDrawable(this, R.drawable.o)
+            buttons[1][0]?.setText("o")!!
+            player1Turn = !player1Turn
+        }
+    }
+
+    //prevent getting 2 X in Raw
+    private fun xTwoInRaw() {
+        for (i in 0..2) {
+            /******************************* Horizontal Lines********************************/
+            if ((buttons[i][1]!!.text.toString() == "x" && buttons[i][2]!!.text.toString() != "o")
+                && buttons[i][0]!!.text.toString() == ""
+                && buttons[i][0]!!.text.toString() != "x"
+            ) {
+
+                buttons[i][0]?.background = ContextCompat.getDrawable(this, R.drawable.o)
+                buttons[i][0]?.setText("o")!!
+                player1Turn = !player1Turn
+                break
+            } else if (((buttons[i][0]!!.text.toString() == "x" && buttons[i][2]!!.text.toString() != "o")
+                        || (buttons[i][2]!!.text.toString() == "x" && buttons[i][0]!!.text.toString() != "o"))
+                && buttons[i][1]!!.text.toString() == ""
+                && buttons[i][1]!!.text.toString() != "x"
+            ) {
+
+                buttons[i][1]?.background = ContextCompat.getDrawable(this, R.drawable.o)
+                buttons[i][1]?.setText("o")!!
+                player1Turn = !player1Turn
+                break
+            } else if ((buttons[i][1]!!.text.toString() == "x" && buttons[i][0]!!.text.toString() != "o")
+                && buttons[i][2]!!.text.toString() == ""
+                && buttons[i][2]!!.text.toString() != "x"
+            ) {
+
+                buttons[i][2]?.background = ContextCompat.getDrawable(this, R.drawable.o)
+                buttons[i][2]?.setText("o")!!
+                player1Turn = !player1Turn
+                break
+            }
+            /******************************* Vertical Lines********************************/
+            if ((buttons[1][i]!!.text.toString() == "x" && buttons[2][i]!!.text.toString() != "o")
+                && buttons[0][i]!!.text.toString() == ""
+                && buttons[0][i]!!.text.toString() != "x"
+            ) {
+
+                buttons[0][i]?.background = ContextCompat.getDrawable(this, R.drawable.o)
+                buttons[0][i]?.setText("o")!!
+                player1Turn = !player1Turn
+                break
+            } else if (((buttons[0][i]!!.text.toString() == "x" && buttons[2][i]!!.text.toString() != "o")
+                        || (buttons[2][i]!!.text.toString() == "x" && buttons[0][i]!!.text.toString() != "o"))
+                && buttons[1][i]!!.text.toString() == ""
+                && buttons[1][i]!!.text.toString() != "x"
+            ) {
+
+                buttons[1][i]?.background = ContextCompat.getDrawable(this, R.drawable.o)
+                buttons[1][i]?.setText("o")!!
+                player1Turn = !player1Turn
+                break
+            } else if ((buttons[1][i]!!.text.toString() == "x" && buttons[0][i]!!.text.toString() != "o")
+                && buttons[2][i]!!.text.toString() == ""
+                && buttons[2][i]!!.text.toString() != "x"
+            ) {
+
+                buttons[2][i]?.background = ContextCompat.getDrawable(this, R.drawable.o)
+                buttons[2][i]?.setText("o")!!
+                player1Turn = !player1Turn
+                break
+            }
+        }
+
+        /*********************** TopLeft to BottomRight Line ************************/
+        if (player1Turn) {
+            if ((buttons[1][1]!!.text.toString() == "x" && buttons[2][2]!!.text.toString() != "o")
+                && buttons[0][0]!!.text.toString() == ""
+                && buttons[0][0]!!.text.toString() != "x"
+            ) {
+
+                buttons[0][0]?.background = ContextCompat.getDrawable(this, R.drawable.o)
+                buttons[0][0]?.setText("o")!!
+                player1Turn = !player1Turn
+
+            } else if (((buttons[0][0]!!.text.toString() == "x" && buttons[2][2]!!.text.toString() != "o")
+                        || (buttons[2][2]!!.text.toString() == "x" && buttons[0][0]!!.text.toString() != "o"))
+                && buttons[1][1]!!.text.toString() == ""
+                && buttons[1][1]!!.text.toString() != "x"
+            ) {
+
+                buttons[1][1]?.background = ContextCompat.getDrawable(this, R.drawable.o)
+                buttons[1][1]?.setText("o")!!
+                player1Turn = !player1Turn
+
+            } else if ((buttons[1][1]!!.text.toString() == "x" && buttons[0][0]!!.text.toString() != "o")
+                && buttons[2][2]!!.text.toString() == ""
+                && buttons[2][2]!!.text.toString() != "x"
+            ) {
+
+                buttons[2][2]?.background = ContextCompat.getDrawable(this, R.drawable.o)
+                buttons[2][2]?.setText("o")!!
+                player1Turn = !player1Turn
+
+            }
+            /*********************** TopRight to BottomLeft Line ************************/
+            else if ((buttons[1][1]!!.text.toString() == "x" && buttons[2][0]!!.text.toString() != "o")
+                && buttons[0][2]!!.text.toString() == ""
+                && buttons[0][2]!!.text.toString() != "x"
+            ) {
+
+                buttons[0][2]?.background = ContextCompat.getDrawable(this, R.drawable.o)
+                buttons[0][2]?.setText("o")!!
+                player1Turn = !player1Turn
+
+            } else if (((buttons[0][2]!!.text.toString() == "x" && buttons[2][0]!!.text.toString() != "o")
+                        || (buttons[2][0]!!.text.toString() == "x" && buttons[0][2]!!.text.toString() != "o"))
+                && buttons[1][1]!!.text.toString() == ""
+                && buttons[1][1]!!.text.toString() != "x"
+            ) {
+
+                buttons[1][1]?.background = ContextCompat.getDrawable(this, R.drawable.o)
+                buttons[1][1]?.setText("o")!!
+                player1Turn = !player1Turn
+
+            } else if ((buttons[1][1]!!.text.toString() == "x" && buttons[0][2]!!.text.toString() != "o")
+                && buttons[2][0]!!.text.toString() == ""
+                && buttons[2][0]!!.text.toString() != "x"
+            ) {
+
+                buttons[2][0]?.background = ContextCompat.getDrawable(this, R.drawable.o)
+                buttons[2][0]?.setText("o")!!
+                player1Turn = !player1Turn
+
+            }
+        }
+    }
+
+    private fun ifNothingToDo1() {
+        when {
+            buttons[1][2]!!.text.toString() == "" -> {
+                buttons[1][2]?.background = ContextCompat.getDrawable(
+                    this,
+                    R.drawable.o
+                )
+                buttons[1][2]?.setText("o")!!
+                player1Turn = !player1Turn
+            }
+            buttons[0][2]!!.text.toString() == "" -> {
+                buttons[0][2]?.background = ContextCompat.getDrawable(
+                    this,
+                    R.drawable.o
+                )
+                buttons[0][2]?.setText("o")!!
+                player1Turn = !player1Turn
+            }
+            buttons[2][1]!!.text.toString() == "" -> {
+                buttons[2][1]?.background = ContextCompat.getDrawable(
+                    this,
+                    R.drawable.o
+                )
+                buttons[2][1]?.setText("o")!!
+                player1Turn = !player1Turn
+            }
+        }
+    }
+
+    private fun ifNothingToDo2() {
+        when {
+            buttons[0][0]!!.text.toString() == "" -> {
+                buttons[0][0]?.background = ContextCompat.getDrawable(
+                    this,
+                    R.drawable.o
+                )
+                buttons[0][0]?.setText("o")!!
+                player1Turn = !player1Turn
+            }
+            buttons[1][1]!!.text.toString() == "" -> {
+                buttons[1][1]?.background = ContextCompat.getDrawable(
+                    this,
+                    R.drawable.o
+                )
+                buttons[1][1]?.setText("o")!!
+                player1Turn = !player1Turn
+            }
+            buttons[2][2]!!.text.toString() == "" -> {
+                buttons[2][2]?.background = ContextCompat.getDrawable(
+                    this,
+                    R.drawable.o
+                )
+                buttons[2][2]?.setText("o")!!
+                player1Turn = !player1Turn
+            }
+        }
+    }
+
+    private fun ifNothingToDo3() {
+        when {
+            buttons[2][0]!!.text.toString() == "" -> {
+                buttons[2][0]?.background = ContextCompat.getDrawable(
+                    this,
+                    R.drawable.o
+                )
+                buttons[2][0]?.setText("o")!!
+                player1Turn = !player1Turn
+            }
+            buttons[0][1]!!.text.toString() == "" -> {
+                buttons[0][1]?.background = ContextCompat.getDrawable(
+                    this,
+                    R.drawable.o
+                )
+                buttons[0][1]?.setText("o")!!
+                player1Turn = !player1Turn
+            }
+            buttons[1][0]!!.text.toString() == "" -> {
+                buttons[1][0]?.background = ContextCompat.getDrawable(
+                    this,
+                    R.drawable.o
+                )
+                buttons[1][0]?.setText("o")!!
+                player1Turn = !player1Turn
+            }
+        }
+    }
+
+    /******************** End of Computer Turn Methods ****************************/
+
     private fun bannerAds() {
         MobileAds.initialize(this) {}
         val adRequest = AdRequest.Builder().build()
@@ -534,7 +958,6 @@ class EasyLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
 
             override fun onAdFailedToLoad(errorCode: Int) {
                 // Code to be executed when an ad request fails.
-                mInterstitialAd.loadAd(AdRequest.Builder().build())
             }
 
             override fun onAdOpened() {
@@ -575,11 +998,8 @@ class EasyLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
     override fun onRewarded(reward: RewardItem) {
         //Toast.makeText(this, "onRewarded! currency: ${reward.type} amount: ${reward.amount}", Toast.LENGTH_SHORT).show()
         // Reward the user.
-        if (adWatched1) {
-            adWatched2 = true
-        } else {
-            adWatched1 = true
-        }
+        adWatched1 = true
+
     }
 
     override fun onRewardedVideoAdLeftApplication() {
@@ -734,11 +1154,10 @@ class EasyLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
         view.watchAd.typeface = typeface
         view.cancel.typeface = typeface
 
-        if (adWatched1) {
-            view.adsText.text = watchAds2
-        }
+        clickSound()
 
         view.watchAd.setOnClickListener {
+            clickSound()
             if (mRewardedVideoAd.isLoaded) {
                 mRewardedVideoAd.show()
                 dialog.dismiss()
@@ -758,6 +1177,7 @@ class EasyLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
         }
 
         view.cancel.setOnClickListener {
+            clickSound()
             dialog.dismiss()
         }
 
