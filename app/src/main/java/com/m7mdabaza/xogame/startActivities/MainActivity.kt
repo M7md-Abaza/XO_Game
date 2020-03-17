@@ -23,7 +23,7 @@ class MainActivity : AppCompatActivity() {
         singlePlayer.typeface = typeface
         multiPlayer.typeface = typeface
 
-        //bannerAds()
+        bannerAds()
 
         onePlayerCard.setOnClickListener {
             clickSound()

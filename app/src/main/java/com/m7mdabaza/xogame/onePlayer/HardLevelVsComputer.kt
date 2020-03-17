@@ -43,7 +43,7 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
 
     private var roundCount = 0      // to determine Draw Case
     private var playTimeCount = 0   // to determine the computer Turn pattern
-    private var displayAdsCount = 0   // to displayAds after sertain nomber
+    private var displayAdsCount = 0   // to displayAds after certain number
 
     private var player1Points = 0
     private var player2Points = 0
@@ -78,7 +78,6 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
         textView7.typeface = typeface
         txt_Help.typeface = typeface
 
-
         draw = getString(R.string.its_draw)
         draw2 = getString(R.string.its_draw2)
         phoneWin = getString(R.string.phone_win)
@@ -93,7 +92,6 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
 
         bannerAds()
         interstitialAd()
-
         loadRewardedVideoAd()
 
         txt_Help.setOnClickListener {
@@ -249,16 +247,9 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
     private fun computerTurn() {
 
         oFourInRow()
-
-        if (player1Turn) {
-            oTopLiftBottomRightFourInRow()
-        }
-        if (player1Turn) {
-            xFourInRow()
-        }
         // when reward ads watched in Second time "adWatched2 == true"
         if (player1Turn && !adWatched2) {
-            xTopLiftBottomRightFourInRow()
+            xFourInRow()
         }
         if (player1Turn) {
             xHorizontalVertical()
@@ -485,11 +476,11 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
 
     /*************** Start of all Methods for computer Turn Algorithm *******************/
     // check for x on Horizontal and Vertical to prevent get 4 X in row
-    /*** Done***/
+    /*** Done ***/
     private fun xHorizontalVertical() {
         for (i in 0..7) {
             /******************************* Horizontal Lines********************************/
-            if ((buttons[i][1]!!.text.toString() == buttons[i][2]!!.text.toString() && buttons[i][1]!!.text.toString() == buttons[i][3]!!.text.toString() && buttons[i][1]!!.text.toString() != "")
+            if ((buttons[i][1]!!.text.toString() == buttons[i][2]!!.text.toString() && buttons[i][1]!!.text.toString() == buttons[i][3]!!.text.toString() && buttons[i][1]!!.text.toString() != "" && buttons[i][4]!!.text.toString() != "o")
                 && buttons[i][1]!!.text.toString() == "x"
                 && buttons[i][0]!!.text.toString() == ""
                 && buttons[i][0]!!.text.toString() != "x"
@@ -500,8 +491,8 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
                 player1Turn = !player1Turn
                 break
 
-            } else if ((buttons[i][3]!!.text.toString() == buttons[i][2]!!.text.toString() && buttons[i][4]!!.text.toString() == buttons[i][3]!!.text.toString() && buttons[i][3]!!.text.toString() != ""
-                        || buttons[i][3]!!.text.toString() == buttons[i][2]!!.text.toString() && buttons[i][3]!!.text.toString() == buttons[i][0]!!.text.toString() && buttons[i][3]!!.text.toString() != "")
+            } else if ((buttons[i][3]!!.text.toString() == buttons[i][2]!!.text.toString() && buttons[i][4]!!.text.toString() == buttons[i][3]!!.text.toString() && buttons[i][3]!!.text.toString() != "" && buttons[i][4]!!.text.toString() != "o"
+                        || buttons[i][3]!!.text.toString() == buttons[i][2]!!.text.toString() && buttons[i][3]!!.text.toString() == buttons[i][0]!!.text.toString() && buttons[i][3]!!.text.toString() != "" && buttons[i][5]!!.text.toString() != "o")
                 && buttons[i][3]!!.text.toString() == "x"
                 && buttons[i][1]!!.text.toString() == ""
                 && buttons[i][1]!!.text.toString() != "x"
@@ -515,9 +506,9 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
                 player1Turn = !player1Turn
                 break
 
-            } else if ((buttons[i][3]!!.text.toString() == buttons[i][1]!!.text.toString() && buttons[i][0]!!.text.toString() == buttons[i][3]!!.text.toString() && buttons[i][3]!!.text.toString() != ""
-                        || buttons[i][3]!!.text.toString() == buttons[i][1]!!.text.toString() && buttons[i][3]!!.text.toString() == buttons[i][4]!!.text.toString() && buttons[i][3]!!.text.toString() != ""
-                        || buttons[i][3]!!.text.toString() == buttons[i][4]!!.text.toString() && buttons[i][3]!!.text.toString() == buttons[i][5]!!.text.toString() && buttons[i][3]!!.text.toString() != ""
+            } else if ((buttons[i][3]!!.text.toString() == buttons[i][1]!!.text.toString() && buttons[i][0]!!.text.toString() == buttons[i][3]!!.text.toString() && buttons[i][3]!!.text.toString() != "" && buttons[i][4]!!.text.toString() != "o"
+                        || buttons[i][3]!!.text.toString() == buttons[i][1]!!.text.toString() && buttons[i][3]!!.text.toString() == buttons[i][4]!!.text.toString() && buttons[i][3]!!.text.toString() != "" && buttons[i][5]!!.text.toString() != "o"
+                        || buttons[i][3]!!.text.toString() == buttons[i][4]!!.text.toString() && buttons[i][3]!!.text.toString() == buttons[i][5]!!.text.toString() && buttons[i][3]!!.text.toString() != "" && buttons[i][6]!!.text.toString() != "o"
                         )
                 && buttons[i][3]!!.text.toString() == "x"
                 && buttons[i][2]!!.text.toString() == ""
@@ -532,10 +523,10 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
                 player1Turn = !player1Turn
                 break
 
-            } else if ((buttons[i][0]!!.text.toString() == buttons[i][1]!!.text.toString() && buttons[i][1]!!.text.toString() == buttons[i][2]!!.text.toString() && buttons[i][1]!!.text.toString() != "" && buttons[i][1]!!.text.toString() == "x"
-                        || buttons[i][4]!!.text.toString() == buttons[i][1]!!.text.toString() && buttons[i][1]!!.text.toString() == buttons[i][2]!!.text.toString() && buttons[i][1]!!.text.toString() != "" && buttons[i][1]!!.text.toString() == "x"
-                        || buttons[i][5]!!.text.toString() == buttons[i][4]!!.text.toString() && buttons[i][4]!!.text.toString() == buttons[i][6]!!.text.toString() && buttons[i][4]!!.text.toString() != "" && buttons[i][4]!!.text.toString() == "x"
-                        || buttons[i][5]!!.text.toString() == buttons[i][4]!!.text.toString() && buttons[i][4]!!.text.toString() == buttons[i][2]!!.text.toString() && buttons[i][4]!!.text.toString() != "" && buttons[i][4]!!.text.toString() == "x"
+            } else if ((buttons[i][0]!!.text.toString() == buttons[i][1]!!.text.toString() && buttons[i][1]!!.text.toString() == buttons[i][2]!!.text.toString() && buttons[i][1]!!.text.toString() != "" && buttons[i][1]!!.text.toString() == "x" && buttons[i][4]!!.text.toString() != "o"
+                        || buttons[i][4]!!.text.toString() == buttons[i][1]!!.text.toString() && buttons[i][1]!!.text.toString() == buttons[i][2]!!.text.toString() && buttons[i][1]!!.text.toString() != "" && buttons[i][1]!!.text.toString() == "x" && buttons[i][5]!!.text.toString() != "o"
+                        || buttons[i][5]!!.text.toString() == buttons[i][4]!!.text.toString() && buttons[i][4]!!.text.toString() == buttons[i][6]!!.text.toString() && buttons[i][4]!!.text.toString() != "" && buttons[i][4]!!.text.toString() == "x" && buttons[i][2]!!.text.toString() != "o"
+                        || buttons[i][5]!!.text.toString() == buttons[i][4]!!.text.toString() && buttons[i][4]!!.text.toString() == buttons[i][2]!!.text.toString() && buttons[i][4]!!.text.toString() != "" && buttons[i][4]!!.text.toString() == "x" && buttons[i][6]!!.text.toString() != "o"
                         )
                 && buttons[i][3]!!.text.toString() == ""
                 && buttons[i][3]!!.text.toString() != "x"
@@ -549,10 +540,10 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
                 player1Turn = !player1Turn
                 break
 
-            } else if ((buttons[i][3]!!.text.toString() == buttons[i][1]!!.text.toString() && buttons[i][3]!!.text.toString() == buttons[i][2]!!.text.toString() && buttons[i][3]!!.text.toString() != "" && buttons[i][3]!!.text.toString() == "x"
-                        || buttons[i][3]!!.text.toString() == buttons[i][2]!!.text.toString() && buttons[i][3]!!.text.toString() == buttons[i][5]!!.text.toString() && buttons[i][3]!!.text.toString() != "" && buttons[i][3]!!.text.toString() == "x"
-                        || buttons[i][3]!!.text.toString() == buttons[i][6]!!.text.toString() && buttons[i][3]!!.text.toString() == buttons[i][5]!!.text.toString() && buttons[i][3]!!.text.toString() != "" && buttons[i][5]!!.text.toString() == "x"
-                        || buttons[i][5]!!.text.toString() == buttons[i][6]!!.text.toString() && buttons[i][5]!!.text.toString() == buttons[i][7]!!.text.toString() && buttons[i][5]!!.text.toString() != "" && buttons[i][5]!!.text.toString() == "x"
+            } else if ((buttons[i][3]!!.text.toString() == buttons[i][1]!!.text.toString() && buttons[i][3]!!.text.toString() == buttons[i][2]!!.text.toString() && buttons[i][3]!!.text.toString() != "" && buttons[i][3]!!.text.toString() == "x" && buttons[i][5]!!.text.toString() != "o"
+                        || buttons[i][3]!!.text.toString() == buttons[i][2]!!.text.toString() && buttons[i][3]!!.text.toString() == buttons[i][5]!!.text.toString() && buttons[i][3]!!.text.toString() != "" && buttons[i][3]!!.text.toString() == "x" && buttons[i][6]!!.text.toString() != "o"
+                        || buttons[i][3]!!.text.toString() == buttons[i][6]!!.text.toString() && buttons[i][3]!!.text.toString() == buttons[i][5]!!.text.toString() && buttons[i][3]!!.text.toString() != "" && buttons[i][5]!!.text.toString() == "x" && buttons[i][2]!!.text.toString() != "o"
+                        || buttons[i][5]!!.text.toString() == buttons[i][6]!!.text.toString() && buttons[i][5]!!.text.toString() == buttons[i][7]!!.text.toString() && buttons[i][5]!!.text.toString() != "" && buttons[i][5]!!.text.toString() == "x" && buttons[i][3]!!.text.toString() != "o"
                         )
                 && buttons[i][4]!!.text.toString() == ""
                 && buttons[i][4]!!.text.toString() != "x"
@@ -566,9 +557,9 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
                 player1Turn = !player1Turn
                 break
 
-            } else if ((buttons[i][3]!!.text.toString() == buttons[i][4]!!.text.toString() && buttons[i][4]!!.text.toString() == buttons[i][2]!!.text.toString() && buttons[i][4]!!.text.toString() != ""
-                        || buttons[i][6]!!.text.toString() == buttons[i][4]!!.text.toString() && buttons[i][3]!!.text.toString() == buttons[i][4]!!.text.toString() && buttons[i][4]!!.text.toString() != ""
-                        || buttons[i][6]!!.text.toString() == buttons[i][4]!!.text.toString() && buttons[i][7]!!.text.toString() == buttons[i][4]!!.text.toString() && buttons[i][4]!!.text.toString() != ""
+            } else if ((buttons[i][3]!!.text.toString() == buttons[i][4]!!.text.toString() && buttons[i][4]!!.text.toString() == buttons[i][2]!!.text.toString() && buttons[i][4]!!.text.toString() != "" && buttons[i][1]!!.text.toString() != "o"
+                        || buttons[i][6]!!.text.toString() == buttons[i][4]!!.text.toString() && buttons[i][3]!!.text.toString() == buttons[i][4]!!.text.toString() && buttons[i][4]!!.text.toString() != "" && buttons[i][2]!!.text.toString() != "o"
+                        || buttons[i][6]!!.text.toString() == buttons[i][4]!!.text.toString() && buttons[i][7]!!.text.toString() == buttons[i][4]!!.text.toString() && buttons[i][4]!!.text.toString() != "" && buttons[i][3]!!.text.toString() != "o"
                         )
                 && buttons[i][4]!!.text.toString() == "x"
                 && buttons[i][5]!!.text.toString() == ""
@@ -583,8 +574,8 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
                 player1Turn = !player1Turn
                 break
 
-            } else if ((buttons[i][3]!!.text.toString() == buttons[i][4]!!.text.toString() && buttons[i][4]!!.text.toString() == buttons[i][5]!!.text.toString() && buttons[i][4]!!.text.toString() != ""
-                        || buttons[i][7]!!.text.toString() == buttons[i][4]!!.text.toString() && buttons[i][5]!!.text.toString() == buttons[i][4]!!.text.toString() && buttons[i][4]!!.text.toString() != ""
+            } else if ((buttons[i][3]!!.text.toString() == buttons[i][4]!!.text.toString() && buttons[i][4]!!.text.toString() == buttons[i][5]!!.text.toString() && buttons[i][4]!!.text.toString() != "" && buttons[i][2]!!.text.toString() != "o"
+                        || buttons[i][7]!!.text.toString() == buttons[i][4]!!.text.toString() && buttons[i][5]!!.text.toString() == buttons[i][4]!!.text.toString() && buttons[i][4]!!.text.toString() != "" && buttons[i][3]!!.text.toString() != "o"
                         )
                 && buttons[i][4]!!.text.toString() == "x"
                 && buttons[i][6]!!.text.toString() == ""
@@ -599,7 +590,7 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
                 player1Turn = !player1Turn
                 break
 
-            } else if ((buttons[i][6]!!.text.toString() == buttons[i][4]!!.text.toString() && buttons[i][4]!!.text.toString() == buttons[i][5]!!.text.toString() && buttons[i][4]!!.text.toString() != ""
+            } else if ((buttons[i][6]!!.text.toString() == buttons[i][4]!!.text.toString() && buttons[i][4]!!.text.toString() == buttons[i][5]!!.text.toString() && buttons[i][4]!!.text.toString() != "" && buttons[i][3]!!.text.toString() != "o"
                         )
                 && buttons[i][4]!!.text.toString() == "x"
                 && buttons[i][7]!!.text.toString() == ""
@@ -618,7 +609,7 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
 
             /******************************* Vertical Lines********************************/
 
-            else if ((buttons[1][i]!!.text.toString() == buttons[2][i]!!.text.toString() && buttons[1][i]!!.text.toString() == buttons[3][i]!!.text.toString() && buttons[1][i]!!.text.toString() != "")
+            else if ((buttons[1][i]!!.text.toString() == buttons[2][i]!!.text.toString() && buttons[1][i]!!.text.toString() == buttons[3][i]!!.text.toString() && buttons[1][i]!!.text.toString() != "" && buttons[4][i]!!.text.toString() != "o")
                 && buttons[1][i]!!.text.toString() == "x"
                 && buttons[0][i]!!.text.toString() == ""
                 && buttons[0][i]!!.text.toString() != "x"
@@ -629,8 +620,8 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
                 player1Turn = !player1Turn
                 break
 
-            } else if ((buttons[3][i]!!.text.toString() == buttons[2][i]!!.text.toString() && buttons[4][i]!!.text.toString() == buttons[3][i]!!.text.toString() && buttons[3][i]!!.text.toString() != ""
-                        || buttons[3][i]!!.text.toString() == buttons[2][i]!!.text.toString() && buttons[3][i]!!.text.toString() == buttons[0][i]!!.text.toString() && buttons[3][i]!!.text.toString() != "")
+            } else if ((buttons[3][i]!!.text.toString() == buttons[2][i]!!.text.toString() && buttons[4][i]!!.text.toString() == buttons[3][i]!!.text.toString() && buttons[3][i]!!.text.toString() != "" && buttons[5][i]!!.text.toString() != "o"
+                        || buttons[3][i]!!.text.toString() == buttons[2][i]!!.text.toString() && buttons[3][i]!!.text.toString() == buttons[0][i]!!.text.toString() && buttons[3][i]!!.text.toString() != "" && buttons[4][i]!!.text.toString() != "o")
                 && buttons[3][i]!!.text.toString() == "x"
                 && buttons[1][i]!!.text.toString() == ""
                 && buttons[1][i]!!.text.toString() != "x"
@@ -644,9 +635,9 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
                 player1Turn = !player1Turn
                 break
 
-            } else if ((buttons[3][i]!!.text.toString() == buttons[1][i]!!.text.toString() && buttons[0][i]!!.text.toString() == buttons[3][i]!!.text.toString() && buttons[3][i]!!.text.toString() != ""
-                        || buttons[3][i]!!.text.toString() == buttons[1][i]!!.text.toString() && buttons[3][i]!!.text.toString() == buttons[4][i]!!.text.toString() && buttons[3][i]!!.text.toString() != ""
-                        || buttons[3][i]!!.text.toString() == buttons[4][i]!!.text.toString() && buttons[3][i]!!.text.toString() == buttons[5][i]!!.text.toString() && buttons[3][i]!!.text.toString() != ""
+            } else if ((buttons[3][i]!!.text.toString() == buttons[1][i]!!.text.toString() && buttons[0][i]!!.text.toString() == buttons[3][i]!!.text.toString() && buttons[3][i]!!.text.toString() != "" && buttons[4][i]!!.text.toString() != "o"
+                        || buttons[3][i]!!.text.toString() == buttons[1][i]!!.text.toString() && buttons[3][i]!!.text.toString() == buttons[4][i]!!.text.toString() && buttons[3][i]!!.text.toString() != "" && buttons[5][i]!!.text.toString() != "o"
+                        || buttons[3][i]!!.text.toString() == buttons[4][i]!!.text.toString() && buttons[3][i]!!.text.toString() == buttons[5][i]!!.text.toString() && buttons[3][i]!!.text.toString() != "" && buttons[6][i]!!.text.toString() != "o"
                         )
                 && buttons[3][i]!!.text.toString() == "x"
                 && buttons[2][i]!!.text.toString() == ""
@@ -661,10 +652,10 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
                 player1Turn = !player1Turn
                 break
 
-            } else if ((buttons[0][i]!!.text.toString() == buttons[1][i]!!.text.toString() && buttons[1][i]!!.text.toString() == buttons[2][i]!!.text.toString() && buttons[1][i]!!.text.toString() != "" && buttons[1][i]!!.text.toString() == "x"
-                        || buttons[4][i]!!.text.toString() == buttons[1][i]!!.text.toString() && buttons[1][i]!!.text.toString() == buttons[2][i]!!.text.toString() && buttons[1][i]!!.text.toString() != "" && buttons[1][i]!!.text.toString() == "x"
-                        || buttons[5][i]!!.text.toString() == buttons[4][i]!!.text.toString() && buttons[4][i]!!.text.toString() == buttons[6][i]!!.text.toString() && buttons[4][i]!!.text.toString() != "" && buttons[4][i]!!.text.toString() == "x"
-                        || buttons[5][i]!!.text.toString() == buttons[4][i]!!.text.toString() && buttons[4][i]!!.text.toString() == buttons[2][i]!!.text.toString() && buttons[4][i]!!.text.toString() != "" && buttons[4][i]!!.text.toString() == "x"
+            } else if ((buttons[0][i]!!.text.toString() == buttons[1][i]!!.text.toString() && buttons[1][i]!!.text.toString() == buttons[2][i]!!.text.toString() && buttons[1][i]!!.text.toString() != "" && buttons[1][i]!!.text.toString() == "x" && buttons[4][i]!!.text.toString() != "o"
+                        || buttons[4][i]!!.text.toString() == buttons[1][i]!!.text.toString() && buttons[1][i]!!.text.toString() == buttons[2][i]!!.text.toString() && buttons[1][i]!!.text.toString() != "" && buttons[1][i]!!.text.toString() == "x" && buttons[0][i]!!.text.toString() != "o"
+                        || buttons[5][i]!!.text.toString() == buttons[4][i]!!.text.toString() && buttons[4][i]!!.text.toString() == buttons[6][i]!!.text.toString() && buttons[4][i]!!.text.toString() != "" && buttons[4][i]!!.text.toString() == "x" && buttons[7][i]!!.text.toString() != "o"
+                        || buttons[5][i]!!.text.toString() == buttons[4][i]!!.text.toString() && buttons[4][i]!!.text.toString() == buttons[2][i]!!.text.toString() && buttons[4][i]!!.text.toString() != "" && buttons[4][i]!!.text.toString() == "x" && buttons[6][i]!!.text.toString() != "o"
                         )
                 && buttons[3][i]!!.text.toString() == ""
                 && buttons[3][i]!!.text.toString() != "x"
@@ -678,10 +669,10 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
                 player1Turn = !player1Turn
                 break
 
-            } else if ((buttons[3][i]!!.text.toString() == buttons[1][i]!!.text.toString() && buttons[3][i]!!.text.toString() == buttons[2][i]!!.text.toString() && buttons[3][i]!!.text.toString() != "" && buttons[3][i]!!.text.toString() == "x"
-                        || buttons[3][i]!!.text.toString() == buttons[2][i]!!.text.toString() && buttons[3][i]!!.text.toString() == buttons[5][i]!!.text.toString() && buttons[3][i]!!.text.toString() != "" && buttons[3][i]!!.text.toString() == "x"
-                        || buttons[3][i]!!.text.toString() == buttons[6][i]!!.text.toString() && buttons[3][i]!!.text.toString() == buttons[5][i]!!.text.toString() && buttons[3][i]!!.text.toString() != "" && buttons[3][i]!!.text.toString() == "x"
-                        || buttons[5][i]!!.text.toString() == buttons[6][i]!!.text.toString() && buttons[5][i]!!.text.toString() == buttons[7][i]!!.text.toString() && buttons[5][i]!!.text.toString() != "" && buttons[5][i]!!.text.toString() == "x"
+            } else if ((buttons[3][i]!!.text.toString() == buttons[1][i]!!.text.toString() && buttons[3][i]!!.text.toString() == buttons[2][i]!!.text.toString() && buttons[3][i]!!.text.toString() != "" && buttons[3][i]!!.text.toString() == "x" && buttons[0][i]!!.text.toString() != "o"
+                        || buttons[3][i]!!.text.toString() == buttons[2][i]!!.text.toString() && buttons[3][i]!!.text.toString() == buttons[5][i]!!.text.toString() && buttons[3][i]!!.text.toString() != "" && buttons[3][i]!!.text.toString() == "x" && buttons[1][i]!!.text.toString() != "o"
+                        || buttons[3][i]!!.text.toString() == buttons[6][i]!!.text.toString() && buttons[3][i]!!.text.toString() == buttons[5][i]!!.text.toString() && buttons[3][i]!!.text.toString() != "" && buttons[3][i]!!.text.toString() == "x" && buttons[7][i]!!.text.toString() != "o"
+                        || buttons[5][i]!!.text.toString() == buttons[6][i]!!.text.toString() && buttons[5][i]!!.text.toString() == buttons[7][i]!!.text.toString() && buttons[5][i]!!.text.toString() != "" && buttons[5][i]!!.text.toString() == "x" && buttons[3][i]!!.text.toString() != "o"
                         )
                 && buttons[4][i]!!.text.toString() == ""
                 && buttons[4][i]!!.text.toString() != "x"
@@ -695,9 +686,9 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
                 player1Turn = !player1Turn
                 break
 
-            } else if ((buttons[3][i]!!.text.toString() == buttons[4][i]!!.text.toString() && buttons[4][i]!!.text.toString() == buttons[2][i]!!.text.toString() && buttons[4][i]!!.text.toString() != ""
-                        || buttons[6][i]!!.text.toString() == buttons[4][i]!!.text.toString() && buttons[3][i]!!.text.toString() == buttons[4][i]!!.text.toString() && buttons[4][i]!!.text.toString() != ""
-                        || buttons[6][i]!!.text.toString() == buttons[4][i]!!.text.toString() && buttons[7][i]!!.text.toString() == buttons[4][i]!!.text.toString() && buttons[4][i]!!.text.toString() != ""
+            } else if ((buttons[3][i]!!.text.toString() == buttons[4][i]!!.text.toString() && buttons[4][i]!!.text.toString() == buttons[2][i]!!.text.toString() && buttons[4][i]!!.text.toString() != "" && buttons[1][i]!!.text.toString() != "o"
+                        || buttons[6][i]!!.text.toString() == buttons[4][i]!!.text.toString() && buttons[3][i]!!.text.toString() == buttons[4][i]!!.text.toString() && buttons[4][i]!!.text.toString() != "" && buttons[2][i]!!.text.toString() != "o"
+                        || buttons[6][i]!!.text.toString() == buttons[4][i]!!.text.toString() && buttons[7][i]!!.text.toString() == buttons[4][i]!!.text.toString() && buttons[4][i]!!.text.toString() != "" && buttons[3][i]!!.text.toString() != "o"
                         )
                 && buttons[4][i]!!.text.toString() == "x"
                 && buttons[5][i]!!.text.toString() == ""
@@ -712,8 +703,8 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
                 player1Turn = !player1Turn
                 break
 
-            } else if ((buttons[3][i]!!.text.toString() == buttons[4][i]!!.text.toString() && buttons[4][i]!!.text.toString() == buttons[5][i]!!.text.toString() && buttons[4][i]!!.text.toString() != ""
-                        || buttons[7][i]!!.text.toString() == buttons[4][i]!!.text.toString() && buttons[5][i]!!.text.toString() == buttons[4][i]!!.text.toString() && buttons[4][i]!!.text.toString() != ""
+            } else if ((buttons[3][i]!!.text.toString() == buttons[4][i]!!.text.toString() && buttons[4][i]!!.text.toString() == buttons[5][i]!!.text.toString() && buttons[4][i]!!.text.toString() != "" && buttons[2][i]!!.text.toString() != "o"
+                        || buttons[7][i]!!.text.toString() == buttons[4][i]!!.text.toString() && buttons[5][i]!!.text.toString() == buttons[4][i]!!.text.toString() && buttons[4][i]!!.text.toString() != "" && buttons[3][i]!!.text.toString() != "o"
                         )
                 && buttons[4][i]!!.text.toString() == "x"
                 && buttons[6][i]!!.text.toString() == ""
@@ -728,7 +719,7 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
                 player1Turn = !player1Turn
                 break
 
-            } else if ((buttons[6][i]!!.text.toString() == buttons[4][i]!!.text.toString() && buttons[4][i]!!.text.toString() == buttons[5][i]!!.text.toString() && buttons[4][i]!!.text.toString() != "")
+            } else if ((buttons[6][i]!!.text.toString() == buttons[4][i]!!.text.toString() && buttons[4][i]!!.text.toString() == buttons[5][i]!!.text.toString() && buttons[4][i]!!.text.toString() != "" && buttons[3][i]!!.text.toString() != "o")
                 && buttons[4][i]!!.text.toString() == "x"
                 && buttons[7][i]!!.text.toString() == ""
                 && buttons[7][i]!!.text.toString() != "x"
@@ -747,10 +738,10 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
     }
 
     // check for x from TopLift to BottomRight to prevent get 4 X in row
-    /*** Done***/
+    /*** Done ***/
     private fun topLiftBottomRightX() {
         /****************************-1-********************************/
-        if ((buttons[1][4]!!.text.toString() == buttons[2][5]!!.text.toString() && buttons[1][4]!!.text.toString() == buttons[3][6]!!.text.toString() && buttons[1][4]!!.text.toString() != "")
+        if ((buttons[1][4]!!.text.toString() == buttons[2][5]!!.text.toString() && buttons[1][4]!!.text.toString() == buttons[3][6]!!.text.toString() && buttons[1][4]!!.text.toString() != "" && buttons[4][7]!!.text.toString() != "o")
             && buttons[1][4]!!.text.toString() == "x"
             && buttons[0][3]!!.text.toString() == ""
             && buttons[0][3]!!.text.toString() != "x"
@@ -760,8 +751,8 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
             buttons[0][3]?.setText("o")!!
             player1Turn = !player1Turn
 
-        } else if ((buttons[0][3]!!.text.toString() == buttons[2][5]!!.text.toString() && buttons[2][5]!!.text.toString() == buttons[3][6]!!.text.toString() && buttons[2][5]!!.text.toString() != ""
-                    || buttons[4][7]!!.text.toString() == buttons[2][5]!!.text.toString() && buttons[2][5]!!.text.toString() == buttons[3][6]!!.text.toString() && buttons[2][5]!!.text.toString() != ""
+        } else if ((buttons[0][3]!!.text.toString() == buttons[2][5]!!.text.toString() && buttons[2][5]!!.text.toString() == buttons[3][6]!!.text.toString() && buttons[2][5]!!.text.toString() != "" //&& buttons[4][7]!!.text.toString() != "o"
+                    || buttons[4][7]!!.text.toString() == buttons[2][5]!!.text.toString() && buttons[2][5]!!.text.toString() == buttons[3][6]!!.text.toString() && buttons[2][5]!!.text.toString() != "" //&& buttons[0][3]!!.text.toString() != "o"
                     )
             && buttons[2][5]!!.text.toString() == "x"
             && buttons[1][4]!!.text.toString() == ""
@@ -772,8 +763,8 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
             buttons[1][4]?.setText("o")!!
             player1Turn = !player1Turn
 
-        } else if ((buttons[3][6]!!.text.toString() == buttons[1][4]!!.text.toString() && buttons[0][3]!!.text.toString() == buttons[3][6]!!.text.toString() && buttons[3][6]!!.text.toString() != ""
-                    || buttons[4][7]!!.text.toString() == buttons[3][6]!!.text.toString() && buttons[1][4]!!.text.toString() == buttons[3][6]!!.text.toString() && buttons[3][6]!!.text.toString() != ""
+        } else if ((buttons[3][6]!!.text.toString() == buttons[1][4]!!.text.toString() && buttons[0][3]!!.text.toString() == buttons[3][6]!!.text.toString() && buttons[3][6]!!.text.toString() != "" //&& buttons[4][7]!!.text.toString() != "o"
+                    || buttons[4][7]!!.text.toString() == buttons[3][6]!!.text.toString() && buttons[1][4]!!.text.toString() == buttons[3][6]!!.text.toString() && buttons[3][6]!!.text.toString() != "" //&& buttons[0][3]!!.text.toString() != "o"
                     )
             && buttons[3][6]!!.text.toString() == "x"
             && buttons[2][5]!!.text.toString() == ""
@@ -784,8 +775,8 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
             buttons[2][5]?.setText("o")!!
             player1Turn = !player1Turn
 
-        } else if ((buttons[0][3]!!.text.toString() == buttons[2][5]!!.text.toString() && buttons[2][5]!!.text.toString() == buttons[1][4]!!.text.toString() && buttons[2][5]!!.text.toString() != ""
-                    || buttons[4][7]!!.text.toString() == buttons[2][5]!!.text.toString() && buttons[2][5]!!.text.toString() == buttons[1][4]!!.text.toString() && buttons[2][5]!!.text.toString() != ""
+        } else if ((buttons[0][3]!!.text.toString() == buttons[2][5]!!.text.toString() && buttons[2][5]!!.text.toString() == buttons[1][4]!!.text.toString() && buttons[2][5]!!.text.toString() != "" //&& buttons[4][7]!!.text.toString() != "o"
+                    || buttons[4][7]!!.text.toString() == buttons[2][5]!!.text.toString() && buttons[2][5]!!.text.toString() == buttons[1][4]!!.text.toString() && buttons[2][5]!!.text.toString() != "" //&& buttons[0][3]!!.text.toString() != "o"
                     )
             && buttons[2][5]!!.text.toString() == "x"
             && buttons[3][6]!!.text.toString() == ""
@@ -796,7 +787,7 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
             buttons[3][6]?.setText("o")!!
             player1Turn = !player1Turn
 
-        } else if ((buttons[3][6]!!.text.toString() == buttons[2][5]!!.text.toString() && buttons[2][5]!!.text.toString() == buttons[1][4]!!.text.toString() && buttons[2][5]!!.text.toString() != "")
+        } else if ((buttons[3][6]!!.text.toString() == buttons[2][5]!!.text.toString() && buttons[2][5]!!.text.toString() == buttons[1][4]!!.text.toString() && buttons[2][5]!!.text.toString() != "" && buttons[0][3]!!.text.toString() != "o")
             && buttons[2][5]!!.text.toString() == "x"
             && buttons[4][7]!!.text.toString() == ""
             && buttons[4][7]!!.text.toString() != "x"
@@ -808,7 +799,7 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
 
         }
         /*****************************-2-*******************************/
-        else if ((buttons[1][3]!!.text.toString() == buttons[2][4]!!.text.toString() && buttons[1][3]!!.text.toString() == buttons[3][5]!!.text.toString() && buttons[1][3]!!.text.toString() != "")
+        else if ((buttons[1][3]!!.text.toString() == buttons[2][4]!!.text.toString() && buttons[1][3]!!.text.toString() == buttons[3][5]!!.text.toString() && buttons[1][3]!!.text.toString() != "" && buttons[4][6]!!.text.toString() != "o")
             && buttons[1][3]!!.text.toString() == "x"
             && buttons[0][2]!!.text.toString() == ""
             && buttons[0][2]!!.text.toString() != "x"
@@ -818,8 +809,8 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
             buttons[0][2]?.setText("o")!!
             player1Turn = !player1Turn
 
-        } else if ((buttons[2][4]!!.text.toString() == buttons[0][2]!!.text.toString() && buttons[2][4]!!.text.toString() == buttons[3][5]!!.text.toString() && buttons[2][4]!!.text.toString() != ""
-                    || buttons[2][4]!!.text.toString() == buttons[4][6]!!.text.toString() && buttons[2][4]!!.text.toString() == buttons[3][5]!!.text.toString() && buttons[2][4]!!.text.toString() != "")
+        } else if ((buttons[2][4]!!.text.toString() == buttons[0][2]!!.text.toString() && buttons[2][4]!!.text.toString() == buttons[3][5]!!.text.toString() && buttons[2][4]!!.text.toString() != "" //&& buttons[4][6]!!.text.toString() != "o"
+                    || buttons[2][4]!!.text.toString() == buttons[4][6]!!.text.toString() && buttons[2][4]!!.text.toString() == buttons[3][5]!!.text.toString() && buttons[2][4]!!.text.toString() != "" && buttons[5][7]!!.text.toString() != "o")
             && buttons[2][4]!!.text.toString() == "x"
             && buttons[1][3]!!.text.toString() == ""
             && buttons[1][3]!!.text.toString() != "x"
@@ -829,9 +820,9 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
             buttons[1][3]?.setText("o")!!
             player1Turn = !player1Turn
 
-        } else if ((buttons[3][5]!!.text.toString() == buttons[1][3]!!.text.toString() && buttons[3][5]!!.text.toString() == buttons[0][2]!!.text.toString() && buttons[3][5]!!.text.toString() != ""
-                    || buttons[3][5]!!.text.toString() == buttons[1][3]!!.text.toString() && buttons[3][5]!!.text.toString() == buttons[4][6]!!.text.toString() && buttons[3][5]!!.text.toString() != ""
-                    || buttons[3][5]!!.text.toString() == buttons[5][7]!!.text.toString() && buttons[3][5]!!.text.toString() == buttons[4][6]!!.text.toString() && buttons[3][5]!!.text.toString() != ""
+        } else if ((buttons[3][5]!!.text.toString() == buttons[1][3]!!.text.toString() && buttons[3][5]!!.text.toString() == buttons[0][2]!!.text.toString() && buttons[3][5]!!.text.toString() != "" //&& buttons[4][6]!!.text.toString() != "o"
+                    || buttons[3][5]!!.text.toString() == buttons[1][3]!!.text.toString() && buttons[3][5]!!.text.toString() == buttons[4][6]!!.text.toString() && buttons[3][5]!!.text.toString() != "" //&& buttons[5][7]!!.text.toString() != "o"
+                    || buttons[3][5]!!.text.toString() == buttons[5][7]!!.text.toString() && buttons[3][5]!!.text.toString() == buttons[4][6]!!.text.toString() && buttons[3][5]!!.text.toString() != "" //&& buttons[1][3]!!.text.toString() != "o"
                     )
             && buttons[3][5]!!.text.toString() == "x"
             && buttons[2][4]!!.text.toString() == ""
@@ -842,9 +833,9 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
             buttons[2][4]?.setText("o")!!
             player1Turn = !player1Turn
 
-        } else if ((buttons[0][2]!!.text.toString() == buttons[2][4]!!.text.toString() && buttons[2][4]!!.text.toString() == buttons[1][3]!!.text.toString() && buttons[2][4]!!.text.toString() != ""
-                    || buttons[2][4]!!.text.toString() == buttons[4][6]!!.text.toString() && buttons[2][4]!!.text.toString() == buttons[1][3]!!.text.toString() && buttons[2][4]!!.text.toString() != ""
-                    || buttons[2][4]!!.text.toString() == buttons[4][6]!!.text.toString() && buttons[2][4]!!.text.toString() == buttons[5][7]!!.text.toString() && buttons[2][4]!!.text.toString() != ""
+        } else if ((buttons[0][2]!!.text.toString() == buttons[2][4]!!.text.toString() && buttons[2][4]!!.text.toString() == buttons[1][3]!!.text.toString() && buttons[2][4]!!.text.toString() != "" //&& buttons[4][6]!!.text.toString() != "o"
+                    || buttons[2][4]!!.text.toString() == buttons[4][6]!!.text.toString() && buttons[2][4]!!.text.toString() == buttons[1][3]!!.text.toString() && buttons[2][4]!!.text.toString() != "" //&& buttons[0][2]!!.text.toString() != "o"
+                    || buttons[2][4]!!.text.toString() == buttons[4][6]!!.text.toString() && buttons[2][4]!!.text.toString() == buttons[5][7]!!.text.toString() && buttons[2][4]!!.text.toString() != "" //&& buttons[1][3]!!.text.toString() != "o"
                     )
             && buttons[2][4]!!.text.toString() == "x"
             && buttons[3][5]!!.text.toString() == ""
@@ -855,7 +846,7 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
             buttons[3][5]?.setText("o")!!
             player1Turn = !player1Turn
 
-        } else if ((buttons[3][5]!!.text.toString() == buttons[1][3]!!.text.toString() && buttons[3][5]!!.text.toString() == buttons[2][4]!!.text.toString() && buttons[3][5]!!.text.toString() != ""
+        } else if ((buttons[3][5]!!.text.toString() == buttons[1][3]!!.text.toString() && buttons[3][5]!!.text.toString() == buttons[2][4]!!.text.toString() && buttons[3][5]!!.text.toString() != "" && buttons[0][2]!!.text.toString() != "o"
                     || buttons[3][5]!!.text.toString() == buttons[2][4]!!.text.toString() && buttons[3][5]!!.text.toString() == buttons[5][7]!!.text.toString() && buttons[3][5]!!.text.toString() != ""
                     )
             && buttons[3][5]!!.text.toString() == "x"
@@ -867,7 +858,7 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
             buttons[4][6]?.setText("o")!!
             player1Turn = !player1Turn
 
-        } else if ((buttons[4][6]!!.text.toString() == buttons[3][5]!!.text.toString() && buttons[4][6]!!.text.toString() == buttons[2][4]!!.text.toString() && buttons[4][6]!!.text.toString() != "")
+        } else if ((buttons[4][6]!!.text.toString() == buttons[3][5]!!.text.toString() && buttons[4][6]!!.text.toString() == buttons[2][4]!!.text.toString() && buttons[4][6]!!.text.toString() != "" && buttons[1][3]!!.text.toString() != "o")
             && buttons[4][6]!!.text.toString() == "x"
             && buttons[5][7]!!.text.toString() == ""
             && buttons[5][7]!!.text.toString() != "x"
@@ -880,7 +871,7 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
         }
 
         /*************************-3-**************************/
-        else if ((buttons[1][2]!!.text.toString() == buttons[2][3]!!.text.toString() && buttons[1][2]!!.text.toString() == buttons[3][4]!!.text.toString() && buttons[1][2]!!.text.toString() != "")
+        else if ((buttons[1][2]!!.text.toString() == buttons[2][3]!!.text.toString() && buttons[1][2]!!.text.toString() == buttons[3][4]!!.text.toString() && buttons[1][2]!!.text.toString() != "" && buttons[4][5]!!.text.toString() != "o")
             && buttons[1][2]!!.text.toString() == "x"
             && buttons[0][1]!!.text.toString() == ""
             && buttons[0][1]!!.text.toString() != "x"
@@ -891,7 +882,7 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
             player1Turn = !player1Turn
 
         } else if ((buttons[2][3]!!.text.toString() == buttons[0][1]!!.text.toString() && buttons[2][3]!!.text.toString() == buttons[3][4]!!.text.toString() && buttons[2][3]!!.text.toString() != ""
-                    || buttons[2][3]!!.text.toString() == buttons[4][5]!!.text.toString() && buttons[2][3]!!.text.toString() == buttons[3][4]!!.text.toString() && buttons[2][3]!!.text.toString() != "")
+                    || buttons[2][3]!!.text.toString() == buttons[4][5]!!.text.toString() && buttons[2][3]!!.text.toString() == buttons[3][4]!!.text.toString() && buttons[2][3]!!.text.toString() != "" && buttons[5][6]!!.text.toString() != "o")
             && buttons[2][3]!!.text.toString() == "x"
             && buttons[1][2]!!.text.toString() == ""
             && buttons[1][2]!!.text.toString() != "x"
@@ -903,7 +894,7 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
 
         } else if ((buttons[3][4]!!.text.toString() == buttons[1][2]!!.text.toString() && buttons[3][4]!!.text.toString() == buttons[0][1]!!.text.toString() && buttons[3][4]!!.text.toString() != ""
                     || buttons[3][4]!!.text.toString() == buttons[1][2]!!.text.toString() && buttons[3][4]!!.text.toString() == buttons[4][5]!!.text.toString() && buttons[3][4]!!.text.toString() != ""
-                    || buttons[3][4]!!.text.toString() == buttons[5][6]!!.text.toString() && buttons[3][4]!!.text.toString() == buttons[4][5]!!.text.toString() && buttons[3][4]!!.text.toString() != ""
+                    || buttons[3][4]!!.text.toString() == buttons[5][6]!!.text.toString() && buttons[3][4]!!.text.toString() == buttons[4][5]!!.text.toString() && buttons[3][4]!!.text.toString() != "" && buttons[6][7]!!.text.toString() != "o"
                     )
             && buttons[3][4]!!.text.toString() == "x"
             && buttons[2][3]!!.text.toString() == ""
@@ -927,7 +918,7 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
             buttons[3][4]?.setText("o")!!
             player1Turn = !player1Turn
 
-        } else if ((buttons[3][4]!!.text.toString() == buttons[1][2]!!.text.toString() && buttons[3][4]!!.text.toString() == buttons[2][3]!!.text.toString() && buttons[3][4]!!.text.toString() != ""
+        } else if ((buttons[3][4]!!.text.toString() == buttons[1][2]!!.text.toString() && buttons[3][4]!!.text.toString() == buttons[2][3]!!.text.toString() && buttons[3][4]!!.text.toString() != "" && buttons[0][1]!!.text.toString() != "o"
                     || buttons[3][4]!!.text.toString() == buttons[2][3]!!.text.toString() && buttons[3][4]!!.text.toString() == buttons[5][6]!!.text.toString() && buttons[3][4]!!.text.toString() != ""
                     || buttons[3][4]!!.text.toString() == buttons[6][7]!!.text.toString() && buttons[3][4]!!.text.toString() == buttons[5][6]!!.text.toString() && buttons[3][4]!!.text.toString() != ""
                     )
@@ -940,7 +931,7 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
             buttons[4][5]?.setText("o")!!
             player1Turn = !player1Turn
 
-        } else if ((buttons[3][4]!!.text.toString() == buttons[4][5]!!.text.toString() && buttons[3][4]!!.text.toString() == buttons[2][3]!!.text.toString() && buttons[3][4]!!.text.toString() != ""
+        } else if ((buttons[3][4]!!.text.toString() == buttons[4][5]!!.text.toString() && buttons[3][4]!!.text.toString() == buttons[2][3]!!.text.toString() && buttons[3][4]!!.text.toString() != "" && buttons[1][2]!!.text.toString() != "o"
                     || buttons[3][4]!!.text.toString() == buttons[4][5]!!.text.toString() && buttons[3][4]!!.text.toString() == buttons[6][7]!!.text.toString() && buttons[3][4]!!.text.toString() != ""
                     )
             && buttons[3][4]!!.text.toString() == "x"
@@ -952,7 +943,7 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
             buttons[5][6]?.setText("o")!!
             player1Turn = !player1Turn
 
-        } else if ((buttons[4][5]!!.text.toString() == buttons[3][4]!!.text.toString() && buttons[5][6]!!.text.toString() == buttons[3][4]!!.text.toString() && buttons[3][4]!!.text.toString() != "")
+        } else if ((buttons[4][5]!!.text.toString() == buttons[3][4]!!.text.toString() && buttons[5][6]!!.text.toString() == buttons[3][4]!!.text.toString() && buttons[3][4]!!.text.toString() != "" && buttons[2][3]!!.text.toString() != "o")
             && buttons[3][4]!!.text.toString() == "x"
             && buttons[6][7]!!.text.toString() == ""
             && buttons[6][7]!!.text.toString() != "x"
@@ -966,7 +957,7 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
 
         /*************************-4-***************************/
 
-        else if ((buttons[1][1]!!.text.toString() == buttons[2][2]!!.text.toString() && buttons[1][1]!!.text.toString() == buttons[3][3]!!.text.toString() && buttons[1][1]!!.text.toString() != "")
+        else if ((buttons[1][1]!!.text.toString() == buttons[2][2]!!.text.toString() && buttons[1][1]!!.text.toString() == buttons[3][3]!!.text.toString() && buttons[1][1]!!.text.toString() != "" && buttons[4][4]!!.text.toString() != "o")
             && buttons[1][1]!!.text.toString() == "x"
             && buttons[0][0]!!.text.toString() == ""
             && buttons[0][0]!!.text.toString() != "x"
@@ -977,7 +968,7 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
             player1Turn = !player1Turn
 
         } else if ((buttons[3][3]!!.text.toString() == buttons[2][2]!!.text.toString() && buttons[0][0]!!.text.toString() == buttons[3][3]!!.text.toString() && buttons[3][3]!!.text.toString() != ""
-                    || buttons[3][3]!!.text.toString() == buttons[2][2]!!.text.toString() && buttons[4][4]!!.text.toString() == buttons[3][3]!!.text.toString() && buttons[3][3]!!.text.toString() != ""
+                    || buttons[3][3]!!.text.toString() == buttons[2][2]!!.text.toString() && buttons[4][4]!!.text.toString() == buttons[3][3]!!.text.toString() && buttons[3][3]!!.text.toString() != "" && buttons[5][5]!!.text.toString() != "o"
                     )
             && buttons[3][3]!!.text.toString() == "x"
             && buttons[1][1]!!.text.toString() == ""
@@ -990,7 +981,7 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
 
         } else if ((buttons[3][3]!!.text.toString() == buttons[1][1]!!.text.toString() && buttons[0][0]!!.text.toString() == buttons[3][3]!!.text.toString() && buttons[3][3]!!.text.toString() != ""
                     || buttons[3][3]!!.text.toString() == buttons[4][4]!!.text.toString() && buttons[1][1]!!.text.toString() == buttons[3][3]!!.text.toString() && buttons[3][3]!!.text.toString() != ""
-                    || buttons[3][3]!!.text.toString() == buttons[4][4]!!.text.toString() && buttons[5][5]!!.text.toString() == buttons[3][3]!!.text.toString() && buttons[3][3]!!.text.toString() != ""
+                    || buttons[3][3]!!.text.toString() == buttons[4][4]!!.text.toString() && buttons[5][5]!!.text.toString() == buttons[3][3]!!.text.toString() && buttons[3][3]!!.text.toString() != "" && buttons[6][6]!!.text.toString() != "o"
                     )
             && buttons[3][3]!!.text.toString() == "x"
             && buttons[2][2]!!.text.toString() == ""
@@ -1004,7 +995,7 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
         } else if ((buttons[2][2]!!.text.toString() == buttons[1][1]!!.text.toString() && buttons[0][0]!!.text.toString() == buttons[2][2]!!.text.toString() && buttons[2][2]!!.text.toString() != "" && buttons[2][2]!!.text.toString() == "x"
                     || buttons[2][2]!!.text.toString() == buttons[4][4]!!.text.toString() && buttons[1][1]!!.text.toString() == buttons[2][2]!!.text.toString() && buttons[2][2]!!.text.toString() != "" && buttons[2][2]!!.text.toString() == "x"
                     || buttons[2][2]!!.text.toString() == buttons[4][4]!!.text.toString() && buttons[5][5]!!.text.toString() == buttons[2][2]!!.text.toString() && buttons[2][2]!!.text.toString() != "" && buttons[2][2]!!.text.toString() == "x"
-                    || buttons[5][5]!!.text.toString() == buttons[4][4]!!.text.toString() && buttons[5][5]!!.text.toString() == buttons[6][6]!!.text.toString() && buttons[6][6]!!.text.toString() != "" && buttons[6][6]!!.text.toString() == "x"
+                    || buttons[5][5]!!.text.toString() == buttons[4][4]!!.text.toString() && buttons[5][5]!!.text.toString() == buttons[6][6]!!.text.toString() && buttons[6][6]!!.text.toString() != "" && buttons[6][6]!!.text.toString() == "x" && buttons[7][7]!!.text.toString() != "o"
                     )
             && buttons[3][3]!!.text.toString() == ""
             && buttons[3][3]!!.text.toString() != "x"
@@ -1014,7 +1005,7 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
             buttons[3][3]?.setText("o")!!
             player1Turn = !player1Turn
 
-        } else if ((buttons[2][2]!!.text.toString() == buttons[1][1]!!.text.toString() && buttons[3][3]!!.text.toString() == buttons[2][2]!!.text.toString() && buttons[2][2]!!.text.toString() != "" && buttons[2][2]!!.text.toString() == "x"
+        } else if ((buttons[2][2]!!.text.toString() == buttons[1][1]!!.text.toString() && buttons[3][3]!!.text.toString() == buttons[2][2]!!.text.toString() && buttons[2][2]!!.text.toString() != "" && buttons[2][2]!!.text.toString() == "x" && buttons[0][0]!!.text.toString() != "o"
                     || buttons[2][2]!!.text.toString() == buttons[3][3]!!.text.toString() && buttons[5][5]!!.text.toString() == buttons[2][2]!!.text.toString() && buttons[2][2]!!.text.toString() != "" && buttons[2][2]!!.text.toString() == "x"
                     || buttons[5][5]!!.text.toString() == buttons[6][6]!!.text.toString() && buttons[5][5]!!.text.toString() == buttons[3][3]!!.text.toString() && buttons[5][5]!!.text.toString() != "" && buttons[5][5]!!.text.toString() == "x"
                     || buttons[5][5]!!.text.toString() == buttons[6][6]!!.text.toString() && buttons[5][5]!!.text.toString() == buttons[7][7]!!.text.toString() && buttons[5][5]!!.text.toString() != "" && buttons[5][5]!!.text.toString() == "x"
@@ -1027,7 +1018,7 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
             buttons[4][4]?.setText("o")!!
             player1Turn = !player1Turn
 
-        } else if ((buttons[2][2]!!.text.toString() == buttons[4][4]!!.text.toString() && buttons[4][4]!!.text.toString() == buttons[3][3]!!.text.toString() && buttons[4][4]!!.text.toString() != ""
+        } else if ((buttons[2][2]!!.text.toString() == buttons[4][4]!!.text.toString() && buttons[4][4]!!.text.toString() == buttons[3][3]!!.text.toString() && buttons[4][4]!!.text.toString() != "" && buttons[1][1]!!.text.toString() != "o"
                     || buttons[6][6]!!.text.toString() == buttons[4][4]!!.text.toString() && buttons[4][4]!!.text.toString() == buttons[3][3]!!.text.toString() && buttons[4][4]!!.text.toString() != ""
                     || buttons[6][6]!!.text.toString() == buttons[4][4]!!.text.toString() && buttons[4][4]!!.text.toString() == buttons[7][7]!!.text.toString() && buttons[4][4]!!.text.toString() != ""
                     )
@@ -1040,7 +1031,7 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
             buttons[5][5]?.setText("o")!!
             player1Turn = !player1Turn
 
-        } else if ((buttons[5][5]!!.text.toString() == buttons[4][4]!!.text.toString() && buttons[4][4]!!.text.toString() == buttons[3][3]!!.text.toString() && buttons[4][4]!!.text.toString() != ""
+        } else if ((buttons[5][5]!!.text.toString() == buttons[4][4]!!.text.toString() && buttons[4][4]!!.text.toString() == buttons[3][3]!!.text.toString() && buttons[4][4]!!.text.toString() != "" && buttons[2][2]!!.text.toString() != "o"
                     || buttons[5][5]!!.text.toString() == buttons[4][4]!!.text.toString() && buttons[4][4]!!.text.toString() == buttons[7][7]!!.text.toString() && buttons[4][4]!!.text.toString() != ""
                     )
             && buttons[4][4]!!.text.toString() == "x"
@@ -1052,7 +1043,7 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
             buttons[6][6]?.setText("o")!!
             player1Turn = !player1Turn
 
-        } else if ((buttons[5][5]!!.text.toString() == buttons[4][4]!!.text.toString() && buttons[4][4]!!.text.toString() == buttons[6][6]!!.text.toString() && buttons[4][4]!!.text.toString() != "")
+        } else if ((buttons[5][5]!!.text.toString() == buttons[4][4]!!.text.toString() && buttons[4][4]!!.text.toString() == buttons[6][6]!!.text.toString() && buttons[4][4]!!.text.toString() != "" && buttons[3][3]!!.text.toString() != "o")
             && buttons[4][4]!!.text.toString() == "x"
             && buttons[7][7]!!.text.toString() == ""
             && buttons[7][7]!!.text.toString() != "x"
@@ -1064,10 +1055,10 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
 
         }
         /**********************-5-*************************/
-        else if ((buttons[2][1]!!.text.toString() == buttons[3][2]!!.text.toString() && buttons[2][1]!!.text.toString() == buttons[4][3]!!.text.toString() && buttons[2][1]!!.text.toString() != "")
+        else if ((buttons[2][1]!!.text.toString() == buttons[3][2]!!.text.toString() && buttons[2][1]!!.text.toString() == buttons[4][3]!!.text.toString() && buttons[2][1]!!.text.toString() != "" && buttons[5][4]!!.text.toString() != "o")
             && buttons[2][1]!!.text.toString() == "x"
             && buttons[1][0]!!.text.toString() == ""
-            && buttons[1][1]!!.text.toString() != "x"
+            && buttons[1][0]!!.text.toString() != "x"
         ) {
 
             buttons[1][0]?.background = ContextCompat.getDrawable(this, R.drawable.o)
@@ -1075,7 +1066,7 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
             player1Turn = !player1Turn
 
         } else if ((buttons[3][2]!!.text.toString() == buttons[1][0]!!.text.toString() && buttons[3][2]!!.text.toString() == buttons[4][3]!!.text.toString() && buttons[3][2]!!.text.toString() != ""
-                    || buttons[3][2]!!.text.toString() == buttons[5][4]!!.text.toString() && buttons[3][2]!!.text.toString() == buttons[4][3]!!.text.toString() && buttons[3][2]!!.text.toString() != "")
+                    || buttons[3][2]!!.text.toString() == buttons[5][4]!!.text.toString() && buttons[3][2]!!.text.toString() == buttons[4][3]!!.text.toString() && buttons[3][2]!!.text.toString() != "" && buttons[6][5]!!.text.toString() != "o")
             && buttons[3][2]!!.text.toString() == "x"
             && buttons[2][1]!!.text.toString() == ""
             && buttons[2][1]!!.text.toString() != "x"
@@ -1087,7 +1078,7 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
 
         } else if ((buttons[4][3]!!.text.toString() == buttons[2][1]!!.text.toString() && buttons[4][3]!!.text.toString() == buttons[1][0]!!.text.toString() && buttons[4][3]!!.text.toString() != ""
                     || buttons[4][3]!!.text.toString() == buttons[2][1]!!.text.toString() && buttons[4][3]!!.text.toString() == buttons[5][4]!!.text.toString() && buttons[4][3]!!.text.toString() != ""
-                    || buttons[4][3]!!.text.toString() == buttons[6][5]!!.text.toString() && buttons[4][3]!!.text.toString() == buttons[5][4]!!.text.toString() && buttons[4][3]!!.text.toString() != ""
+                    || buttons[4][3]!!.text.toString() == buttons[6][5]!!.text.toString() && buttons[4][3]!!.text.toString() == buttons[5][4]!!.text.toString() && buttons[4][3]!!.text.toString() != "" && buttons[7][6]!!.text.toString() != "o"
                     )
             && buttons[4][3]!!.text.toString() == "x"
             && buttons[3][2]!!.text.toString() == ""
@@ -1111,7 +1102,7 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
             buttons[4][3]?.setText("o")!!
             player1Turn = !player1Turn
 
-        } else if ((buttons[4][3]!!.text.toString() == buttons[2][1]!!.text.toString() && buttons[4][3]!!.text.toString() == buttons[3][2]!!.text.toString() && buttons[4][3]!!.text.toString() != ""
+        } else if ((buttons[4][3]!!.text.toString() == buttons[2][1]!!.text.toString() && buttons[4][3]!!.text.toString() == buttons[3][2]!!.text.toString() && buttons[4][3]!!.text.toString() != "" && buttons[1][0]!!.text.toString() != "o"
                     || buttons[4][3]!!.text.toString() == buttons[3][2]!!.text.toString() && buttons[4][3]!!.text.toString() == buttons[6][5]!!.text.toString() && buttons[4][3]!!.text.toString() != ""
                     || buttons[4][3]!!.text.toString() == buttons[7][6]!!.text.toString() && buttons[4][3]!!.text.toString() == buttons[6][5]!!.text.toString() && buttons[4][3]!!.text.toString() != ""
                     )
@@ -1124,7 +1115,7 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
             buttons[5][4]?.setText("o")!!
             player1Turn = !player1Turn
 
-        } else if ((buttons[4][3]!!.text.toString() == buttons[5][4]!!.text.toString() && buttons[4][3]!!.text.toString() == buttons[3][2]!!.text.toString() && buttons[4][3]!!.text.toString() != ""
+        } else if ((buttons[4][3]!!.text.toString() == buttons[5][4]!!.text.toString() && buttons[4][3]!!.text.toString() == buttons[3][2]!!.text.toString() && buttons[4][3]!!.text.toString() != "" && buttons[2][1]!!.text.toString() != "o"
                     || buttons[4][3]!!.text.toString() == buttons[5][4]!!.text.toString() && buttons[4][3]!!.text.toString() == buttons[7][6]!!.text.toString() && buttons[4][3]!!.text.toString() != ""
                     )
             && buttons[4][3]!!.text.toString() == "x"
@@ -1136,7 +1127,7 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
             buttons[6][5]?.setText("o")!!
             player1Turn = !player1Turn
 
-        } else if ((buttons[5][4]!!.text.toString() == buttons[4][3]!!.text.toString() && buttons[6][5]!!.text.toString() == buttons[4][3]!!.text.toString() && buttons[4][3]!!.text.toString() != "")
+        } else if ((buttons[5][4]!!.text.toString() == buttons[4][3]!!.text.toString() && buttons[6][5]!!.text.toString() == buttons[4][3]!!.text.toString() && buttons[4][3]!!.text.toString() != "" && buttons[3][2]!!.text.toString() != "o")
             && buttons[4][3]!!.text.toString() == "x"
             && buttons[7][6]!!.text.toString() == ""
             && buttons[7][6]!!.text.toString() != "x"
@@ -1148,7 +1139,7 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
 
         }
         /***********************-6-************************/
-        else if ((buttons[3][1]!!.text.toString() == buttons[4][2]!!.text.toString() && buttons[3][1]!!.text.toString() == buttons[5][3]!!.text.toString() && buttons[3][1]!!.text.toString() != "")
+        else if ((buttons[3][1]!!.text.toString() == buttons[4][2]!!.text.toString() && buttons[3][1]!!.text.toString() == buttons[5][3]!!.text.toString() && buttons[3][1]!!.text.toString() != "" && buttons[6][4]!!.text.toString() != "o")
             && buttons[3][1]!!.text.toString() == "x"
             && buttons[2][0]!!.text.toString() == ""
             && buttons[2][0]!!.text.toString() != "x"
@@ -1159,7 +1150,7 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
             player1Turn = !player1Turn
 
         } else if ((buttons[4][2]!!.text.toString() == buttons[2][0]!!.text.toString() && buttons[4][2]!!.text.toString() == buttons[5][3]!!.text.toString() && buttons[4][2]!!.text.toString() != ""
-                    || buttons[4][2]!!.text.toString() == buttons[6][4]!!.text.toString() && buttons[4][2]!!.text.toString() == buttons[5][3]!!.text.toString() && buttons[4][2]!!.text.toString() != "")
+                    || buttons[4][2]!!.text.toString() == buttons[6][4]!!.text.toString() && buttons[4][2]!!.text.toString() == buttons[5][3]!!.text.toString() && buttons[4][2]!!.text.toString() != "" && buttons[7][5]!!.text.toString() != "o")
             && buttons[4][2]!!.text.toString() == "x"
             && buttons[3][1]!!.text.toString() == ""
             && buttons[3][1]!!.text.toString() != "x"
@@ -1195,7 +1186,7 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
             buttons[5][3]?.setText("o")!!
             player1Turn = !player1Turn
 
-        } else if ((buttons[5][3]!!.text.toString() == buttons[3][1]!!.text.toString() && buttons[5][3]!!.text.toString() == buttons[4][2]!!.text.toString() && buttons[5][3]!!.text.toString() != ""
+        } else if ((buttons[5][3]!!.text.toString() == buttons[3][1]!!.text.toString() && buttons[5][3]!!.text.toString() == buttons[4][2]!!.text.toString() && buttons[5][3]!!.text.toString() != "" && buttons[2][0]!!.text.toString() != "o"
                     || buttons[5][3]!!.text.toString() == buttons[4][2]!!.text.toString() && buttons[5][3]!!.text.toString() == buttons[7][5]!!.text.toString() && buttons[5][3]!!.text.toString() != ""
                     )
             && buttons[5][3]!!.text.toString() == "x"
@@ -1207,7 +1198,7 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
             buttons[6][4]?.setText("o")!!
             player1Turn = !player1Turn
 
-        } else if ((buttons[6][4]!!.text.toString() == buttons[5][3]!!.text.toString() && buttons[6][4]!!.text.toString() == buttons[4][2]!!.text.toString() && buttons[6][4]!!.text.toString() != "")
+        } else if ((buttons[6][4]!!.text.toString() == buttons[5][3]!!.text.toString() && buttons[6][4]!!.text.toString() == buttons[4][2]!!.text.toString() && buttons[6][4]!!.text.toString() != "" && buttons[3][1]!!.text.toString() != "o")
             && buttons[6][4]!!.text.toString() == "x"
             && buttons[7][5]!!.text.toString() == ""
             && buttons[7][5]!!.text.toString() != "x"
@@ -1219,7 +1210,7 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
 
         }
         /***********************-7-************************/
-        else if ((buttons[4][1]!!.text.toString() == buttons[5][2]!!.text.toString() && buttons[4][1]!!.text.toString() == buttons[6][3]!!.text.toString() && buttons[4][1]!!.text.toString() != "")
+        else if ((buttons[4][1]!!.text.toString() == buttons[5][2]!!.text.toString() && buttons[4][1]!!.text.toString() == buttons[6][3]!!.text.toString() && buttons[4][1]!!.text.toString() != "" && buttons[7][4]!!.text.toString() != "o")
             && buttons[4][1]!!.text.toString() == "x"
             && buttons[3][0]!!.text.toString() == ""
             && buttons[3][0]!!.text.toString() != "x"
@@ -1265,7 +1256,7 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
             buttons[6][3]?.setText("o")!!
             player1Turn = !player1Turn
 
-        } else if ((buttons[6][3]!!.text.toString() == buttons[5][2]!!.text.toString() && buttons[5][2]!!.text.toString() == buttons[4][1]!!.text.toString() && buttons[5][2]!!.text.toString() != "")
+        } else if ((buttons[6][3]!!.text.toString() == buttons[5][2]!!.text.toString() && buttons[5][2]!!.text.toString() == buttons[4][1]!!.text.toString() && buttons[5][2]!!.text.toString() != "" && buttons[3][0]!!.text.toString() != "o")
             && buttons[5][2]!!.text.toString() == "x"
             && buttons[7][4]!!.text.toString() == ""
             && buttons[7][4]!!.text.toString() != "x"
@@ -1282,7 +1273,7 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
     /*** Done ***/
     private fun topRightBottomLiftX() {
         /************************-1-*********************/
-        if ((buttons[3][1]!!.text.toString() == buttons[2][2]!!.text.toString() && buttons[3][1]!!.text.toString() == buttons[1][3]!!.text.toString() && buttons[3][1]!!.text.toString() != "")
+        if ((buttons[3][1]!!.text.toString() == buttons[2][2]!!.text.toString() && buttons[3][1]!!.text.toString() == buttons[1][3]!!.text.toString() && buttons[3][1]!!.text.toString() != "" && buttons[4][0]!!.text.toString() != "o")
             && buttons[3][1]!!.text.toString() == "x"
             && buttons[0][4]!!.text.toString() == ""
             && buttons[0][4]!!.text.toString() != "x"
@@ -1328,7 +1319,7 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
             buttons[3][1]?.setText("o")!!
             player1Turn = !player1Turn
 
-        } else if ((buttons[2][2]!!.text.toString() == buttons[1][3]!!.text.toString() && buttons[2][2]!!.text.toString() == buttons[3][1]!!.text.toString() && buttons[2][2]!!.text.toString() != "")
+        } else if ((buttons[2][2]!!.text.toString() == buttons[1][3]!!.text.toString() && buttons[2][2]!!.text.toString() == buttons[3][1]!!.text.toString() && buttons[2][2]!!.text.toString() != "" && buttons[0][4]!!.text.toString() != "o")
             && buttons[2][2]!!.text.toString() == "x"
             && buttons[4][0]!!.text.toString() == ""
             && buttons[4][0]!!.text.toString() != "x"
@@ -1340,7 +1331,7 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
 
         }
         /*************-2-****************/
-        else if ((buttons[3][2]!!.text.toString() == buttons[2][3]!!.text.toString() && buttons[3][2]!!.text.toString() == buttons[1][4]!!.text.toString() && buttons[3][2]!!.text.toString() != "")
+        else if ((buttons[3][2]!!.text.toString() == buttons[2][3]!!.text.toString() && buttons[3][2]!!.text.toString() == buttons[1][4]!!.text.toString() && buttons[3][2]!!.text.toString() != "" && buttons[4][1]!!.text.toString() != "o")
             && buttons[3][2]!!.text.toString() == "x"
             && buttons[0][5]!!.text.toString() == ""
             && buttons[0][5]!!.text.toString() != "x"
@@ -1351,7 +1342,7 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
             player1Turn = !player1Turn
 
         } else if ((buttons[3][2]!!.text.toString() == buttons[2][3]!!.text.toString() && buttons[3][2]!!.text.toString() == buttons[0][5]!!.text.toString() && buttons[3][2]!!.text.toString() != ""
-                    || buttons[3][2]!!.text.toString() == buttons[2][3]!!.text.toString() && buttons[3][2]!!.text.toString() == buttons[4][1]!!.text.toString() && buttons[3][2]!!.text.toString() != ""
+                    || buttons[3][2]!!.text.toString() == buttons[2][3]!!.text.toString() && buttons[3][2]!!.text.toString() == buttons[4][1]!!.text.toString() && buttons[3][2]!!.text.toString() != "" && buttons[5][0]!!.text.toString() != "o"
                     )
             && buttons[3][2]!!.text.toString() == "x"
             && buttons[1][4]!!.text.toString() == ""
@@ -1388,7 +1379,7 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
             buttons[3][2]?.setText("o")!!
             player1Turn = !player1Turn
 
-        } else if ((buttons[2][3]!!.text.toString() == buttons[1][4]!!.text.toString() && buttons[2][3]!!.text.toString() == buttons[3][2]!!.text.toString() && buttons[2][3]!!.text.toString() != ""
+        } else if ((buttons[2][3]!!.text.toString() == buttons[1][4]!!.text.toString() && buttons[2][3]!!.text.toString() == buttons[3][2]!!.text.toString() && buttons[2][3]!!.text.toString() != "" && buttons[0][5]!!.text.toString() != "o"
                     || buttons[2][3]!!.text.toString() == buttons[5][0]!!.text.toString() && buttons[2][3]!!.text.toString() == buttons[3][2]!!.text.toString() && buttons[2][3]!!.text.toString() != ""
                     )
             && buttons[2][3]!!.text.toString() == "x"
@@ -1400,7 +1391,7 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
             buttons[4][1]?.setText("o")!!
             player1Turn = !player1Turn
 
-        } else if ((buttons[3][2]!!.text.toString() == buttons[2][3]!!.text.toString() && buttons[3][2]!!.text.toString() == buttons[4][1]!!.text.toString() && buttons[3][2]!!.text.toString() != "")
+        } else if ((buttons[3][2]!!.text.toString() == buttons[2][3]!!.text.toString() && buttons[3][2]!!.text.toString() == buttons[4][1]!!.text.toString() && buttons[3][2]!!.text.toString() != "" && buttons[1][4]!!.text.toString() != "o")
             && buttons[3][2]!!.text.toString() == "x"
             && buttons[5][0]!!.text.toString() == ""
             && buttons[5][0]!!.text.toString() != "x"
@@ -1412,7 +1403,7 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
 
         }
         /*************-3-****************/
-        else if ((buttons[3][3]!!.text.toString() == buttons[2][4]!!.text.toString() && buttons[3][3]!!.text.toString() == buttons[1][5]!!.text.toString() && buttons[3][3]!!.text.toString() != "")
+        else if ((buttons[3][3]!!.text.toString() == buttons[2][4]!!.text.toString() && buttons[3][3]!!.text.toString() == buttons[1][5]!!.text.toString() && buttons[3][3]!!.text.toString() != "" && buttons[4][2]!!.text.toString() != "o")
             && buttons[3][3]!!.text.toString() == "x"
             && buttons[0][6]!!.text.toString() == ""
             && buttons[0][6]!!.text.toString() != "x"
@@ -1423,7 +1414,7 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
             player1Turn = !player1Turn
 
         } else if ((buttons[3][3]!!.text.toString() == buttons[2][4]!!.text.toString() && buttons[3][3]!!.text.toString() == buttons[0][6]!!.text.toString() && buttons[3][3]!!.text.toString() != ""
-                    || buttons[3][3]!!.text.toString() == buttons[2][4]!!.text.toString() && buttons[3][3]!!.text.toString() == buttons[4][2]!!.text.toString() && buttons[3][3]!!.text.toString() != ""
+                    || buttons[3][3]!!.text.toString() == buttons[2][4]!!.text.toString() && buttons[3][3]!!.text.toString() == buttons[4][2]!!.text.toString() && buttons[3][3]!!.text.toString() != "" && buttons[5][1]!!.text.toString() != "o"
                     )
             && buttons[3][3]!!.text.toString() == "x"
             && buttons[1][5]!!.text.toString() == ""
@@ -1436,7 +1427,7 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
 
         } else if ((buttons[3][3]!!.text.toString() == buttons[1][5]!!.text.toString() && buttons[3][3]!!.text.toString() == buttons[0][6]!!.text.toString() && buttons[3][3]!!.text.toString() != ""
                     || buttons[3][3]!!.text.toString() == buttons[1][5]!!.text.toString() && buttons[3][3]!!.text.toString() == buttons[4][2]!!.text.toString() && buttons[3][3]!!.text.toString() != ""
-                    || buttons[3][3]!!.text.toString() == buttons[5][1]!!.text.toString() && buttons[3][3]!!.text.toString() == buttons[4][2]!!.text.toString() && buttons[3][3]!!.text.toString() != ""
+                    || buttons[3][3]!!.text.toString() == buttons[5][1]!!.text.toString() && buttons[3][3]!!.text.toString() == buttons[4][2]!!.text.toString() && buttons[3][3]!!.text.toString() != "" && buttons[6][0]!!.text.toString() != "o"
                     )
             && buttons[3][3]!!.text.toString() == "x"
             && buttons[2][4]!!.text.toString() == ""
@@ -1450,7 +1441,7 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
         } else if ((buttons[2][4]!!.text.toString() == buttons[1][5]!!.text.toString() && buttons[2][4]!!.text.toString() == buttons[0][6]!!.text.toString() && buttons[2][4]!!.text.toString() != ""
                     || buttons[2][4]!!.text.toString() == buttons[1][5]!!.text.toString() && buttons[2][4]!!.text.toString() == buttons[4][2]!!.text.toString() && buttons[2][4]!!.text.toString() != ""
                     || buttons[2][4]!!.text.toString() == buttons[5][1]!!.text.toString() && buttons[2][4]!!.text.toString() == buttons[4][2]!!.text.toString() && buttons[2][4]!!.text.toString() != ""
-                    || buttons[2][4]!!.text.toString() == buttons[5][1]!!.text.toString() && buttons[2][4]!!.text.toString() == buttons[3][3]!!.text.toString() && buttons[2][4]!!.text.toString() != ""
+                    || buttons[2][4]!!.text.toString() == buttons[5][1]!!.text.toString() && buttons[2][4]!!.text.toString() == buttons[6][0]!!.text.toString() && buttons[2][4]!!.text.toString() != ""
                     )
             && buttons[2][4]!!.text.toString() == "x"
             && buttons[3][3]!!.text.toString() == ""
@@ -1461,7 +1452,7 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
             buttons[3][3]?.setText("o")!!
             player1Turn = !player1Turn
 
-        } else if ((buttons[3][3]!!.text.toString() == buttons[1][5]!!.text.toString() && buttons[3][3]!!.text.toString() == buttons[2][4]!!.text.toString() && buttons[3][3]!!.text.toString() != ""
+        } else if ((buttons[3][3]!!.text.toString() == buttons[1][5]!!.text.toString() && buttons[3][3]!!.text.toString() == buttons[2][4]!!.text.toString() && buttons[3][3]!!.text.toString() != "" && buttons[0][6]!!.text.toString() != "o"
                     || buttons[3][3]!!.text.toString() == buttons[5][1]!!.text.toString() && buttons[3][3]!!.text.toString() == buttons[2][4]!!.text.toString() && buttons[3][3]!!.text.toString() != ""
                     || buttons[3][3]!!.text.toString() == buttons[5][1]!!.text.toString() && buttons[3][3]!!.text.toString() == buttons[6][0]!!.text.toString() && buttons[3][3]!!.text.toString() != ""
                     )
@@ -1474,7 +1465,7 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
             buttons[4][2]?.setText("o")!!
             player1Turn = !player1Turn
 
-        } else if ((buttons[3][3]!!.text.toString() == buttons[4][2]!!.text.toString() && buttons[3][3]!!.text.toString() == buttons[2][4]!!.text.toString() && buttons[3][3]!!.text.toString() != ""
+        } else if ((buttons[3][3]!!.text.toString() == buttons[4][2]!!.text.toString() && buttons[3][3]!!.text.toString() == buttons[2][4]!!.text.toString() && buttons[3][3]!!.text.toString() != "" && buttons[1][5]!!.text.toString() != "o"
                     || buttons[3][3]!!.text.toString() == buttons[6][0]!!.text.toString() && buttons[3][3]!!.text.toString() == buttons[4][2]!!.text.toString() && buttons[3][3]!!.text.toString() != ""
                     )
             && buttons[3][3]!!.text.toString() == "x"
@@ -1486,7 +1477,7 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
             buttons[5][1]?.setText("o")!!
             player1Turn = !player1Turn
 
-        } else if ((buttons[3][3]!!.text.toString() == buttons[4][2]!!.text.toString() && buttons[3][3]!!.text.toString() == buttons[5][1]!!.text.toString() && buttons[3][3]!!.text.toString() != "")
+        } else if ((buttons[3][3]!!.text.toString() == buttons[4][2]!!.text.toString() && buttons[3][3]!!.text.toString() == buttons[5][1]!!.text.toString() && buttons[3][3]!!.text.toString() != "" && buttons[2][4]!!.text.toString() != "o")
             && buttons[3][3]!!.text.toString() == "x"
             && buttons[6][0]!!.text.toString() == ""
             && buttons[6][0]!!.text.toString() != "x"
@@ -1498,7 +1489,7 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
 
         }
         /******************-4-*****************/
-        else if ((buttons[3][4]!!.text.toString() == buttons[2][5]!!.text.toString() && buttons[3][4]!!.text.toString() == buttons[1][6]!!.text.toString() && buttons[3][4]!!.text.toString() != "")
+        else if ((buttons[3][4]!!.text.toString() == buttons[2][5]!!.text.toString() && buttons[3][4]!!.text.toString() == buttons[1][6]!!.text.toString() && buttons[3][4]!!.text.toString() != "" && buttons[4][3]!!.text.toString() != "o")
             && buttons[3][4]!!.text.toString() == "x"
             && buttons[0][7]!!.text.toString() == ""
             && buttons[0][7]!!.text.toString() != "x"
@@ -1509,7 +1500,7 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
             player1Turn = !player1Turn
 
         } else if ((buttons[3][4]!!.text.toString() == buttons[2][5]!!.text.toString() && buttons[3][4]!!.text.toString() == buttons[0][7]!!.text.toString() && buttons[3][4]!!.text.toString() != ""
-                    || buttons[3][4]!!.text.toString() == buttons[2][5]!!.text.toString() && buttons[3][4]!!.text.toString() == buttons[4][3]!!.text.toString() && buttons[3][4]!!.text.toString() != ""
+                    || buttons[3][4]!!.text.toString() == buttons[2][5]!!.text.toString() && buttons[3][4]!!.text.toString() == buttons[4][3]!!.text.toString() && buttons[3][4]!!.text.toString() != "" && buttons[5][2]!!.text.toString() != "o"
                     )
             && buttons[3][4]!!.text.toString() == "x"
             && buttons[1][6]!!.text.toString() == ""
@@ -1522,7 +1513,7 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
 
         } else if ((buttons[3][4]!!.text.toString() == buttons[1][6]!!.text.toString() && buttons[3][4]!!.text.toString() == buttons[0][7]!!.text.toString() && buttons[3][4]!!.text.toString() != ""
                     || buttons[3][4]!!.text.toString() == buttons[1][6]!!.text.toString() && buttons[3][4]!!.text.toString() == buttons[4][3]!!.text.toString() && buttons[3][4]!!.text.toString() != ""
-                    || buttons[3][4]!!.text.toString() == buttons[5][2]!!.text.toString() && buttons[3][4]!!.text.toString() == buttons[4][3]!!.text.toString() && buttons[3][4]!!.text.toString() != ""
+                    || buttons[3][4]!!.text.toString() == buttons[5][2]!!.text.toString() && buttons[3][4]!!.text.toString() == buttons[4][3]!!.text.toString() && buttons[3][4]!!.text.toString() != "" && buttons[6][1]!!.text.toString() != "o"
                     )
             && buttons[3][4]!!.text.toString() == "x"
             && buttons[2][5]!!.text.toString() == ""
@@ -1536,7 +1527,7 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
         } else if ((buttons[2][5]!!.text.toString() == buttons[1][6]!!.text.toString() && buttons[2][5]!!.text.toString() == buttons[0][7]!!.text.toString() && buttons[2][5]!!.text.toString() != "" && buttons[2][5]!!.text.toString() == "x"
                     || buttons[2][5]!!.text.toString() == buttons[1][6]!!.text.toString() && buttons[2][5]!!.text.toString() == buttons[4][3]!!.text.toString() && buttons[2][5]!!.text.toString() != "" && buttons[2][5]!!.text.toString() == "x"
                     || buttons[2][5]!!.text.toString() == buttons[5][2]!!.text.toString() && buttons[2][5]!!.text.toString() == buttons[4][3]!!.text.toString() && buttons[2][5]!!.text.toString() != "" && buttons[2][5]!!.text.toString() == "x"
-                    || buttons[6][1]!!.text.toString() == buttons[5][2]!!.text.toString() && buttons[6][1]!!.text.toString() == buttons[4][3]!!.text.toString() && buttons[6][1]!!.text.toString() != "" && buttons[6][1]!!.text.toString() == "x"
+                    || buttons[6][1]!!.text.toString() == buttons[5][2]!!.text.toString() && buttons[6][1]!!.text.toString() == buttons[4][3]!!.text.toString() && buttons[6][1]!!.text.toString() != "" && buttons[6][1]!!.text.toString() == "x" && buttons[7][0]!!.text.toString() != "o"
                     )
             && buttons[3][4]!!.text.toString() == ""
             && buttons[3][4]!!.text.toString() != "x"
@@ -1546,7 +1537,7 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
             buttons[3][4]?.setText("o")!!
             player1Turn = !player1Turn
 
-        } else if ((buttons[3][4]!!.text.toString() == buttons[1][6]!!.text.toString() && buttons[3][4]!!.text.toString() == buttons[2][5]!!.text.toString() && buttons[3][4]!!.text.toString() != "" && buttons[3][4]!!.text.toString() == "x"
+        } else if ((buttons[3][4]!!.text.toString() == buttons[1][6]!!.text.toString() && buttons[3][4]!!.text.toString() == buttons[2][5]!!.text.toString() && buttons[3][4]!!.text.toString() != "" && buttons[3][4]!!.text.toString() == "x" && buttons[0][7]!!.text.toString() != "o"
                     || buttons[3][4]!!.text.toString() == buttons[2][5]!!.text.toString() && buttons[3][4]!!.text.toString() == buttons[5][2]!!.text.toString() && buttons[3][4]!!.text.toString() != "" && buttons[3][4]!!.text.toString() == "x"
                     || buttons[3][4]!!.text.toString() == buttons[6][1]!!.text.toString() && buttons[3][4]!!.text.toString() == buttons[5][2]!!.text.toString() && buttons[3][4]!!.text.toString() != "" && buttons[3][4]!!.text.toString() == "x"
                     || buttons[7][0]!!.text.toString() == buttons[6][1]!!.text.toString() && buttons[7][0]!!.text.toString() == buttons[5][2]!!.text.toString() && buttons[7][0]!!.text.toString() != "" && buttons[7][0]!!.text.toString() == "x"
@@ -1559,7 +1550,7 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
             buttons[4][3]?.setText("o")!!
             player1Turn = !player1Turn
 
-        } else if ((buttons[4][3]!!.text.toString() == buttons[3][4]!!.text.toString() && buttons[4][3]!!.text.toString() == buttons[2][5]!!.text.toString() && buttons[4][3]!!.text.toString() != ""
+        } else if ((buttons[4][3]!!.text.toString() == buttons[3][4]!!.text.toString() && buttons[4][3]!!.text.toString() == buttons[2][5]!!.text.toString() && buttons[4][3]!!.text.toString() != "" && buttons[1][6]!!.text.toString() != "o"
                     || buttons[4][3]!!.text.toString() == buttons[3][4]!!.text.toString() && buttons[4][3]!!.text.toString() == buttons[6][1]!!.text.toString() && buttons[4][3]!!.text.toString() != ""
                     || buttons[4][3]!!.text.toString() == buttons[7][0]!!.text.toString() && buttons[4][3]!!.text.toString() == buttons[6][1]!!.text.toString() && buttons[4][3]!!.text.toString() != ""
                     )
@@ -1572,7 +1563,7 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
             buttons[5][2]?.setText("o")!!
             player1Turn = !player1Turn
 
-        } else if ((buttons[4][3]!!.text.toString() == buttons[3][4]!!.text.toString() && buttons[4][3]!!.text.toString() == buttons[5][2]!!.text.toString() && buttons[4][3]!!.text.toString() != ""
+        } else if ((buttons[4][3]!!.text.toString() == buttons[3][4]!!.text.toString() && buttons[4][3]!!.text.toString() == buttons[5][2]!!.text.toString() && buttons[4][3]!!.text.toString() != "" && buttons[2][5]!!.text.toString() != "o"
                     || buttons[4][3]!!.text.toString() == buttons[7][0]!!.text.toString() && buttons[4][3]!!.text.toString() == buttons[5][2]!!.text.toString() && buttons[4][3]!!.text.toString() != ""
                     )
             && buttons[4][3]!!.text.toString() == "x"
@@ -1584,7 +1575,7 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
             buttons[6][1]?.setText("o")!!
             player1Turn = !player1Turn
 
-        } else if ((buttons[4][3]!!.text.toString() == buttons[5][2]!!.text.toString() && buttons[4][3]!!.text.toString() == buttons[6][1]!!.text.toString() && buttons[4][3]!!.text.toString() != "")
+        } else if ((buttons[4][3]!!.text.toString() == buttons[5][2]!!.text.toString() && buttons[4][3]!!.text.toString() == buttons[6][1]!!.text.toString() && buttons[4][3]!!.text.toString() != "" && buttons[3][4]!!.text.toString() != "o")
             && buttons[4][3]!!.text.toString() == "x"
             && buttons[7][0]!!.text.toString() == ""
             && buttons[7][0]!!.text.toString() != "x"
@@ -1597,7 +1588,7 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
         }
         /******************-5-*****************/
 
-        else if ((buttons[4][4]!!.text.toString() == buttons[3][5]!!.text.toString() && buttons[4][4]!!.text.toString() == buttons[2][6]!!.text.toString() && buttons[4][4]!!.text.toString() != "")
+        else if ((buttons[4][4]!!.text.toString() == buttons[3][5]!!.text.toString() && buttons[4][4]!!.text.toString() == buttons[2][6]!!.text.toString() && buttons[4][4]!!.text.toString() != "" && buttons[5][3]!!.text.toString() != "o")
             && buttons[4][4]!!.text.toString() == "x"
             && buttons[1][7]!!.text.toString() == ""
             && buttons[1][7]!!.text.toString() != "x"
@@ -1608,7 +1599,7 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
             player1Turn = !player1Turn
 
         } else if ((buttons[4][4]!!.text.toString() == buttons[3][5]!!.text.toString() && buttons[4][4]!!.text.toString() == buttons[1][7]!!.text.toString() && buttons[4][4]!!.text.toString() != ""
-                    || buttons[4][4]!!.text.toString() == buttons[3][5]!!.text.toString() && buttons[4][4]!!.text.toString() == buttons[5][3]!!.text.toString() && buttons[4][4]!!.text.toString() != ""
+                    || buttons[4][4]!!.text.toString() == buttons[3][5]!!.text.toString() && buttons[4][4]!!.text.toString() == buttons[5][3]!!.text.toString() && buttons[4][4]!!.text.toString() != "" && buttons[6][2]!!.text.toString() != "o"
                     )
             && buttons[4][4]!!.text.toString() == "x"
             && buttons[2][6]!!.text.toString() == ""
@@ -1621,7 +1612,7 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
 
         } else if ((buttons[4][4]!!.text.toString() == buttons[2][6]!!.text.toString() && buttons[4][4]!!.text.toString() == buttons[1][7]!!.text.toString() && buttons[4][4]!!.text.toString() != ""
                     || buttons[4][4]!!.text.toString() == buttons[2][6]!!.text.toString() && buttons[4][4]!!.text.toString() == buttons[5][3]!!.text.toString() && buttons[4][4]!!.text.toString() != ""
-                    || buttons[4][4]!!.text.toString() == buttons[6][2]!!.text.toString() && buttons[4][4]!!.text.toString() == buttons[5][3]!!.text.toString() && buttons[4][4]!!.text.toString() != ""
+                    || buttons[4][4]!!.text.toString() == buttons[6][2]!!.text.toString() && buttons[4][4]!!.text.toString() == buttons[5][3]!!.text.toString() && buttons[4][4]!!.text.toString() != "" && buttons[7][1]!!.text.toString() != "o"
                     )
             && buttons[4][4]!!.text.toString() == "x"
             && buttons[3][5]!!.text.toString() == ""
@@ -1632,12 +1623,11 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
             buttons[3][5]?.setText("o")!!
             player1Turn = !player1Turn
 
-        } else if ((buttons[3][5]!!.text.toString() == buttons[2][6]!!.text.toString() && buttons[3][5]!!.text.toString() == buttons[1][7]!!.text.toString() && buttons[3][5]!!.text.toString() != ""
-                    || buttons[3][5]!!.text.toString() == buttons[2][6]!!.text.toString() && buttons[3][5]!!.text.toString() == buttons[5][3]!!.text.toString() && buttons[3][5]!!.text.toString() != ""
-                    || buttons[3][5]!!.text.toString() == buttons[6][2]!!.text.toString() && buttons[3][5]!!.text.toString() == buttons[5][3]!!.text.toString() && buttons[3][5]!!.text.toString() != ""
-                    || buttons[3][5]!!.text.toString() == buttons[6][2]!!.text.toString() && buttons[3][5]!!.text.toString() == buttons[4][4]!!.text.toString() && buttons[3][5]!!.text.toString() != ""
+        } else if ((buttons[3][5]!!.text.toString() == buttons[2][6]!!.text.toString() && buttons[3][5]!!.text.toString() == buttons[1][7]!!.text.toString() && buttons[3][5]!!.text.toString() != "" && buttons[3][5]!!.text.toString() == "x"
+                    || buttons[3][5]!!.text.toString() == buttons[2][6]!!.text.toString() && buttons[3][5]!!.text.toString() == buttons[5][3]!!.text.toString() && buttons[3][5]!!.text.toString() != "" && buttons[3][5]!!.text.toString() == "x"
+                    || buttons[3][5]!!.text.toString() == buttons[6][2]!!.text.toString() && buttons[3][5]!!.text.toString() == buttons[5][3]!!.text.toString() && buttons[3][5]!!.text.toString() != "" && buttons[3][5]!!.text.toString() == "x"
+                    || buttons[7][1]!!.text.toString() == buttons[6][2]!!.text.toString() && buttons[7][1]!!.text.toString() == buttons[5][3]!!.text.toString() && buttons[7][1]!!.text.toString() != "" && buttons[7][1]!!.text.toString() == "x"
                     )
-            && buttons[3][5]!!.text.toString() == "x"
             && buttons[4][4]!!.text.toString() == ""
             && buttons[4][4]!!.text.toString() != "x"
         ) {
@@ -1646,7 +1636,7 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
             buttons[4][4]?.setText("o")!!
             player1Turn = !player1Turn
 
-        } else if ((buttons[4][4]!!.text.toString() == buttons[2][6]!!.text.toString() && buttons[4][4]!!.text.toString() == buttons[3][5]!!.text.toString() && buttons[4][4]!!.text.toString() != ""
+        } else if ((buttons[4][4]!!.text.toString() == buttons[2][6]!!.text.toString() && buttons[4][4]!!.text.toString() == buttons[3][5]!!.text.toString() && buttons[4][4]!!.text.toString() != "" && buttons[1][7]!!.text.toString() != "o"
                     || buttons[4][4]!!.text.toString() == buttons[6][2]!!.text.toString() && buttons[4][4]!!.text.toString() == buttons[3][5]!!.text.toString() && buttons[4][4]!!.text.toString() != ""
                     || buttons[4][4]!!.text.toString() == buttons[6][2]!!.text.toString() && buttons[4][4]!!.text.toString() == buttons[7][1]!!.text.toString() && buttons[4][4]!!.text.toString() != ""
                     )
@@ -1659,7 +1649,7 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
             buttons[5][3]?.setText("o")!!
             player1Turn = !player1Turn
 
-        } else if ((buttons[4][4]!!.text.toString() == buttons[5][3]!!.text.toString() && buttons[4][4]!!.text.toString() == buttons[3][5]!!.text.toString() && buttons[4][4]!!.text.toString() != ""
+        } else if ((buttons[4][4]!!.text.toString() == buttons[5][3]!!.text.toString() && buttons[4][4]!!.text.toString() == buttons[3][5]!!.text.toString() && buttons[4][4]!!.text.toString() != "" && buttons[2][6]!!.text.toString() != "o"
                     || buttons[4][4]!!.text.toString() == buttons[7][1]!!.text.toString() && buttons[4][4]!!.text.toString() == buttons[5][3]!!.text.toString() && buttons[4][4]!!.text.toString() != ""
                     )
             && buttons[4][4]!!.text.toString() == "x"
@@ -1671,7 +1661,7 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
             buttons[6][2]?.setText("o")!!
             player1Turn = !player1Turn
 
-        } else if ((buttons[4][4]!!.text.toString() == buttons[5][3]!!.text.toString() && buttons[4][4]!!.text.toString() == buttons[6][2]!!.text.toString() && buttons[4][4]!!.text.toString() != "")
+        } else if ((buttons[4][4]!!.text.toString() == buttons[5][3]!!.text.toString() && buttons[4][4]!!.text.toString() == buttons[6][2]!!.text.toString() && buttons[4][4]!!.text.toString() != "" && buttons[2][5]!!.text.toString() != "o")
             && buttons[4][4]!!.text.toString() == "x"
             && buttons[7][1]!!.text.toString() == ""
             && buttons[7][1]!!.text.toString() != "x"
@@ -1685,7 +1675,7 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
 
         /******************-6-*****************/
 
-        else if ((buttons[5][4]!!.text.toString() == buttons[4][5]!!.text.toString() && buttons[5][4]!!.text.toString() == buttons[3][6]!!.text.toString() && buttons[5][4]!!.text.toString() != "")
+        else if ((buttons[5][4]!!.text.toString() == buttons[4][5]!!.text.toString() && buttons[5][4]!!.text.toString() == buttons[3][6]!!.text.toString() && buttons[5][4]!!.text.toString() != "" && buttons[6][3]!!.text.toString() != "o")
             && buttons[5][4]!!.text.toString() == "x"
             && buttons[2][7]!!.text.toString() == ""
             && buttons[2][7]!!.text.toString() != "x"
@@ -1696,7 +1686,7 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
             player1Turn = !player1Turn
 
         } else if ((buttons[5][4]!!.text.toString() == buttons[4][5]!!.text.toString() && buttons[5][4]!!.text.toString() == buttons[2][7]!!.text.toString() && buttons[5][4]!!.text.toString() != ""
-                    || buttons[5][4]!!.text.toString() == buttons[4][5]!!.text.toString() && buttons[5][4]!!.text.toString() == buttons[6][3]!!.text.toString() && buttons[5][4]!!.text.toString() != ""
+                    || buttons[5][4]!!.text.toString() == buttons[4][5]!!.text.toString() && buttons[5][4]!!.text.toString() == buttons[6][3]!!.text.toString() && buttons[5][4]!!.text.toString() != "" && buttons[7][2]!!.text.toString() != "o"
                     )
             && buttons[5][4]!!.text.toString() == "x"
             && buttons[3][6]!!.text.toString() == ""
@@ -1720,7 +1710,7 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
             buttons[4][5]?.setText("o")!!
             player1Turn = !player1Turn
 
-        } else if ((buttons[4][5]!!.text.toString() == buttons[3][6]!!.text.toString() && buttons[4][6]!!.text.toString() == buttons[2][7]!!.text.toString() && buttons[4][5]!!.text.toString() != ""
+        } else if ((buttons[4][5]!!.text.toString() == buttons[3][6]!!.text.toString() && buttons[4][5]!!.text.toString() == buttons[2][7]!!.text.toString() && buttons[4][5]!!.text.toString() != ""
                     || buttons[4][5]!!.text.toString() == buttons[3][6]!!.text.toString() && buttons[4][5]!!.text.toString() == buttons[6][3]!!.text.toString() && buttons[4][5]!!.text.toString() != ""
                     || buttons[4][5]!!.text.toString() == buttons[7][2]!!.text.toString() && buttons[4][5]!!.text.toString() == buttons[6][3]!!.text.toString() && buttons[4][5]!!.text.toString() != ""
                     )
@@ -1733,7 +1723,7 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
             buttons[5][4]?.setText("o")!!
             player1Turn = !player1Turn
 
-        } else if ((buttons[4][5]!!.text.toString() == buttons[3][6]!!.text.toString() && buttons[4][5]!!.text.toString() == buttons[5][4]!!.text.toString() && buttons[4][5]!!.text.toString() != ""
+        } else if ((buttons[4][5]!!.text.toString() == buttons[3][6]!!.text.toString() && buttons[4][5]!!.text.toString() == buttons[5][4]!!.text.toString() && buttons[4][5]!!.text.toString() != "" && buttons[2][7]!!.text.toString() != "o"
                     || buttons[4][5]!!.text.toString() == buttons[7][2]!!.text.toString() && buttons[4][5]!!.text.toString() == buttons[5][4]!!.text.toString() && buttons[4][5]!!.text.toString() != ""
                     )
             && buttons[4][5]!!.text.toString() == "x"
@@ -1745,7 +1735,7 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
             buttons[6][3]?.setText("o")!!
             player1Turn = !player1Turn
 
-        } else if ((buttons[5][4]!!.text.toString() == buttons[4][5]!!.text.toString() && buttons[5][4]!!.text.toString() == buttons[6][3]!!.text.toString() && buttons[5][4]!!.text.toString() != "")
+        } else if ((buttons[5][4]!!.text.toString() == buttons[4][5]!!.text.toString() && buttons[5][4]!!.text.toString() == buttons[6][3]!!.text.toString() && buttons[5][4]!!.text.toString() != "" && buttons[3][6]!!.text.toString() != "o")
             && buttons[5][4]!!.text.toString() == "x"
             && buttons[7][2]!!.text.toString() == ""
             && buttons[7][2]!!.text.toString() != "x"
@@ -1759,7 +1749,7 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
 
         /******************-7-*****************/
 
-        else if ((buttons[6][4]!!.text.toString() == buttons[5][5]!!.text.toString() && buttons[6][4]!!.text.toString() == buttons[4][6]!!.text.toString() && buttons[6][4]!!.text.toString() != "")
+        else if ((buttons[6][4]!!.text.toString() == buttons[5][5]!!.text.toString() && buttons[6][4]!!.text.toString() == buttons[4][6]!!.text.toString() && buttons[6][4]!!.text.toString() != "" && buttons[7][3]!!.text.toString() != "o")
             && buttons[6][4]!!.text.toString() == "x"
             && buttons[3][7]!!.text.toString() == ""
             && buttons[3][7]!!.text.toString() != "x"
@@ -1805,7 +1795,7 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
             buttons[6][4]?.setText("o")!!
             player1Turn = !player1Turn
 
-        } else if ((buttons[5][5]!!.text.toString() == buttons[4][6]!!.text.toString() && buttons[5][5]!!.text.toString() == buttons[6][4]!!.text.toString() && buttons[5][5]!!.text.toString() != "")
+        } else if ((buttons[5][5]!!.text.toString() == buttons[4][6]!!.text.toString() && buttons[5][5]!!.text.toString() == buttons[6][4]!!.text.toString() && buttons[5][5]!!.text.toString() != "" && buttons[3][7]!!.text.toString() != "o")
             && buttons[5][5]!!.text.toString() == "x"
             && buttons[7][3]!!.text.toString() == ""
             && buttons[7][3]!!.text.toString() != "x"
@@ -2140,7 +2130,7 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
         else if ((buttons[2][1]!!.text.toString() == buttons[3][2]!!.text.toString() && buttons[2][1]!!.text.toString() == buttons[4][3]!!.text.toString() && buttons[2][1]!!.text.toString() != "")
             && buttons[2][1]!!.text.toString() == "o"
             && buttons[1][0]!!.text.toString() == ""
-            && buttons[1][1]!!.text.toString() != "x"
+            && buttons[1][0]!!.text.toString() != "x"
         ) {
 
             buttons[1][0]?.background = ContextCompat.getDrawable(this, R.drawable.o)
@@ -2524,7 +2514,7 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
         } else if ((buttons[2][4]!!.text.toString() == buttons[1][5]!!.text.toString() && buttons[2][4]!!.text.toString() == buttons[0][6]!!.text.toString() && buttons[2][4]!!.text.toString() != ""
                     || buttons[2][4]!!.text.toString() == buttons[1][5]!!.text.toString() && buttons[2][4]!!.text.toString() == buttons[4][2]!!.text.toString() && buttons[2][4]!!.text.toString() != ""
                     || buttons[2][4]!!.text.toString() == buttons[5][1]!!.text.toString() && buttons[2][4]!!.text.toString() == buttons[4][2]!!.text.toString() && buttons[2][4]!!.text.toString() != ""
-                    || buttons[2][4]!!.text.toString() == buttons[5][1]!!.text.toString() && buttons[2][4]!!.text.toString() == buttons[3][3]!!.text.toString() && buttons[2][4]!!.text.toString() != ""
+                    || buttons[2][4]!!.text.toString() == buttons[5][1]!!.text.toString() && buttons[2][4]!!.text.toString() == buttons[6][0]!!.text.toString() && buttons[2][4]!!.text.toString() != ""
                     )
             && buttons[2][4]!!.text.toString() == "o"
             && buttons[3][3]!!.text.toString() == ""
@@ -2706,12 +2696,11 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
             buttons[3][5]?.setText("o")!!
             player1Turn = !player1Turn
 
-        } else if ((buttons[3][5]!!.text.toString() == buttons[2][6]!!.text.toString() && buttons[3][5]!!.text.toString() == buttons[1][7]!!.text.toString() && buttons[3][5]!!.text.toString() != ""
-                    || buttons[3][5]!!.text.toString() == buttons[2][6]!!.text.toString() && buttons[3][5]!!.text.toString() == buttons[5][3]!!.text.toString() && buttons[3][5]!!.text.toString() != ""
-                    || buttons[3][5]!!.text.toString() == buttons[6][2]!!.text.toString() && buttons[3][5]!!.text.toString() == buttons[5][3]!!.text.toString() && buttons[3][5]!!.text.toString() != ""
-                    || buttons[3][5]!!.text.toString() == buttons[6][2]!!.text.toString() && buttons[3][5]!!.text.toString() == buttons[4][4]!!.text.toString() && buttons[3][5]!!.text.toString() != ""
+        } else if ((buttons[3][5]!!.text.toString() == buttons[2][6]!!.text.toString() && buttons[3][5]!!.text.toString() == buttons[1][7]!!.text.toString() && buttons[3][5]!!.text.toString() != "" && buttons[3][5]!!.text.toString() == "o"
+                    || buttons[3][5]!!.text.toString() == buttons[2][6]!!.text.toString() && buttons[3][5]!!.text.toString() == buttons[5][3]!!.text.toString() && buttons[3][5]!!.text.toString() != "" && buttons[3][5]!!.text.toString() == "o"
+                    || buttons[3][5]!!.text.toString() == buttons[6][2]!!.text.toString() && buttons[3][5]!!.text.toString() == buttons[5][3]!!.text.toString() && buttons[3][5]!!.text.toString() != "" && buttons[3][5]!!.text.toString() == "o"
+                    || buttons[7][1]!!.text.toString() == buttons[6][2]!!.text.toString() && buttons[7][1]!!.text.toString() == buttons[5][3]!!.text.toString() && buttons[7][1]!!.text.toString() != "" && buttons[7][1]!!.text.toString() == "o"
                     )
-            && buttons[3][5]!!.text.toString() == "o"
             && buttons[4][4]!!.text.toString() == ""
             && buttons[4][4]!!.text.toString() != "x"
         ) {
@@ -2794,7 +2783,7 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
             buttons[4][5]?.setText("o")!!
             player1Turn = !player1Turn
 
-        } else if ((buttons[4][5]!!.text.toString() == buttons[3][6]!!.text.toString() && buttons[4][6]!!.text.toString() == buttons[2][7]!!.text.toString() && buttons[4][5]!!.text.toString() != ""
+        } else if ((buttons[4][5]!!.text.toString() == buttons[3][6]!!.text.toString() && buttons[4][5]!!.text.toString() == buttons[2][7]!!.text.toString() && buttons[4][5]!!.text.toString() != ""
                     || buttons[4][5]!!.text.toString() == buttons[3][6]!!.text.toString() && buttons[4][5]!!.text.toString() == buttons[6][3]!!.text.toString() && buttons[4][5]!!.text.toString() != ""
                     || buttons[4][5]!!.text.toString() == buttons[7][2]!!.text.toString() && buttons[4][5]!!.text.toString() == buttons[6][3]!!.text.toString() && buttons[4][5]!!.text.toString() != ""
                     )
@@ -2892,11 +2881,11 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
         }
     }
 
-    // check for o from TopLift to BottomRight to get 4 O in row
+    // check for o from TopLift to BottomRight to get 5 O in row
     /*** Done ***/
-    private fun topLiftBottomRight5InRawO() {
+    private fun topLiftBottomRight4InRawO() {
         /****************************-1-********************************/
-        if ((buttons[1][4]!!.text.toString() == buttons[2][5]!!.text.toString() && buttons[1][4]!!.text.toString() == buttons[3][6]!!.text.toString() && buttons[1][4]!!.text.toString() != "")
+        if ((buttons[1][4]!!.text.toString() == buttons[2][5]!!.text.toString() && buttons[1][4]!!.text.toString() == buttons[3][6]!!.text.toString() && buttons[1][4]!!.text.toString() == buttons[4][7]!!.text.toString() && buttons[1][4]!!.text.toString() != "")
             && buttons[1][4]!!.text.toString() == "o"
             && buttons[0][3]!!.text.toString() == ""
             && buttons[0][3]!!.text.toString() != "x"
@@ -2906,8 +2895,7 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
             buttons[0][3]?.setText("o")!!
             player1Turn = !player1Turn
 
-        } else if ((buttons[0][3]!!.text.toString() == buttons[2][5]!!.text.toString() && buttons[2][5]!!.text.toString() == buttons[3][6]!!.text.toString() && buttons[2][5]!!.text.toString() != ""
-                    || buttons[4][7]!!.text.toString() == buttons[2][5]!!.text.toString() && buttons[2][5]!!.text.toString() == buttons[3][6]!!.text.toString() && buttons[2][5]!!.text.toString() != ""
+        } else if ((buttons[0][3]!!.text.toString() == buttons[2][5]!!.text.toString() && buttons[2][5]!!.text.toString() == buttons[3][6]!!.text.toString() && buttons[2][5]!!.text.toString() == buttons[4][7]!!.text.toString() && buttons[2][5]!!.text.toString() != ""
                     )
             && buttons[2][5]!!.text.toString() == "o"
             && buttons[1][4]!!.text.toString() == ""
@@ -2918,8 +2906,7 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
             buttons[1][4]?.setText("o")!!
             player1Turn = !player1Turn
 
-        } else if ((buttons[3][6]!!.text.toString() == buttons[1][4]!!.text.toString() && buttons[0][3]!!.text.toString() == buttons[3][6]!!.text.toString() && buttons[3][6]!!.text.toString() != ""
-                    || buttons[4][7]!!.text.toString() == buttons[3][6]!!.text.toString() && buttons[1][4]!!.text.toString() == buttons[3][6]!!.text.toString() && buttons[3][6]!!.text.toString() != ""
+        } else if ((buttons[3][6]!!.text.toString() == buttons[1][4]!!.text.toString() && buttons[0][3]!!.text.toString() == buttons[3][6]!!.text.toString() && buttons[4][7]!!.text.toString() == buttons[3][6]!!.text.toString() && buttons[3][6]!!.text.toString() != ""
                     )
             && buttons[3][6]!!.text.toString() == "o"
             && buttons[2][5]!!.text.toString() == ""
@@ -2930,8 +2917,7 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
             buttons[2][5]?.setText("o")!!
             player1Turn = !player1Turn
 
-        } else if ((buttons[0][3]!!.text.toString() == buttons[2][5]!!.text.toString() && buttons[2][5]!!.text.toString() == buttons[1][4]!!.text.toString() && buttons[2][5]!!.text.toString() != ""
-                    || buttons[4][7]!!.text.toString() == buttons[2][5]!!.text.toString() && buttons[2][5]!!.text.toString() == buttons[1][4]!!.text.toString() && buttons[2][5]!!.text.toString() != ""
+        } else if ((buttons[0][3]!!.text.toString() == buttons[2][5]!!.text.toString() && buttons[2][5]!!.text.toString() == buttons[1][4]!!.text.toString() && buttons[2][5]!!.text.toString() == buttons[4][7]!!.text.toString() && buttons[2][5]!!.text.toString() != ""
                     )
             && buttons[2][5]!!.text.toString() == "o"
             && buttons[3][6]!!.text.toString() == ""
@@ -2942,7 +2928,7 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
             buttons[3][6]?.setText("o")!!
             player1Turn = !player1Turn
 
-        } else if ((buttons[3][6]!!.text.toString() == buttons[2][5]!!.text.toString() && buttons[2][5]!!.text.toString() == buttons[1][4]!!.text.toString() && buttons[2][5]!!.text.toString() != "")
+        } else if ((buttons[3][6]!!.text.toString() == buttons[2][5]!!.text.toString() && buttons[2][5]!!.text.toString() == buttons[1][4]!!.text.toString() && buttons[2][5]!!.text.toString() == buttons[0][3]!!.text.toString() && buttons[2][5]!!.text.toString() != "")
             && buttons[2][5]!!.text.toString() == "o"
             && buttons[4][7]!!.text.toString() == ""
             && buttons[4][7]!!.text.toString() != "x"
@@ -2954,7 +2940,7 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
 
         }
         /*****************************-2-*******************************/
-        else if ((buttons[1][3]!!.text.toString() == buttons[2][4]!!.text.toString() && buttons[1][3]!!.text.toString() == buttons[3][5]!!.text.toString() && buttons[1][3]!!.text.toString() != "")
+        else if ((buttons[1][3]!!.text.toString() == buttons[2][4]!!.text.toString() && buttons[1][3]!!.text.toString() == buttons[3][5]!!.text.toString() && buttons[1][3]!!.text.toString() == buttons[4][6]!!.text.toString() && buttons[1][3]!!.text.toString() != "")
             && buttons[1][3]!!.text.toString() == "o"
             && buttons[0][2]!!.text.toString() == ""
             && buttons[0][2]!!.text.toString() != "x"
@@ -2964,8 +2950,8 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
             buttons[0][2]?.setText("o")!!
             player1Turn = !player1Turn
 
-        } else if ((buttons[2][4]!!.text.toString() == buttons[0][2]!!.text.toString() && buttons[2][4]!!.text.toString() == buttons[3][5]!!.text.toString() && buttons[2][4]!!.text.toString() != ""
-                    || buttons[2][4]!!.text.toString() == buttons[4][6]!!.text.toString() && buttons[2][4]!!.text.toString() == buttons[3][5]!!.text.toString() && buttons[2][4]!!.text.toString() != "")
+        } else if ((buttons[2][4]!!.text.toString() == buttons[0][2]!!.text.toString() && buttons[2][4]!!.text.toString() == buttons[3][5]!!.text.toString() && buttons[2][4]!!.text.toString() == buttons[4][6]!!.text.toString() && buttons[2][4]!!.text.toString() != ""
+                    || buttons[2][4]!!.text.toString() == buttons[4][6]!!.text.toString() && buttons[2][4]!!.text.toString() == buttons[3][5]!!.text.toString() && buttons[2][4]!!.text.toString() == buttons[5][7]!!.text.toString() && buttons[2][4]!!.text.toString() != "")
             && buttons[2][4]!!.text.toString() == "o"
             && buttons[1][3]!!.text.toString() == ""
             && buttons[1][3]!!.text.toString() != "x"
@@ -2975,9 +2961,8 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
             buttons[1][3]?.setText("o")!!
             player1Turn = !player1Turn
 
-        } else if ((buttons[3][5]!!.text.toString() == buttons[1][3]!!.text.toString() && buttons[3][5]!!.text.toString() == buttons[0][2]!!.text.toString() && buttons[3][5]!!.text.toString() != ""
-                    || buttons[3][5]!!.text.toString() == buttons[1][3]!!.text.toString() && buttons[3][5]!!.text.toString() == buttons[4][6]!!.text.toString() && buttons[3][5]!!.text.toString() != ""
-                    || buttons[3][5]!!.text.toString() == buttons[5][7]!!.text.toString() && buttons[3][5]!!.text.toString() == buttons[4][6]!!.text.toString() && buttons[3][5]!!.text.toString() != ""
+        } else if ((buttons[3][5]!!.text.toString() == buttons[1][3]!!.text.toString() && buttons[3][5]!!.text.toString() == buttons[0][2]!!.text.toString() && buttons[3][5]!!.text.toString() == buttons[4][6]!!.text.toString() && buttons[3][5]!!.text.toString() != ""
+                    || buttons[3][5]!!.text.toString() == buttons[1][3]!!.text.toString() && buttons[3][5]!!.text.toString() == buttons[4][6]!!.text.toString() && buttons[3][5]!!.text.toString() == buttons[5][7]!!.text.toString() && buttons[3][5]!!.text.toString() != ""
                     )
             && buttons[3][5]!!.text.toString() == "o"
             && buttons[2][4]!!.text.toString() == ""
@@ -2988,9 +2973,8 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
             buttons[2][4]?.setText("o")!!
             player1Turn = !player1Turn
 
-        } else if ((buttons[0][2]!!.text.toString() == buttons[2][4]!!.text.toString() && buttons[2][4]!!.text.toString() == buttons[1][3]!!.text.toString() && buttons[2][4]!!.text.toString() != ""
-                    || buttons[2][4]!!.text.toString() == buttons[4][6]!!.text.toString() && buttons[2][4]!!.text.toString() == buttons[1][3]!!.text.toString() && buttons[2][4]!!.text.toString() != ""
-                    || buttons[2][4]!!.text.toString() == buttons[4][6]!!.text.toString() && buttons[2][4]!!.text.toString() == buttons[5][7]!!.text.toString() && buttons[2][4]!!.text.toString() != ""
+        } else if ((buttons[0][2]!!.text.toString() == buttons[2][4]!!.text.toString() && buttons[2][4]!!.text.toString() == buttons[1][3]!!.text.toString() && buttons[2][4]!!.text.toString() == buttons[4][6]!!.text.toString() && buttons[2][4]!!.text.toString() != ""
+                    || buttons[2][4]!!.text.toString() == buttons[4][6]!!.text.toString() && buttons[2][4]!!.text.toString() == buttons[1][3]!!.text.toString() && buttons[2][4]!!.text.toString() == buttons[5][7]!!.text.toString() && buttons[2][4]!!.text.toString() != ""
                     )
             && buttons[2][4]!!.text.toString() == "o"
             && buttons[3][5]!!.text.toString() == ""
@@ -3001,8 +2985,8 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
             buttons[3][5]?.setText("o")!!
             player1Turn = !player1Turn
 
-        } else if ((buttons[3][5]!!.text.toString() == buttons[1][3]!!.text.toString() && buttons[3][5]!!.text.toString() == buttons[2][4]!!.text.toString() && buttons[3][5]!!.text.toString() != ""
-                    || buttons[3][5]!!.text.toString() == buttons[2][4]!!.text.toString() && buttons[3][5]!!.text.toString() == buttons[5][7]!!.text.toString() && buttons[3][5]!!.text.toString() != ""
+        } else if ((buttons[3][5]!!.text.toString() == buttons[1][3]!!.text.toString() && buttons[3][5]!!.text.toString() == buttons[2][4]!!.text.toString() && buttons[3][5]!!.text.toString() == buttons[0][2]!!.text.toString() && buttons[3][5]!!.text.toString() != ""
+                    || buttons[3][5]!!.text.toString() == buttons[2][4]!!.text.toString() && buttons[3][5]!!.text.toString() == buttons[5][7]!!.text.toString() && buttons[3][5]!!.text.toString() == buttons[1][3]!!.text.toString() && buttons[3][5]!!.text.toString() != ""
                     )
             && buttons[3][5]!!.text.toString() == "o"
             && buttons[4][6]!!.text.toString() == ""
@@ -3013,7 +2997,7 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
             buttons[4][6]?.setText("o")!!
             player1Turn = !player1Turn
 
-        } else if ((buttons[4][6]!!.text.toString() == buttons[3][5]!!.text.toString() && buttons[4][6]!!.text.toString() == buttons[2][4]!!.text.toString() && buttons[4][6]!!.text.toString() != "")
+        } else if ((buttons[4][6]!!.text.toString() == buttons[3][5]!!.text.toString() && buttons[4][6]!!.text.toString() == buttons[2][4]!!.text.toString() && buttons[4][6]!!.text.toString() == buttons[1][3]!!.text.toString() && buttons[4][6]!!.text.toString() != "")
             && buttons[4][6]!!.text.toString() == "o"
             && buttons[5][7]!!.text.toString() == ""
             && buttons[5][7]!!.text.toString() != "x"
@@ -3026,7 +3010,7 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
         }
 
         /*************************-3-**************************/
-        else if ((buttons[1][2]!!.text.toString() == buttons[2][3]!!.text.toString() && buttons[1][2]!!.text.toString() == buttons[3][4]!!.text.toString() && buttons[1][2]!!.text.toString() != "")
+        else if ((buttons[1][2]!!.text.toString() == buttons[2][3]!!.text.toString() && buttons[1][2]!!.text.toString() == buttons[3][4]!!.text.toString() && buttons[1][2]!!.text.toString() == buttons[4][5]!!.text.toString() && buttons[1][2]!!.text.toString() != "")
             && buttons[1][2]!!.text.toString() == "o"
             && buttons[0][1]!!.text.toString() == ""
             && buttons[0][1]!!.text.toString() != "x"
@@ -3036,8 +3020,8 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
             buttons[0][1]?.setText("o")!!
             player1Turn = !player1Turn
 
-        } else if ((buttons[2][3]!!.text.toString() == buttons[0][1]!!.text.toString() && buttons[2][3]!!.text.toString() == buttons[3][4]!!.text.toString() && buttons[2][3]!!.text.toString() != ""
-                    || buttons[2][3]!!.text.toString() == buttons[4][5]!!.text.toString() && buttons[2][3]!!.text.toString() == buttons[3][4]!!.text.toString() && buttons[2][3]!!.text.toString() != "")
+        } else if ((buttons[2][3]!!.text.toString() == buttons[0][1]!!.text.toString() && buttons[2][3]!!.text.toString() == buttons[3][4]!!.text.toString() && buttons[2][3]!!.text.toString() == buttons[4][5]!!.text.toString() && buttons[2][3]!!.text.toString() != ""
+                    || buttons[2][3]!!.text.toString() == buttons[4][5]!!.text.toString() && buttons[2][3]!!.text.toString() == buttons[3][4]!!.text.toString() && buttons[2][3]!!.text.toString() == buttons[5][6]!!.text.toString() && buttons[2][3]!!.text.toString() != "")
             && buttons[2][3]!!.text.toString() == "o"
             && buttons[1][2]!!.text.toString() == ""
             && buttons[1][2]!!.text.toString() != "x"
@@ -3047,9 +3031,9 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
             buttons[1][2]?.setText("o")!!
             player1Turn = !player1Turn
 
-        } else if ((buttons[3][4]!!.text.toString() == buttons[1][2]!!.text.toString() && buttons[3][4]!!.text.toString() == buttons[0][1]!!.text.toString() && buttons[3][4]!!.text.toString() != ""
-                    || buttons[3][4]!!.text.toString() == buttons[1][2]!!.text.toString() && buttons[3][4]!!.text.toString() == buttons[4][5]!!.text.toString() && buttons[3][4]!!.text.toString() != ""
-                    || buttons[3][4]!!.text.toString() == buttons[5][6]!!.text.toString() && buttons[3][4]!!.text.toString() == buttons[4][5]!!.text.toString() && buttons[3][4]!!.text.toString() != ""
+        } else if ((buttons[3][4]!!.text.toString() == buttons[1][2]!!.text.toString() && buttons[3][4]!!.text.toString() == buttons[0][1]!!.text.toString() && buttons[3][4]!!.text.toString() == buttons[4][5]!!.text.toString() && buttons[3][4]!!.text.toString() != ""
+                    || buttons[3][4]!!.text.toString() == buttons[1][2]!!.text.toString() && buttons[3][4]!!.text.toString() == buttons[4][5]!!.text.toString() && buttons[3][4]!!.text.toString() == buttons[5][6]!!.text.toString() && buttons[3][4]!!.text.toString() != ""
+                    || buttons[3][4]!!.text.toString() == buttons[5][6]!!.text.toString() && buttons[3][4]!!.text.toString() == buttons[4][5]!!.text.toString() && buttons[3][4]!!.text.toString() == buttons[6][7]!!.text.toString() && buttons[3][4]!!.text.toString() != ""
                     )
             && buttons[3][4]!!.text.toString() == "o"
             && buttons[2][3]!!.text.toString() == ""
@@ -3060,11 +3044,11 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
             buttons[2][3]?.setText("o")!!
             player1Turn = !player1Turn
 
-        } else if ((buttons[0][1]!!.text.toString() == buttons[2][3]!!.text.toString() && buttons[2][3]!!.text.toString() == buttons[1][2]!!.text.toString() && buttons[2][3]!!.text.toString() != "" && buttons[2][3]!!.text.toString() == "o"
-                    || buttons[2][3]!!.text.toString() == buttons[4][5]!!.text.toString() && buttons[2][3]!!.text.toString() == buttons[1][2]!!.text.toString() && buttons[2][3]!!.text.toString() != "" && buttons[2][3]!!.text.toString() == "o"
-                    || buttons[2][3]!!.text.toString() == buttons[4][5]!!.text.toString() && buttons[2][3]!!.text.toString() == buttons[5][6]!!.text.toString() && buttons[2][3]!!.text.toString() != "" && buttons[2][3]!!.text.toString() == "o"
-                    || buttons[6][7]!!.text.toString() == buttons[4][5]!!.text.toString() && buttons[4][5]!!.text.toString() == buttons[5][6]!!.text.toString() && buttons[4][5]!!.text.toString() != "" && buttons[4][5]!!.text.toString() == "o"
+        } else if ((buttons[0][1]!!.text.toString() == buttons[2][3]!!.text.toString() && buttons[2][3]!!.text.toString() == buttons[1][2]!!.text.toString() && buttons[2][3]!!.text.toString() == buttons[4][5]!!.text.toString() && buttons[2][3]!!.text.toString() != ""
+                    || buttons[2][3]!!.text.toString() == buttons[4][5]!!.text.toString() && buttons[2][3]!!.text.toString() == buttons[1][2]!!.text.toString() && buttons[2][3]!!.text.toString() == buttons[5][6]!!.text.toString() && buttons[2][3]!!.text.toString() != ""
+                    || buttons[2][3]!!.text.toString() == buttons[4][5]!!.text.toString() && buttons[2][3]!!.text.toString() == buttons[5][6]!!.text.toString() && buttons[2][3]!!.text.toString() == buttons[6][7]!!.text.toString() && buttons[2][3]!!.text.toString() != ""
                     )
+            && buttons[2][3]!!.text.toString() == "o"
             && buttons[3][4]!!.text.toString() == ""
             && buttons[3][4]!!.text.toString() != "x"
         ) {
@@ -3073,9 +3057,9 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
             buttons[3][4]?.setText("o")!!
             player1Turn = !player1Turn
 
-        } else if ((buttons[3][4]!!.text.toString() == buttons[1][2]!!.text.toString() && buttons[3][4]!!.text.toString() == buttons[2][3]!!.text.toString() && buttons[3][4]!!.text.toString() != ""
-                    || buttons[3][4]!!.text.toString() == buttons[2][3]!!.text.toString() && buttons[3][4]!!.text.toString() == buttons[5][6]!!.text.toString() && buttons[3][4]!!.text.toString() != ""
-                    || buttons[3][4]!!.text.toString() == buttons[6][7]!!.text.toString() && buttons[3][4]!!.text.toString() == buttons[5][6]!!.text.toString() && buttons[3][4]!!.text.toString() != ""
+        } else if ((buttons[3][4]!!.text.toString() == buttons[1][2]!!.text.toString() && buttons[3][4]!!.text.toString() == buttons[2][3]!!.text.toString() && buttons[3][4]!!.text.toString() == buttons[0][1]!!.text.toString() && buttons[3][4]!!.text.toString() != ""
+                    || buttons[3][4]!!.text.toString() == buttons[2][3]!!.text.toString() && buttons[3][4]!!.text.toString() == buttons[5][6]!!.text.toString() && buttons[3][4]!!.text.toString() == buttons[1][2]!!.text.toString() && buttons[3][4]!!.text.toString() != ""
+                    || buttons[3][4]!!.text.toString() == buttons[6][7]!!.text.toString() && buttons[3][4]!!.text.toString() == buttons[5][6]!!.text.toString() && buttons[3][4]!!.text.toString() == buttons[2][3]!!.text.toString() && buttons[3][4]!!.text.toString() != ""
                     )
             && buttons[3][4]!!.text.toString() == "o"
             && buttons[4][5]!!.text.toString() == ""
@@ -3086,8 +3070,8 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
             buttons[4][5]?.setText("o")!!
             player1Turn = !player1Turn
 
-        } else if ((buttons[3][4]!!.text.toString() == buttons[4][5]!!.text.toString() && buttons[3][4]!!.text.toString() == buttons[2][3]!!.text.toString() && buttons[3][4]!!.text.toString() != ""
-                    || buttons[3][4]!!.text.toString() == buttons[4][5]!!.text.toString() && buttons[3][4]!!.text.toString() == buttons[6][7]!!.text.toString() && buttons[3][4]!!.text.toString() != ""
+        } else if ((buttons[3][4]!!.text.toString() == buttons[4][5]!!.text.toString() && buttons[3][4]!!.text.toString() == buttons[2][3]!!.text.toString() && buttons[3][4]!!.text.toString() == buttons[1][2]!!.text.toString() && buttons[3][4]!!.text.toString() != ""
+                    || buttons[3][4]!!.text.toString() == buttons[4][5]!!.text.toString() && buttons[3][4]!!.text.toString() == buttons[6][7]!!.text.toString() && buttons[3][4]!!.text.toString() == buttons[2][3]!!.text.toString() && buttons[3][4]!!.text.toString() != ""
                     )
             && buttons[3][4]!!.text.toString() == "o"
             && buttons[5][6]!!.text.toString() == ""
@@ -3098,7 +3082,7 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
             buttons[5][6]?.setText("o")!!
             player1Turn = !player1Turn
 
-        } else if ((buttons[4][5]!!.text.toString() == buttons[3][4]!!.text.toString() && buttons[5][6]!!.text.toString() == buttons[3][4]!!.text.toString() && buttons[3][4]!!.text.toString() != "")
+        } else if ((buttons[4][5]!!.text.toString() == buttons[3][4]!!.text.toString() && buttons[5][6]!!.text.toString() == buttons[3][4]!!.text.toString() && buttons[3][4]!!.text.toString() == buttons[2][3]!!.text.toString() && buttons[3][4]!!.text.toString() != "")
             && buttons[3][4]!!.text.toString() == "o"
             && buttons[6][7]!!.text.toString() == ""
             && buttons[6][7]!!.text.toString() != "x"
@@ -3112,7 +3096,7 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
 
         /*************************-4-***************************/
 
-        else if ((buttons[1][1]!!.text.toString() == buttons[2][2]!!.text.toString() && buttons[1][1]!!.text.toString() == buttons[3][3]!!.text.toString() && buttons[1][1]!!.text.toString() != "")
+        else if ((buttons[1][1]!!.text.toString() == buttons[2][2]!!.text.toString() && buttons[1][1]!!.text.toString() == buttons[3][3]!!.text.toString() && buttons[1][1]!!.text.toString() == buttons[4][4]!!.text.toString() && buttons[1][1]!!.text.toString() != "")
             && buttons[1][1]!!.text.toString() == "o"
             && buttons[0][0]!!.text.toString() == ""
             && buttons[0][0]!!.text.toString() != "x"
@@ -3122,8 +3106,8 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
             buttons[0][0]?.setText("o")!!
             player1Turn = !player1Turn
 
-        } else if ((buttons[3][3]!!.text.toString() == buttons[2][2]!!.text.toString() && buttons[0][0]!!.text.toString() == buttons[3][3]!!.text.toString() && buttons[3][3]!!.text.toString() != ""
-                    || buttons[3][3]!!.text.toString() == buttons[2][2]!!.text.toString() && buttons[4][4]!!.text.toString() == buttons[3][3]!!.text.toString() && buttons[3][3]!!.text.toString() != ""
+        } else if ((buttons[3][3]!!.text.toString() == buttons[2][2]!!.text.toString() && buttons[0][0]!!.text.toString() == buttons[3][3]!!.text.toString() && buttons[3][3]!!.text.toString() == buttons[4][4]!!.text.toString() && buttons[3][3]!!.text.toString() != ""
+                    || buttons[3][3]!!.text.toString() == buttons[2][2]!!.text.toString() && buttons[4][4]!!.text.toString() == buttons[3][3]!!.text.toString() && buttons[3][3]!!.text.toString() == buttons[5][5]!!.text.toString() && buttons[3][3]!!.text.toString() != ""
                     )
             && buttons[3][3]!!.text.toString() == "o"
             && buttons[1][1]!!.text.toString() == ""
@@ -3134,9 +3118,9 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
             buttons[1][1]?.setText("o")!!
             player1Turn = !player1Turn
 
-        } else if ((buttons[3][3]!!.text.toString() == buttons[1][1]!!.text.toString() && buttons[0][0]!!.text.toString() == buttons[3][3]!!.text.toString() && buttons[3][3]!!.text.toString() != ""
-                    || buttons[3][3]!!.text.toString() == buttons[4][4]!!.text.toString() && buttons[1][1]!!.text.toString() == buttons[3][3]!!.text.toString() && buttons[3][3]!!.text.toString() != ""
-                    || buttons[3][3]!!.text.toString() == buttons[4][4]!!.text.toString() && buttons[5][5]!!.text.toString() == buttons[3][3]!!.text.toString() && buttons[3][3]!!.text.toString() != ""
+        } else if ((buttons[3][3]!!.text.toString() == buttons[1][1]!!.text.toString() && buttons[0][0]!!.text.toString() == buttons[3][3]!!.text.toString() && buttons[3][3]!!.text.toString() == buttons[4][4]!!.text.toString() && buttons[3][3]!!.text.toString() != ""
+                    || buttons[3][3]!!.text.toString() == buttons[4][4]!!.text.toString() && buttons[1][1]!!.text.toString() == buttons[3][3]!!.text.toString() && buttons[3][3]!!.text.toString() == buttons[5][5]!!.text.toString() && buttons[3][3]!!.text.toString() != ""
+                    || buttons[3][3]!!.text.toString() == buttons[4][4]!!.text.toString() && buttons[5][5]!!.text.toString() == buttons[3][3]!!.text.toString() && buttons[3][3]!!.text.toString() == buttons[6][6]!!.text.toString() && buttons[3][3]!!.text.toString() != ""
                     )
             && buttons[3][3]!!.text.toString() == "o"
             && buttons[2][2]!!.text.toString() == ""
@@ -3147,10 +3131,10 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
             buttons[2][2]?.setText("o")!!
             player1Turn = !player1Turn
 
-        } else if ((buttons[2][2]!!.text.toString() == buttons[1][1]!!.text.toString() && buttons[0][0]!!.text.toString() == buttons[2][2]!!.text.toString() && buttons[2][2]!!.text.toString() != "" && buttons[2][2]!!.text.toString() == "o"
-                    || buttons[2][2]!!.text.toString() == buttons[4][4]!!.text.toString() && buttons[1][1]!!.text.toString() == buttons[2][2]!!.text.toString() && buttons[2][2]!!.text.toString() != "" && buttons[2][2]!!.text.toString() == "o"
-                    || buttons[2][2]!!.text.toString() == buttons[4][4]!!.text.toString() && buttons[5][5]!!.text.toString() == buttons[2][2]!!.text.toString() && buttons[2][2]!!.text.toString() != "" && buttons[2][2]!!.text.toString() == "o"
-                    || buttons[5][5]!!.text.toString() == buttons[4][4]!!.text.toString() && buttons[5][5]!!.text.toString() == buttons[6][6]!!.text.toString() && buttons[6][6]!!.text.toString() != "" && buttons[6][6]!!.text.toString() == "o"
+        } else if ((buttons[2][2]!!.text.toString() == buttons[1][1]!!.text.toString() && buttons[0][0]!!.text.toString() == buttons[2][2]!!.text.toString() && buttons[2][2]!!.text.toString() == buttons[4][4]!!.text.toString() && buttons[2][2]!!.text.toString() != "" && buttons[2][2]!!.text.toString() == "o"
+                    || buttons[2][2]!!.text.toString() == buttons[4][4]!!.text.toString() && buttons[1][1]!!.text.toString() == buttons[2][2]!!.text.toString() && buttons[2][2]!!.text.toString() == buttons[5][5]!!.text.toString() && buttons[2][2]!!.text.toString() != "" && buttons[2][2]!!.text.toString() == "o"
+                    || buttons[2][2]!!.text.toString() == buttons[4][4]!!.text.toString() && buttons[5][5]!!.text.toString() == buttons[2][2]!!.text.toString() && buttons[2][2]!!.text.toString() == buttons[6][6]!!.text.toString() && buttons[2][2]!!.text.toString() != "" && buttons[2][2]!!.text.toString() == "o"
+                    || buttons[5][5]!!.text.toString() == buttons[4][4]!!.text.toString() && buttons[5][5]!!.text.toString() == buttons[6][6]!!.text.toString() && buttons[5][5]!!.text.toString() == buttons[7][7]!!.text.toString() && buttons[6][6]!!.text.toString() != "" && buttons[6][6]!!.text.toString() == "o"
                     )
             && buttons[3][3]!!.text.toString() == ""
             && buttons[3][3]!!.text.toString() != "x"
@@ -3160,10 +3144,10 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
             buttons[3][3]?.setText("o")!!
             player1Turn = !player1Turn
 
-        } else if ((buttons[2][2]!!.text.toString() == buttons[1][1]!!.text.toString() && buttons[3][3]!!.text.toString() == buttons[2][2]!!.text.toString() && buttons[2][2]!!.text.toString() != "" && buttons[2][2]!!.text.toString() == "o"
-                    || buttons[2][2]!!.text.toString() == buttons[3][3]!!.text.toString() && buttons[5][5]!!.text.toString() == buttons[2][2]!!.text.toString() && buttons[2][2]!!.text.toString() != "" && buttons[2][2]!!.text.toString() == "o"
-                    || buttons[5][5]!!.text.toString() == buttons[6][6]!!.text.toString() && buttons[5][5]!!.text.toString() == buttons[3][3]!!.text.toString() && buttons[5][5]!!.text.toString() != "" && buttons[5][5]!!.text.toString() == "o"
-                    || buttons[5][5]!!.text.toString() == buttons[6][6]!!.text.toString() && buttons[5][5]!!.text.toString() == buttons[7][7]!!.text.toString() && buttons[5][5]!!.text.toString() != "" && buttons[5][5]!!.text.toString() == "o"
+        } else if ((buttons[2][2]!!.text.toString() == buttons[1][1]!!.text.toString() && buttons[3][3]!!.text.toString() == buttons[2][2]!!.text.toString() && buttons[2][2]!!.text.toString() == buttons[0][0]!!.text.toString() && buttons[2][2]!!.text.toString() != "" && buttons[2][2]!!.text.toString() == "o"
+                    || buttons[2][2]!!.text.toString() == buttons[3][3]!!.text.toString() && buttons[5][5]!!.text.toString() == buttons[2][2]!!.text.toString() && buttons[2][2]!!.text.toString() == buttons[1][1]!!.text.toString() && buttons[2][2]!!.text.toString() != "" && buttons[2][2]!!.text.toString() == "o"
+                    || buttons[5][5]!!.text.toString() == buttons[6][6]!!.text.toString() && buttons[5][5]!!.text.toString() == buttons[3][3]!!.text.toString() && buttons[5][5]!!.text.toString() == buttons[2][2]!!.text.toString() && buttons[5][5]!!.text.toString() != "" && buttons[5][5]!!.text.toString() == "o"
+                    || buttons[5][5]!!.text.toString() == buttons[6][6]!!.text.toString() && buttons[5][5]!!.text.toString() == buttons[7][7]!!.text.toString() && buttons[5][5]!!.text.toString() == buttons[3][3]!!.text.toString() && buttons[5][5]!!.text.toString() != "" && buttons[5][5]!!.text.toString() == "o"
                     )
             && buttons[4][4]!!.text.toString() == ""
             && buttons[4][4]!!.text.toString() != "x"
@@ -3173,9 +3157,9 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
             buttons[4][4]?.setText("o")!!
             player1Turn = !player1Turn
 
-        } else if ((buttons[2][2]!!.text.toString() == buttons[4][4]!!.text.toString() && buttons[4][4]!!.text.toString() == buttons[3][3]!!.text.toString() && buttons[4][4]!!.text.toString() != ""
-                    || buttons[6][6]!!.text.toString() == buttons[4][4]!!.text.toString() && buttons[4][4]!!.text.toString() == buttons[3][3]!!.text.toString() && buttons[4][4]!!.text.toString() != ""
-                    || buttons[6][6]!!.text.toString() == buttons[4][4]!!.text.toString() && buttons[4][4]!!.text.toString() == buttons[7][7]!!.text.toString() && buttons[4][4]!!.text.toString() != ""
+        } else if ((buttons[2][2]!!.text.toString() == buttons[4][4]!!.text.toString() && buttons[4][4]!!.text.toString() == buttons[3][3]!!.text.toString() && buttons[4][4]!!.text.toString() == buttons[1][1]!!.text.toString() && buttons[4][4]!!.text.toString() != ""
+                    || buttons[6][6]!!.text.toString() == buttons[4][4]!!.text.toString() && buttons[4][4]!!.text.toString() == buttons[3][3]!!.text.toString() && buttons[4][4]!!.text.toString() == buttons[2][2]!!.text.toString() && buttons[4][4]!!.text.toString() != ""
+                    || buttons[6][6]!!.text.toString() == buttons[4][4]!!.text.toString() && buttons[4][4]!!.text.toString() == buttons[7][7]!!.text.toString() && buttons[4][4]!!.text.toString() == buttons[3][3]!!.text.toString() && buttons[4][4]!!.text.toString() != ""
                     )
             && buttons[4][4]!!.text.toString() == "o"
             && buttons[5][5]!!.text.toString() == ""
@@ -3186,8 +3170,8 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
             buttons[5][5]?.setText("o")!!
             player1Turn = !player1Turn
 
-        } else if ((buttons[5][5]!!.text.toString() == buttons[4][4]!!.text.toString() && buttons[4][4]!!.text.toString() == buttons[3][3]!!.text.toString() && buttons[4][4]!!.text.toString() != ""
-                    || buttons[5][5]!!.text.toString() == buttons[4][4]!!.text.toString() && buttons[4][4]!!.text.toString() == buttons[7][7]!!.text.toString() && buttons[4][4]!!.text.toString() != ""
+        } else if ((buttons[5][5]!!.text.toString() == buttons[4][4]!!.text.toString() && buttons[4][4]!!.text.toString() == buttons[3][3]!!.text.toString() && buttons[4][4]!!.text.toString() == buttons[2][2]!!.text.toString() && buttons[4][4]!!.text.toString() != ""
+                    || buttons[5][5]!!.text.toString() == buttons[4][4]!!.text.toString() && buttons[4][4]!!.text.toString() == buttons[7][7]!!.text.toString() && buttons[4][4]!!.text.toString() == buttons[3][3]!!.text.toString() && buttons[4][4]!!.text.toString() != ""
                     )
             && buttons[4][4]!!.text.toString() == "o"
             && buttons[6][6]!!.text.toString() == ""
@@ -3198,7 +3182,7 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
             buttons[6][6]?.setText("o")!!
             player1Turn = !player1Turn
 
-        } else if ((buttons[5][5]!!.text.toString() == buttons[4][4]!!.text.toString() && buttons[4][4]!!.text.toString() == buttons[6][6]!!.text.toString() && buttons[4][4]!!.text.toString() != "")
+        } else if ((buttons[5][5]!!.text.toString() == buttons[4][4]!!.text.toString() && buttons[4][4]!!.text.toString() == buttons[6][6]!!.text.toString() && buttons[4][4]!!.text.toString() == buttons[3][3]!!.text.toString() && buttons[4][4]!!.text.toString() != "")
             && buttons[4][4]!!.text.toString() == "o"
             && buttons[7][7]!!.text.toString() == ""
             && buttons[7][7]!!.text.toString() != "x"
@@ -3210,18 +3194,18 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
 
         }
         /**********************-5-*************************/
-        else if ((buttons[2][1]!!.text.toString() == buttons[3][2]!!.text.toString() && buttons[2][1]!!.text.toString() == buttons[4][3]!!.text.toString() && buttons[2][1]!!.text.toString() != "")
+        else if ((buttons[2][1]!!.text.toString() == buttons[3][2]!!.text.toString() && buttons[2][1]!!.text.toString() == buttons[4][3]!!.text.toString() && buttons[2][1]!!.text.toString() == buttons[5][4]!!.text.toString() && buttons[2][1]!!.text.toString() != "")
             && buttons[2][1]!!.text.toString() == "o"
             && buttons[1][0]!!.text.toString() == ""
-            && buttons[1][1]!!.text.toString() != "x"
+            && buttons[1][0]!!.text.toString() != "x"
         ) {
 
             buttons[1][0]?.background = ContextCompat.getDrawable(this, R.drawable.o)
             buttons[1][0]?.setText("o")!!
             player1Turn = !player1Turn
 
-        } else if ((buttons[3][2]!!.text.toString() == buttons[1][0]!!.text.toString() && buttons[3][2]!!.text.toString() == buttons[4][3]!!.text.toString() && buttons[3][2]!!.text.toString() != ""
-                    || buttons[3][2]!!.text.toString() == buttons[5][4]!!.text.toString() && buttons[3][2]!!.text.toString() == buttons[4][3]!!.text.toString() && buttons[3][2]!!.text.toString() != "")
+        } else if ((buttons[3][2]!!.text.toString() == buttons[1][0]!!.text.toString() && buttons[3][2]!!.text.toString() == buttons[4][3]!!.text.toString() && buttons[3][2]!!.text.toString() == buttons[5][4]!!.text.toString() && buttons[3][2]!!.text.toString() != ""
+                    || buttons[3][2]!!.text.toString() == buttons[5][4]!!.text.toString() && buttons[3][2]!!.text.toString() == buttons[4][3]!!.text.toString() && buttons[3][2]!!.text.toString() == buttons[6][5]!!.text.toString() && buttons[3][2]!!.text.toString() != "")
             && buttons[3][2]!!.text.toString() == "o"
             && buttons[2][1]!!.text.toString() == ""
             && buttons[2][1]!!.text.toString() != "x"
@@ -3231,9 +3215,9 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
             buttons[2][1]?.setText("o")!!
             player1Turn = !player1Turn
 
-        } else if ((buttons[4][3]!!.text.toString() == buttons[2][1]!!.text.toString() && buttons[4][3]!!.text.toString() == buttons[1][0]!!.text.toString() && buttons[4][3]!!.text.toString() != ""
-                    || buttons[4][3]!!.text.toString() == buttons[2][1]!!.text.toString() && buttons[4][3]!!.text.toString() == buttons[5][4]!!.text.toString() && buttons[4][3]!!.text.toString() != ""
-                    || buttons[4][3]!!.text.toString() == buttons[6][5]!!.text.toString() && buttons[4][3]!!.text.toString() == buttons[5][4]!!.text.toString() && buttons[4][3]!!.text.toString() != ""
+        } else if ((buttons[4][3]!!.text.toString() == buttons[2][1]!!.text.toString() && buttons[4][3]!!.text.toString() == buttons[1][0]!!.text.toString() && buttons[4][3]!!.text.toString() == buttons[5][4]!!.text.toString() && buttons[4][3]!!.text.toString() != ""
+                    || buttons[4][3]!!.text.toString() == buttons[2][1]!!.text.toString() && buttons[4][3]!!.text.toString() == buttons[5][4]!!.text.toString() && buttons[4][3]!!.text.toString() == buttons[6][5]!!.text.toString() && buttons[4][3]!!.text.toString() != ""
+                    || buttons[4][3]!!.text.toString() == buttons[6][5]!!.text.toString() && buttons[4][3]!!.text.toString() == buttons[5][4]!!.text.toString() && buttons[4][3]!!.text.toString() == buttons[7][6]!!.text.toString() && buttons[4][3]!!.text.toString() != ""
                     )
             && buttons[4][3]!!.text.toString() == "o"
             && buttons[3][2]!!.text.toString() == ""
@@ -3244,11 +3228,11 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
             buttons[3][2]?.setText("o")!!
             player1Turn = !player1Turn
 
-        } else if ((buttons[1][0]!!.text.toString() == buttons[3][2]!!.text.toString() && buttons[3][2]!!.text.toString() == buttons[2][1]!!.text.toString() && buttons[3][2]!!.text.toString() != "" && buttons[3][2]!!.text.toString() == "o"
-                    || buttons[3][2]!!.text.toString() == buttons[5][4]!!.text.toString() && buttons[3][2]!!.text.toString() == buttons[2][1]!!.text.toString() && buttons[3][2]!!.text.toString() != "" && buttons[3][2]!!.text.toString() == "o"
-                    || buttons[3][2]!!.text.toString() == buttons[5][4]!!.text.toString() && buttons[3][2]!!.text.toString() == buttons[6][5]!!.text.toString() && buttons[3][2]!!.text.toString() != "" && buttons[3][2]!!.text.toString() == "o"
-                    || buttons[7][6]!!.text.toString() == buttons[5][4]!!.text.toString() && buttons[5][4]!!.text.toString() == buttons[6][5]!!.text.toString() && buttons[5][4]!!.text.toString() != "" && buttons[5][4]!!.text.toString() == "o"
+        } else if ((buttons[1][0]!!.text.toString() == buttons[3][2]!!.text.toString() && buttons[3][2]!!.text.toString() == buttons[2][1]!!.text.toString() && buttons[3][2]!!.text.toString() == buttons[5][4]!!.text.toString() && buttons[3][2]!!.text.toString() != ""
+                    || buttons[3][2]!!.text.toString() == buttons[5][4]!!.text.toString() && buttons[3][2]!!.text.toString() == buttons[2][1]!!.text.toString() && buttons[3][2]!!.text.toString() == buttons[6][5]!!.text.toString() && buttons[3][2]!!.text.toString() != ""
+                    || buttons[3][2]!!.text.toString() == buttons[5][4]!!.text.toString() && buttons[3][2]!!.text.toString() == buttons[6][5]!!.text.toString() && buttons[3][2]!!.text.toString() == buttons[7][6]!!.text.toString() && buttons[3][2]!!.text.toString() != ""
                     )
+            && buttons[3][2]!!.text.toString() == "o"
             && buttons[4][3]!!.text.toString() == ""
             && buttons[4][3]!!.text.toString() != "x"
         ) {
@@ -3257,9 +3241,9 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
             buttons[4][3]?.setText("o")!!
             player1Turn = !player1Turn
 
-        } else if ((buttons[4][3]!!.text.toString() == buttons[2][1]!!.text.toString() && buttons[4][3]!!.text.toString() == buttons[3][2]!!.text.toString() && buttons[4][3]!!.text.toString() != ""
-                    || buttons[4][3]!!.text.toString() == buttons[3][2]!!.text.toString() && buttons[4][3]!!.text.toString() == buttons[6][5]!!.text.toString() && buttons[4][3]!!.text.toString() != ""
-                    || buttons[4][3]!!.text.toString() == buttons[7][6]!!.text.toString() && buttons[4][3]!!.text.toString() == buttons[6][5]!!.text.toString() && buttons[4][3]!!.text.toString() != ""
+        } else if ((buttons[4][3]!!.text.toString() == buttons[2][1]!!.text.toString() && buttons[4][3]!!.text.toString() == buttons[3][2]!!.text.toString() && buttons[4][3]!!.text.toString() == buttons[1][0]!!.text.toString() && buttons[4][3]!!.text.toString() != ""
+                    || buttons[4][3]!!.text.toString() == buttons[3][2]!!.text.toString() && buttons[4][3]!!.text.toString() == buttons[6][5]!!.text.toString() && buttons[4][3]!!.text.toString() == buttons[2][1]!!.text.toString() && buttons[4][3]!!.text.toString() != ""
+                    || buttons[4][3]!!.text.toString() == buttons[7][6]!!.text.toString() && buttons[4][3]!!.text.toString() == buttons[6][5]!!.text.toString() && buttons[4][3]!!.text.toString() == buttons[3][2]!!.text.toString() && buttons[4][3]!!.text.toString() != ""
                     )
             && buttons[4][3]!!.text.toString() == "o"
             && buttons[5][4]!!.text.toString() == ""
@@ -3270,8 +3254,8 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
             buttons[5][4]?.setText("o")!!
             player1Turn = !player1Turn
 
-        } else if ((buttons[4][3]!!.text.toString() == buttons[5][4]!!.text.toString() && buttons[4][3]!!.text.toString() == buttons[3][2]!!.text.toString() && buttons[4][3]!!.text.toString() != ""
-                    || buttons[4][3]!!.text.toString() == buttons[5][4]!!.text.toString() && buttons[4][3]!!.text.toString() == buttons[7][6]!!.text.toString() && buttons[4][3]!!.text.toString() != ""
+        } else if ((buttons[4][3]!!.text.toString() == buttons[5][4]!!.text.toString() && buttons[4][3]!!.text.toString() == buttons[3][2]!!.text.toString() && buttons[4][3]!!.text.toString() == buttons[2][1]!!.text.toString() && buttons[4][3]!!.text.toString() != ""
+                    || buttons[4][3]!!.text.toString() == buttons[5][4]!!.text.toString() && buttons[4][3]!!.text.toString() == buttons[7][6]!!.text.toString() && buttons[4][3]!!.text.toString() == buttons[3][2]!!.text.toString() && buttons[4][3]!!.text.toString() != ""
                     )
             && buttons[4][3]!!.text.toString() == "o"
             && buttons[6][5]!!.text.toString() == ""
@@ -3282,7 +3266,7 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
             buttons[6][5]?.setText("o")!!
             player1Turn = !player1Turn
 
-        } else if ((buttons[5][4]!!.text.toString() == buttons[4][3]!!.text.toString() && buttons[6][5]!!.text.toString() == buttons[4][3]!!.text.toString() && buttons[4][3]!!.text.toString() != "")
+        } else if ((buttons[5][4]!!.text.toString() == buttons[4][3]!!.text.toString() && buttons[6][5]!!.text.toString() == buttons[4][3]!!.text.toString() && buttons[4][3]!!.text.toString() == buttons[3][2]!!.text.toString() && buttons[4][3]!!.text.toString() != "")
             && buttons[4][3]!!.text.toString() == "o"
             && buttons[7][6]!!.text.toString() == ""
             && buttons[7][6]!!.text.toString() != "x"
@@ -3294,7 +3278,7 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
 
         }
         /***********************-6-************************/
-        else if ((buttons[3][1]!!.text.toString() == buttons[4][2]!!.text.toString() && buttons[3][1]!!.text.toString() == buttons[5][3]!!.text.toString() && buttons[3][1]!!.text.toString() != "")
+        else if ((buttons[3][1]!!.text.toString() == buttons[4][2]!!.text.toString() && buttons[3][1]!!.text.toString() == buttons[5][3]!!.text.toString() && buttons[3][1]!!.text.toString() == buttons[6][4]!!.text.toString() && buttons[3][1]!!.text.toString() != "")
             && buttons[3][1]!!.text.toString() == "o"
             && buttons[2][0]!!.text.toString() == ""
             && buttons[2][0]!!.text.toString() != "x"
@@ -3304,8 +3288,8 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
             buttons[2][0]?.setText("o")!!
             player1Turn = !player1Turn
 
-        } else if ((buttons[4][2]!!.text.toString() == buttons[2][0]!!.text.toString() && buttons[4][2]!!.text.toString() == buttons[5][3]!!.text.toString() && buttons[4][2]!!.text.toString() != ""
-                    || buttons[4][2]!!.text.toString() == buttons[6][4]!!.text.toString() && buttons[4][2]!!.text.toString() == buttons[5][3]!!.text.toString() && buttons[4][2]!!.text.toString() != "")
+        } else if ((buttons[4][2]!!.text.toString() == buttons[2][0]!!.text.toString() && buttons[4][2]!!.text.toString() == buttons[5][3]!!.text.toString() && buttons[4][2]!!.text.toString() == buttons[6][4]!!.text.toString() && buttons[4][2]!!.text.toString() != ""
+                    || buttons[4][2]!!.text.toString() == buttons[6][4]!!.text.toString() && buttons[4][2]!!.text.toString() == buttons[5][3]!!.text.toString() && buttons[4][2]!!.text.toString() == buttons[7][5]!!.text.toString() && buttons[4][2]!!.text.toString() != "")
             && buttons[4][2]!!.text.toString() == "o"
             && buttons[3][1]!!.text.toString() == ""
             && buttons[3][1]!!.text.toString() != "x"
@@ -3315,9 +3299,8 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
             buttons[3][1]?.setText("o")!!
             player1Turn = !player1Turn
 
-        } else if ((buttons[5][3]!!.text.toString() == buttons[3][1]!!.text.toString() && buttons[5][3]!!.text.toString() == buttons[2][0]!!.text.toString() && buttons[5][3]!!.text.toString() != ""
-                    || buttons[5][3]!!.text.toString() == buttons[3][1]!!.text.toString() && buttons[5][3]!!.text.toString() == buttons[6][4]!!.text.toString() && buttons[5][3]!!.text.toString() != ""
-                    || buttons[5][3]!!.text.toString() == buttons[7][5]!!.text.toString() && buttons[5][3]!!.text.toString() == buttons[6][4]!!.text.toString() && buttons[5][3]!!.text.toString() != ""
+        } else if ((buttons[5][3]!!.text.toString() == buttons[3][1]!!.text.toString() && buttons[5][3]!!.text.toString() == buttons[2][0]!!.text.toString() && buttons[5][3]!!.text.toString() == buttons[6][4]!!.text.toString() && buttons[5][3]!!.text.toString() != ""
+                    || buttons[5][3]!!.text.toString() == buttons[3][1]!!.text.toString() && buttons[5][3]!!.text.toString() == buttons[6][4]!!.text.toString() && buttons[5][3]!!.text.toString() == buttons[7][5]!!.text.toString() && buttons[5][3]!!.text.toString() != ""
                     )
             && buttons[5][3]!!.text.toString() == "o"
             && buttons[4][2]!!.text.toString() == ""
@@ -3328,9 +3311,8 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
             buttons[4][2]?.setText("o")!!
             player1Turn = !player1Turn
 
-        } else if ((buttons[2][0]!!.text.toString() == buttons[4][2]!!.text.toString() && buttons[4][2]!!.text.toString() == buttons[3][1]!!.text.toString() && buttons[4][2]!!.text.toString() != ""
-                    || buttons[4][2]!!.text.toString() == buttons[6][4]!!.text.toString() && buttons[4][2]!!.text.toString() == buttons[3][1]!!.text.toString() && buttons[4][2]!!.text.toString() != ""
-                    || buttons[4][2]!!.text.toString() == buttons[6][4]!!.text.toString() && buttons[4][2]!!.text.toString() == buttons[7][5]!!.text.toString() && buttons[4][2]!!.text.toString() != ""
+        } else if ((buttons[2][0]!!.text.toString() == buttons[4][2]!!.text.toString() && buttons[4][2]!!.text.toString() == buttons[3][1]!!.text.toString() && buttons[4][2]!!.text.toString() == buttons[6][4]!!.text.toString() && buttons[4][2]!!.text.toString() != ""
+                    || buttons[4][2]!!.text.toString() == buttons[6][4]!!.text.toString() && buttons[4][2]!!.text.toString() == buttons[3][1]!!.text.toString() && buttons[4][2]!!.text.toString() == buttons[7][5]!!.text.toString() && buttons[4][2]!!.text.toString() != ""
                     )
             && buttons[4][2]!!.text.toString() == "o"
             && buttons[5][3]!!.text.toString() == ""
@@ -3341,8 +3323,8 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
             buttons[5][3]?.setText("o")!!
             player1Turn = !player1Turn
 
-        } else if ((buttons[5][3]!!.text.toString() == buttons[3][1]!!.text.toString() && buttons[5][3]!!.text.toString() == buttons[4][2]!!.text.toString() && buttons[5][3]!!.text.toString() != ""
-                    || buttons[5][3]!!.text.toString() == buttons[4][2]!!.text.toString() && buttons[5][3]!!.text.toString() == buttons[7][5]!!.text.toString() && buttons[5][3]!!.text.toString() != ""
+        } else if ((buttons[5][3]!!.text.toString() == buttons[3][1]!!.text.toString() && buttons[5][3]!!.text.toString() == buttons[4][2]!!.text.toString() && buttons[5][3]!!.text.toString() == buttons[2][0]!!.text.toString() && buttons[5][3]!!.text.toString() != ""
+                    || buttons[5][3]!!.text.toString() == buttons[4][2]!!.text.toString() && buttons[5][3]!!.text.toString() == buttons[7][5]!!.text.toString() && buttons[5][3]!!.text.toString() == buttons[3][1]!!.text.toString() && buttons[5][3]!!.text.toString() != ""
                     )
             && buttons[5][3]!!.text.toString() == "o"
             && buttons[6][4]!!.text.toString() == ""
@@ -3353,7 +3335,7 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
             buttons[6][4]?.setText("o")!!
             player1Turn = !player1Turn
 
-        } else if ((buttons[6][4]!!.text.toString() == buttons[5][3]!!.text.toString() && buttons[6][4]!!.text.toString() == buttons[4][2]!!.text.toString() && buttons[6][4]!!.text.toString() != "")
+        } else if ((buttons[6][4]!!.text.toString() == buttons[5][3]!!.text.toString() && buttons[6][4]!!.text.toString() == buttons[4][2]!!.text.toString() && buttons[6][4]!!.text.toString() == buttons[3][1]!!.text.toString() && buttons[6][4]!!.text.toString() != "")
             && buttons[6][4]!!.text.toString() == "o"
             && buttons[7][5]!!.text.toString() == ""
             && buttons[7][5]!!.text.toString() != "x"
@@ -3365,7 +3347,7 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
 
         }
         /***********************-7-************************/
-        else if ((buttons[4][1]!!.text.toString() == buttons[5][2]!!.text.toString() && buttons[4][1]!!.text.toString() == buttons[6][3]!!.text.toString() && buttons[4][1]!!.text.toString() != "")
+        else if ((buttons[4][1]!!.text.toString() == buttons[5][2]!!.text.toString() && buttons[4][1]!!.text.toString() == buttons[6][3]!!.text.toString() && buttons[4][1]!!.text.toString() == buttons[7][4]!!.text.toString() && buttons[4][1]!!.text.toString() != "")
             && buttons[4][1]!!.text.toString() == "o"
             && buttons[3][0]!!.text.toString() == ""
             && buttons[3][0]!!.text.toString() != "x"
@@ -3375,8 +3357,7 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
             buttons[3][0]?.setText("o")!!
             player1Turn = !player1Turn
 
-        } else if ((buttons[3][0]!!.text.toString() == buttons[5][2]!!.text.toString() && buttons[5][2]!!.text.toString() == buttons[6][3]!!.text.toString() && buttons[5][2]!!.text.toString() != ""
-                    || buttons[7][4]!!.text.toString() == buttons[5][2]!!.text.toString() && buttons[5][2]!!.text.toString() == buttons[6][3]!!.text.toString() && buttons[5][2]!!.text.toString() != ""
+        } else if ((buttons[3][0]!!.text.toString() == buttons[5][2]!!.text.toString() && buttons[5][2]!!.text.toString() == buttons[6][3]!!.text.toString() && buttons[5][2]!!.text.toString() == buttons[7][4]!!.text.toString() && buttons[5][2]!!.text.toString() != ""
                     )
             && buttons[5][2]!!.text.toString() == "o"
             && buttons[4][1]!!.text.toString() == ""
@@ -3387,8 +3368,7 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
             buttons[4][1]?.setText("o")!!
             player1Turn = !player1Turn
 
-        } else if ((buttons[6][3]!!.text.toString() == buttons[4][1]!!.text.toString() && buttons[3][0]!!.text.toString() == buttons[6][3]!!.text.toString() && buttons[6][3]!!.text.toString() != ""
-                    || buttons[7][4]!!.text.toString() == buttons[6][3]!!.text.toString() && buttons[4][1]!!.text.toString() == buttons[6][3]!!.text.toString() && buttons[6][3]!!.text.toString() != ""
+        } else if ((buttons[6][3]!!.text.toString() == buttons[4][1]!!.text.toString() && buttons[3][0]!!.text.toString() == buttons[6][3]!!.text.toString() && buttons[6][3]!!.text.toString() == buttons[7][4]!!.text.toString() && buttons[6][3]!!.text.toString() != ""
                     )
             && buttons[6][3]!!.text.toString() == "o"
             && buttons[5][2]!!.text.toString() == ""
@@ -3399,8 +3379,7 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
             buttons[5][2]?.setText("o")!!
             player1Turn = !player1Turn
 
-        } else if ((buttons[3][0]!!.text.toString() == buttons[5][2]!!.text.toString() && buttons[5][2]!!.text.toString() == buttons[4][1]!!.text.toString() && buttons[5][2]!!.text.toString() != ""
-                    || buttons[7][4]!!.text.toString() == buttons[5][2]!!.text.toString() && buttons[5][2]!!.text.toString() == buttons[4][1]!!.text.toString() && buttons[5][2]!!.text.toString() != ""
+        } else if ((buttons[3][0]!!.text.toString() == buttons[5][2]!!.text.toString() && buttons[5][2]!!.text.toString() == buttons[4][1]!!.text.toString() && buttons[5][2]!!.text.toString() == buttons[7][4]!!.text.toString() && buttons[5][2]!!.text.toString() != ""
                     )
             && buttons[5][2]!!.text.toString() == "o"
             && buttons[6][3]!!.text.toString() == ""
@@ -3411,7 +3390,7 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
             buttons[6][3]?.setText("o")!!
             player1Turn = !player1Turn
 
-        } else if ((buttons[6][3]!!.text.toString() == buttons[5][2]!!.text.toString() && buttons[5][2]!!.text.toString() == buttons[4][1]!!.text.toString() && buttons[5][2]!!.text.toString() != "")
+        } else if ((buttons[6][3]!!.text.toString() == buttons[5][2]!!.text.toString() && buttons[5][2]!!.text.toString() == buttons[4][1]!!.text.toString() && buttons[5][2]!!.text.toString() == buttons[3][0]!!.text.toString() && buttons[5][2]!!.text.toString() != "")
             && buttons[5][2]!!.text.toString() == "o"
             && buttons[7][4]!!.text.toString() == ""
             && buttons[7][4]!!.text.toString() != "x"
@@ -3424,9 +3403,9 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
         }
     }
 
-    // check for o from TopRight to BottomLift to get 4 O in row
+    // check for o from TopRight to BottomLift to get 5 O in row
     /*** Done ***/
-    private fun topRightBottomLift5InRawO() {
+    private fun topRightBottomLift4InRawO() {
 
         /************************-1-*********************/
         if ((buttons[3][1]!!.text.toString() == buttons[2][2]!!.text.toString() && buttons[3][1]!!.text.toString() == buttons[1][3]!!.text.toString() && buttons[3][1]!!.text.toString() == buttons[4][0]!!.text.toString() && buttons[3][1]!!.text.toString() != "")
@@ -3440,7 +3419,6 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
             player1Turn = !player1Turn
 
         } else if ((buttons[3][1]!!.text.toString() == buttons[2][2]!!.text.toString() && buttons[3][1]!!.text.toString() == buttons[0][4]!!.text.toString() && buttons[3][1]!!.text.toString() == buttons[4][0]!!.text.toString() && buttons[3][1]!!.text.toString() != ""
-                    || buttons[3][1]!!.text.toString() == buttons[2][2]!!.text.toString() && buttons[3][1]!!.text.toString() == buttons[4][0]!!.text.toString() && buttons[3][1]!!.text.toString() == buttons[0][4]!!.text.toString() && buttons[3][1]!!.text.toString() != ""
                     )
             && buttons[3][1]!!.text.toString() == "o"
             && buttons[1][3]!!.text.toString() == ""
@@ -3452,7 +3430,6 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
             player1Turn = !player1Turn
 
         } else if ((buttons[3][1]!!.text.toString() == buttons[1][3]!!.text.toString() && buttons[3][1]!!.text.toString() == buttons[0][4]!!.text.toString() && buttons[3][1]!!.text.toString() == buttons[4][0]!!.text.toString() && buttons[3][1]!!.text.toString() != ""
-                    || buttons[3][1]!!.text.toString() == buttons[1][3]!!.text.toString() && buttons[3][1]!!.text.toString() == buttons[4][0]!!.text.toString() && buttons[3][1]!!.text.toString() == buttons[0][4]!!.text.toString() && buttons[3][1]!!.text.toString() != ""
                     )
             && buttons[3][1]!!.text.toString() == "o"
             && buttons[2][2]!!.text.toString() == ""
@@ -3464,7 +3441,6 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
             player1Turn = !player1Turn
 
         } else if ((buttons[2][2]!!.text.toString() == buttons[1][3]!!.text.toString() && buttons[2][2]!!.text.toString() == buttons[0][4]!!.text.toString() && buttons[2][2]!!.text.toString() == buttons[4][0]!!.text.toString() && buttons[2][2]!!.text.toString() != ""
-                    || buttons[2][2]!!.text.toString() == buttons[1][3]!!.text.toString() && buttons[2][2]!!.text.toString() == buttons[4][0]!!.text.toString() && buttons[2][2]!!.text.toString() == buttons[0][4]!!.text.toString() && buttons[2][2]!!.text.toString() != ""
                     )
             && buttons[2][2]!!.text.toString() == "o"
             && buttons[3][1]!!.text.toString() == ""
@@ -3487,7 +3463,7 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
 
         }
         /*************-2-****************/
-        else if ((buttons[3][2]!!.text.toString() == buttons[2][3]!!.text.toString() && buttons[3][2]!!.text.toString() == buttons[1][4]!!.text.toString() && buttons[3][2]!!.text.toString() != "")
+        else if ((buttons[3][2]!!.text.toString() == buttons[2][3]!!.text.toString() && buttons[3][2]!!.text.toString() == buttons[1][4]!!.text.toString() && buttons[3][2]!!.text.toString() == buttons[4][1]!!.text.toString() && buttons[3][2]!!.text.toString() != "")
             && buttons[3][2]!!.text.toString() == "o"
             && buttons[0][5]!!.text.toString() == ""
             && buttons[0][5]!!.text.toString() != "x"
@@ -3497,8 +3473,8 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
             buttons[0][5]?.setText("o")!!
             player1Turn = !player1Turn
 
-        } else if ((buttons[3][2]!!.text.toString() == buttons[2][3]!!.text.toString() && buttons[3][2]!!.text.toString() == buttons[0][5]!!.text.toString() && buttons[3][2]!!.text.toString() != ""
-                    || buttons[3][2]!!.text.toString() == buttons[2][3]!!.text.toString() && buttons[3][2]!!.text.toString() == buttons[4][1]!!.text.toString() && buttons[3][2]!!.text.toString() != ""
+        } else if ((buttons[3][2]!!.text.toString() == buttons[2][3]!!.text.toString() && buttons[3][2]!!.text.toString() == buttons[0][5]!!.text.toString() && buttons[3][2]!!.text.toString() == buttons[4][1]!!.text.toString() && buttons[3][2]!!.text.toString() != ""
+                    || buttons[3][2]!!.text.toString() == buttons[2][3]!!.text.toString() && buttons[3][2]!!.text.toString() == buttons[4][1]!!.text.toString() && buttons[3][2]!!.text.toString() == buttons[5][0]!!.text.toString() && buttons[3][2]!!.text.toString() != ""
                     )
             && buttons[3][2]!!.text.toString() == "o"
             && buttons[1][4]!!.text.toString() == ""
@@ -3509,9 +3485,8 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
             buttons[1][4]?.setText("o")!!
             player1Turn = !player1Turn
 
-        } else if ((buttons[3][2]!!.text.toString() == buttons[1][4]!!.text.toString() && buttons[3][2]!!.text.toString() == buttons[0][5]!!.text.toString() && buttons[3][2]!!.text.toString() != ""
-                    || buttons[3][2]!!.text.toString() == buttons[1][4]!!.text.toString() && buttons[3][2]!!.text.toString() == buttons[4][1]!!.text.toString() && buttons[3][2]!!.text.toString() != ""
-                    || buttons[3][2]!!.text.toString() == buttons[5][0]!!.text.toString() && buttons[3][2]!!.text.toString() == buttons[4][1]!!.text.toString() && buttons[3][2]!!.text.toString() != ""
+        } else if ((buttons[3][2]!!.text.toString() == buttons[1][4]!!.text.toString() && buttons[3][2]!!.text.toString() == buttons[0][5]!!.text.toString() && buttons[3][2]!!.text.toString() == buttons[4][1]!!.text.toString() && buttons[3][2]!!.text.toString() != ""
+                    || buttons[3][2]!!.text.toString() == buttons[5][0]!!.text.toString() && buttons[3][2]!!.text.toString() == buttons[4][1]!!.text.toString() && buttons[3][2]!!.text.toString() == buttons[1][4]!!.text.toString() && buttons[3][2]!!.text.toString() != ""
                     )
             && buttons[3][2]!!.text.toString() == "o"
             && buttons[2][3]!!.text.toString() == ""
@@ -3522,9 +3497,8 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
             buttons[2][3]?.setText("o")!!
             player1Turn = !player1Turn
 
-        } else if ((buttons[2][3]!!.text.toString() == buttons[1][4]!!.text.toString() && buttons[2][3]!!.text.toString() == buttons[0][5]!!.text.toString() && buttons[2][3]!!.text.toString() != ""
-                    || buttons[2][3]!!.text.toString() == buttons[1][4]!!.text.toString() && buttons[2][3]!!.text.toString() == buttons[4][1]!!.text.toString() && buttons[2][3]!!.text.toString() != ""
-                    || buttons[2][3]!!.text.toString() == buttons[5][0]!!.text.toString() && buttons[2][3]!!.text.toString() == buttons[4][1]!!.text.toString() && buttons[2][3]!!.text.toString() != ""
+        } else if ((buttons[2][3]!!.text.toString() == buttons[1][4]!!.text.toString() && buttons[2][3]!!.text.toString() == buttons[0][5]!!.text.toString() && buttons[2][3]!!.text.toString() == buttons[4][1]!!.text.toString() && buttons[2][3]!!.text.toString() != ""
+                    || buttons[2][3]!!.text.toString() == buttons[5][0]!!.text.toString() && buttons[2][3]!!.text.toString() == buttons[4][1]!!.text.toString() && buttons[2][3]!!.text.toString() == buttons[1][4]!!.text.toString() && buttons[2][3]!!.text.toString() != ""
                     )
             && buttons[2][3]!!.text.toString() == "o"
             && buttons[3][2]!!.text.toString() == ""
@@ -3535,8 +3509,8 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
             buttons[3][2]?.setText("o")!!
             player1Turn = !player1Turn
 
-        } else if ((buttons[2][3]!!.text.toString() == buttons[1][4]!!.text.toString() && buttons[2][3]!!.text.toString() == buttons[3][2]!!.text.toString() && buttons[2][3]!!.text.toString() != ""
-                    || buttons[2][3]!!.text.toString() == buttons[5][0]!!.text.toString() && buttons[2][3]!!.text.toString() == buttons[3][2]!!.text.toString() && buttons[2][3]!!.text.toString() != ""
+        } else if ((buttons[2][3]!!.text.toString() == buttons[1][4]!!.text.toString() && buttons[2][3]!!.text.toString() == buttons[3][2]!!.text.toString() && buttons[2][3]!!.text.toString() == buttons[0][5]!!.text.toString() && buttons[2][3]!!.text.toString() != ""
+                    || buttons[2][3]!!.text.toString() == buttons[5][0]!!.text.toString() && buttons[2][3]!!.text.toString() == buttons[3][2]!!.text.toString() && buttons[2][3]!!.text.toString() == buttons[1][4]!!.text.toString() && buttons[2][3]!!.text.toString() != ""
                     )
             && buttons[2][3]!!.text.toString() == "o"
             && buttons[4][1]!!.text.toString() == ""
@@ -3547,7 +3521,7 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
             buttons[4][1]?.setText("o")!!
             player1Turn = !player1Turn
 
-        } else if ((buttons[3][2]!!.text.toString() == buttons[2][3]!!.text.toString() && buttons[3][2]!!.text.toString() == buttons[4][1]!!.text.toString() && buttons[3][2]!!.text.toString() != "")
+        } else if ((buttons[3][2]!!.text.toString() == buttons[2][3]!!.text.toString() && buttons[3][2]!!.text.toString() == buttons[4][1]!!.text.toString() && buttons[2][3]!!.text.toString() == buttons[1][4]!!.text.toString() && buttons[3][2]!!.text.toString() != "")
             && buttons[3][2]!!.text.toString() == "o"
             && buttons[5][0]!!.text.toString() == ""
             && buttons[5][0]!!.text.toString() != "x"
@@ -3559,7 +3533,7 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
 
         }
         /*************-3-****************/
-        else if ((buttons[3][3]!!.text.toString() == buttons[2][4]!!.text.toString() && buttons[3][3]!!.text.toString() == buttons[1][5]!!.text.toString() && buttons[3][3]!!.text.toString() != "")
+        else if ((buttons[3][3]!!.text.toString() == buttons[2][4]!!.text.toString() && buttons[3][3]!!.text.toString() == buttons[1][5]!!.text.toString() && buttons[3][3]!!.text.toString() == buttons[4][2]!!.text.toString() && buttons[3][3]!!.text.toString() != "")
             && buttons[3][3]!!.text.toString() == "o"
             && buttons[0][6]!!.text.toString() == ""
             && buttons[0][6]!!.text.toString() != "x"
@@ -3569,8 +3543,8 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
             buttons[0][6]?.setText("o")!!
             player1Turn = !player1Turn
 
-        } else if ((buttons[3][3]!!.text.toString() == buttons[2][4]!!.text.toString() && buttons[3][3]!!.text.toString() == buttons[0][6]!!.text.toString() && buttons[3][3]!!.text.toString() != ""
-                    || buttons[3][3]!!.text.toString() == buttons[2][4]!!.text.toString() && buttons[3][3]!!.text.toString() == buttons[4][2]!!.text.toString() && buttons[3][3]!!.text.toString() != ""
+        } else if ((buttons[3][3]!!.text.toString() == buttons[2][4]!!.text.toString() && buttons[3][3]!!.text.toString() == buttons[0][6]!!.text.toString() && buttons[3][3]!!.text.toString() == buttons[4][2]!!.text.toString() && buttons[3][3]!!.text.toString() != ""
+                    || buttons[3][3]!!.text.toString() == buttons[2][4]!!.text.toString() && buttons[3][3]!!.text.toString() == buttons[4][2]!!.text.toString() && buttons[3][3]!!.text.toString() == buttons[5][1]!!.text.toString() && buttons[3][3]!!.text.toString() != ""
                     )
             && buttons[3][3]!!.text.toString() == "o"
             && buttons[1][5]!!.text.toString() == ""
@@ -3581,9 +3555,9 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
             buttons[1][5]?.setText("o")!!
             player1Turn = !player1Turn
 
-        } else if ((buttons[3][3]!!.text.toString() == buttons[1][5]!!.text.toString() && buttons[3][3]!!.text.toString() == buttons[0][6]!!.text.toString() && buttons[3][3]!!.text.toString() != ""
-                    || buttons[3][3]!!.text.toString() == buttons[1][5]!!.text.toString() && buttons[3][3]!!.text.toString() == buttons[4][2]!!.text.toString() && buttons[3][3]!!.text.toString() != ""
-                    || buttons[3][3]!!.text.toString() == buttons[5][1]!!.text.toString() && buttons[3][3]!!.text.toString() == buttons[4][2]!!.text.toString() && buttons[3][3]!!.text.toString() != ""
+        } else if ((buttons[3][3]!!.text.toString() == buttons[1][5]!!.text.toString() && buttons[3][3]!!.text.toString() == buttons[0][6]!!.text.toString() && buttons[3][3]!!.text.toString() == buttons[4][2]!!.text.toString() && buttons[3][3]!!.text.toString() != ""
+                    || buttons[3][3]!!.text.toString() == buttons[1][5]!!.text.toString() && buttons[3][3]!!.text.toString() == buttons[4][2]!!.text.toString() && buttons[3][3]!!.text.toString() == buttons[5][1]!!.text.toString() && buttons[3][3]!!.text.toString() != ""
+                    || buttons[3][3]!!.text.toString() == buttons[5][1]!!.text.toString() && buttons[3][3]!!.text.toString() == buttons[4][2]!!.text.toString() && buttons[3][3]!!.text.toString() == buttons[6][0]!!.text.toString() && buttons[3][3]!!.text.toString() != ""
                     )
             && buttons[3][3]!!.text.toString() == "o"
             && buttons[2][4]!!.text.toString() == ""
@@ -3594,10 +3568,9 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
             buttons[2][4]?.setText("o")!!
             player1Turn = !player1Turn
 
-        } else if ((buttons[2][4]!!.text.toString() == buttons[1][5]!!.text.toString() && buttons[2][4]!!.text.toString() == buttons[0][6]!!.text.toString() && buttons[2][4]!!.text.toString() != ""
-                    || buttons[2][4]!!.text.toString() == buttons[1][5]!!.text.toString() && buttons[2][4]!!.text.toString() == buttons[4][2]!!.text.toString() && buttons[2][4]!!.text.toString() != ""
-                    || buttons[2][4]!!.text.toString() == buttons[5][1]!!.text.toString() && buttons[2][4]!!.text.toString() == buttons[4][2]!!.text.toString() && buttons[2][4]!!.text.toString() != ""
-                    || buttons[2][4]!!.text.toString() == buttons[5][1]!!.text.toString() && buttons[2][4]!!.text.toString() == buttons[3][3]!!.text.toString() && buttons[2][4]!!.text.toString() != ""
+        } else if ((buttons[2][4]!!.text.toString() == buttons[1][5]!!.text.toString() && buttons[2][4]!!.text.toString() == buttons[0][6]!!.text.toString() && buttons[2][4]!!.text.toString() == buttons[4][2]!!.text.toString() && buttons[2][4]!!.text.toString() != ""
+                    || buttons[2][4]!!.text.toString() == buttons[1][5]!!.text.toString() && buttons[2][4]!!.text.toString() == buttons[4][2]!!.text.toString() && buttons[2][4]!!.text.toString() == buttons[5][1]!!.text.toString() && buttons[2][4]!!.text.toString() != ""
+                    || buttons[2][4]!!.text.toString() == buttons[5][1]!!.text.toString() && buttons[2][4]!!.text.toString() == buttons[4][2]!!.text.toString() && buttons[2][4]!!.text.toString() == buttons[6][0]!!.text.toString() && buttons[2][4]!!.text.toString() != ""
                     )
             && buttons[2][4]!!.text.toString() == "o"
             && buttons[3][3]!!.text.toString() == ""
@@ -3608,9 +3581,9 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
             buttons[3][3]?.setText("o")!!
             player1Turn = !player1Turn
 
-        } else if ((buttons[3][3]!!.text.toString() == buttons[1][5]!!.text.toString() && buttons[3][3]!!.text.toString() == buttons[2][4]!!.text.toString() && buttons[3][3]!!.text.toString() != ""
-                    || buttons[3][3]!!.text.toString() == buttons[5][1]!!.text.toString() && buttons[3][3]!!.text.toString() == buttons[2][4]!!.text.toString() && buttons[3][3]!!.text.toString() != ""
-                    || buttons[3][3]!!.text.toString() == buttons[5][1]!!.text.toString() && buttons[3][3]!!.text.toString() == buttons[6][0]!!.text.toString() && buttons[3][3]!!.text.toString() != ""
+        } else if ((buttons[3][3]!!.text.toString() == buttons[1][5]!!.text.toString() && buttons[3][3]!!.text.toString() == buttons[2][4]!!.text.toString() && buttons[3][3]!!.text.toString() == buttons[6][0]!!.text.toString() && buttons[3][3]!!.text.toString() != ""
+                    || buttons[3][3]!!.text.toString() == buttons[5][1]!!.text.toString() && buttons[3][3]!!.text.toString() == buttons[2][4]!!.text.toString() && buttons[3][3]!!.text.toString() == buttons[1][5]!!.text.toString() && buttons[3][3]!!.text.toString() != ""
+                    || buttons[3][3]!!.text.toString() == buttons[5][1]!!.text.toString() && buttons[3][3]!!.text.toString() == buttons[6][0]!!.text.toString() && buttons[3][3]!!.text.toString() == buttons[2][4]!!.text.toString() && buttons[3][3]!!.text.toString() != ""
                     )
             && buttons[3][3]!!.text.toString() == "o"
             && buttons[4][2]!!.text.toString() == ""
@@ -3621,8 +3594,8 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
             buttons[4][2]?.setText("o")!!
             player1Turn = !player1Turn
 
-        } else if ((buttons[3][3]!!.text.toString() == buttons[4][2]!!.text.toString() && buttons[3][3]!!.text.toString() == buttons[2][4]!!.text.toString() && buttons[3][3]!!.text.toString() != ""
-                    || buttons[3][3]!!.text.toString() == buttons[6][0]!!.text.toString() && buttons[3][3]!!.text.toString() == buttons[4][2]!!.text.toString() && buttons[3][3]!!.text.toString() != ""
+        } else if ((buttons[3][3]!!.text.toString() == buttons[4][2]!!.text.toString() && buttons[3][3]!!.text.toString() == buttons[2][4]!!.text.toString() && buttons[3][3]!!.text.toString() == buttons[1][5]!!.text.toString() && buttons[3][3]!!.text.toString() != ""
+                    || buttons[3][3]!!.text.toString() == buttons[6][0]!!.text.toString() && buttons[3][3]!!.text.toString() == buttons[4][2]!!.text.toString() && buttons[3][3]!!.text.toString() == buttons[2][4]!!.text.toString() && buttons[3][3]!!.text.toString() != ""
                     )
             && buttons[3][3]!!.text.toString() == "o"
             && buttons[5][1]!!.text.toString() == ""
@@ -3633,7 +3606,7 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
             buttons[5][1]?.setText("o")!!
             player1Turn = !player1Turn
 
-        } else if ((buttons[3][3]!!.text.toString() == buttons[4][2]!!.text.toString() && buttons[3][3]!!.text.toString() == buttons[5][1]!!.text.toString() && buttons[3][3]!!.text.toString() != "")
+        } else if ((buttons[3][3]!!.text.toString() == buttons[4][2]!!.text.toString() && buttons[3][3]!!.text.toString() == buttons[5][1]!!.text.toString() && buttons[3][3]!!.text.toString() == buttons[2][4]!!.text.toString() && buttons[3][3]!!.text.toString() != "")
             && buttons[3][3]!!.text.toString() == "o"
             && buttons[6][0]!!.text.toString() == ""
             && buttons[6][0]!!.text.toString() != "x"
@@ -3645,7 +3618,7 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
 
         }
         /******************-4-*****************/
-        else if ((buttons[3][4]!!.text.toString() == buttons[2][5]!!.text.toString() && buttons[3][4]!!.text.toString() == buttons[1][6]!!.text.toString() && buttons[3][4]!!.text.toString() != "")
+        else if ((buttons[3][4]!!.text.toString() == buttons[2][5]!!.text.toString() && buttons[3][4]!!.text.toString() == buttons[1][6]!!.text.toString() && buttons[3][4]!!.text.toString() == buttons[4][3]!!.text.toString() && buttons[3][4]!!.text.toString() != "")
             && buttons[3][4]!!.text.toString() == "o"
             && buttons[0][7]!!.text.toString() == ""
             && buttons[0][7]!!.text.toString() != "x"
@@ -3655,8 +3628,8 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
             buttons[0][7]?.setText("o")!!
             player1Turn = !player1Turn
 
-        } else if ((buttons[3][4]!!.text.toString() == buttons[2][5]!!.text.toString() && buttons[3][4]!!.text.toString() == buttons[0][7]!!.text.toString() && buttons[3][4]!!.text.toString() != ""
-                    || buttons[3][4]!!.text.toString() == buttons[2][5]!!.text.toString() && buttons[3][4]!!.text.toString() == buttons[4][3]!!.text.toString() && buttons[3][4]!!.text.toString() != ""
+        } else if ((buttons[3][4]!!.text.toString() == buttons[2][5]!!.text.toString() && buttons[3][4]!!.text.toString() == buttons[0][7]!!.text.toString() && buttons[3][4]!!.text.toString() == buttons[4][3]!!.text.toString() && buttons[3][4]!!.text.toString() != ""
+                    || buttons[3][4]!!.text.toString() == buttons[2][5]!!.text.toString() && buttons[3][4]!!.text.toString() == buttons[4][3]!!.text.toString() && buttons[3][4]!!.text.toString() == buttons[5][2]!!.text.toString() && buttons[3][4]!!.text.toString() != ""
                     )
             && buttons[3][4]!!.text.toString() == "o"
             && buttons[1][6]!!.text.toString() == ""
@@ -3667,9 +3640,9 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
             buttons[1][6]?.setText("o")!!
             player1Turn = !player1Turn
 
-        } else if ((buttons[3][4]!!.text.toString() == buttons[1][6]!!.text.toString() && buttons[3][4]!!.text.toString() == buttons[0][7]!!.text.toString() && buttons[3][4]!!.text.toString() != ""
-                    || buttons[3][4]!!.text.toString() == buttons[1][6]!!.text.toString() && buttons[3][4]!!.text.toString() == buttons[4][3]!!.text.toString() && buttons[3][4]!!.text.toString() != ""
-                    || buttons[3][4]!!.text.toString() == buttons[5][2]!!.text.toString() && buttons[3][4]!!.text.toString() == buttons[4][3]!!.text.toString() && buttons[3][4]!!.text.toString() != ""
+        } else if ((buttons[3][4]!!.text.toString() == buttons[1][6]!!.text.toString() && buttons[3][4]!!.text.toString() == buttons[0][7]!!.text.toString() && buttons[3][4]!!.text.toString() == buttons[4][3]!!.text.toString() && buttons[3][4]!!.text.toString() != ""
+                    || buttons[3][4]!!.text.toString() == buttons[1][6]!!.text.toString() && buttons[3][4]!!.text.toString() == buttons[4][3]!!.text.toString() && buttons[3][4]!!.text.toString() == buttons[5][2]!!.text.toString() && buttons[3][4]!!.text.toString() != ""
+                    || buttons[3][4]!!.text.toString() == buttons[5][2]!!.text.toString() && buttons[3][4]!!.text.toString() == buttons[4][3]!!.text.toString() && buttons[3][4]!!.text.toString() == buttons[6][1]!!.text.toString() && buttons[3][4]!!.text.toString() != ""
                     )
             && buttons[3][4]!!.text.toString() == "o"
             && buttons[2][5]!!.text.toString() == ""
@@ -3680,10 +3653,10 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
             buttons[2][5]?.setText("o")!!
             player1Turn = !player1Turn
 
-        } else if ((buttons[2][5]!!.text.toString() == buttons[1][6]!!.text.toString() && buttons[2][5]!!.text.toString() == buttons[0][7]!!.text.toString() && buttons[2][5]!!.text.toString() != "" && buttons[2][5]!!.text.toString() == "o"
-                    || buttons[2][5]!!.text.toString() == buttons[1][6]!!.text.toString() && buttons[2][5]!!.text.toString() == buttons[4][3]!!.text.toString() && buttons[2][5]!!.text.toString() != "" && buttons[2][5]!!.text.toString() == "o"
-                    || buttons[2][5]!!.text.toString() == buttons[5][2]!!.text.toString() && buttons[2][5]!!.text.toString() == buttons[4][3]!!.text.toString() && buttons[2][5]!!.text.toString() != "" && buttons[2][5]!!.text.toString() == "o"
-                    || buttons[6][1]!!.text.toString() == buttons[5][2]!!.text.toString() && buttons[6][1]!!.text.toString() == buttons[4][3]!!.text.toString() && buttons[6][1]!!.text.toString() != "" && buttons[6][1]!!.text.toString() == "o"
+        } else if ((buttons[2][5]!!.text.toString() == buttons[1][6]!!.text.toString() && buttons[2][5]!!.text.toString() == buttons[0][7]!!.text.toString() && buttons[2][5]!!.text.toString() == buttons[4][3]!!.text.toString() && buttons[2][5]!!.text.toString() != "" && buttons[2][5]!!.text.toString() == "o"
+                    || buttons[2][5]!!.text.toString() == buttons[1][6]!!.text.toString() && buttons[2][5]!!.text.toString() == buttons[4][3]!!.text.toString() && buttons[2][5]!!.text.toString() == buttons[5][2]!!.text.toString() && buttons[2][5]!!.text.toString() != "" && buttons[2][5]!!.text.toString() == "o"
+                    || buttons[2][5]!!.text.toString() == buttons[5][2]!!.text.toString() && buttons[2][5]!!.text.toString() == buttons[4][3]!!.text.toString() && buttons[2][5]!!.text.toString() == buttons[6][1]!!.text.toString() && buttons[2][5]!!.text.toString() != "" && buttons[2][5]!!.text.toString() == "o"
+                    || buttons[6][1]!!.text.toString() == buttons[5][2]!!.text.toString() && buttons[6][1]!!.text.toString() == buttons[4][3]!!.text.toString() && buttons[6][1]!!.text.toString() == buttons[7][0]!!.text.toString() && buttons[6][1]!!.text.toString() != "" && buttons[6][1]!!.text.toString() == "o"
                     )
             && buttons[3][4]!!.text.toString() == ""
             && buttons[3][4]!!.text.toString() != "x"
@@ -3693,10 +3666,10 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
             buttons[3][4]?.setText("o")!!
             player1Turn = !player1Turn
 
-        } else if ((buttons[3][4]!!.text.toString() == buttons[1][6]!!.text.toString() && buttons[3][4]!!.text.toString() == buttons[2][5]!!.text.toString() && buttons[3][4]!!.text.toString() != "" && buttons[3][4]!!.text.toString() == "o"
-                    || buttons[3][4]!!.text.toString() == buttons[2][5]!!.text.toString() && buttons[3][4]!!.text.toString() == buttons[5][2]!!.text.toString() && buttons[3][4]!!.text.toString() != "" && buttons[3][4]!!.text.toString() == "o"
-                    || buttons[3][4]!!.text.toString() == buttons[6][1]!!.text.toString() && buttons[3][4]!!.text.toString() == buttons[5][2]!!.text.toString() && buttons[3][4]!!.text.toString() != "" && buttons[3][4]!!.text.toString() == "o"
-                    || buttons[7][0]!!.text.toString() == buttons[6][1]!!.text.toString() && buttons[7][0]!!.text.toString() == buttons[5][2]!!.text.toString() && buttons[7][0]!!.text.toString() != "" && buttons[7][0]!!.text.toString() == "o"
+        } else if ((buttons[3][4]!!.text.toString() == buttons[1][6]!!.text.toString() && buttons[3][4]!!.text.toString() == buttons[2][5]!!.text.toString() && buttons[3][4]!!.text.toString() == buttons[0][7]!!.text.toString() && buttons[3][4]!!.text.toString() != "" && buttons[3][4]!!.text.toString() == "o"
+                    || buttons[3][4]!!.text.toString() == buttons[2][5]!!.text.toString() && buttons[3][4]!!.text.toString() == buttons[5][2]!!.text.toString() && buttons[3][4]!!.text.toString() == buttons[1][6]!!.text.toString() && buttons[3][4]!!.text.toString() != "" && buttons[3][4]!!.text.toString() == "o"
+                    || buttons[3][4]!!.text.toString() == buttons[6][1]!!.text.toString() && buttons[3][4]!!.text.toString() == buttons[5][2]!!.text.toString() && buttons[3][4]!!.text.toString() == buttons[2][5]!!.text.toString() && buttons[3][4]!!.text.toString() != "" && buttons[3][4]!!.text.toString() == "o"
+                    || buttons[7][0]!!.text.toString() == buttons[6][1]!!.text.toString() && buttons[7][0]!!.text.toString() == buttons[5][2]!!.text.toString() && buttons[7][0]!!.text.toString() == buttons[3][4]!!.text.toString() && buttons[7][0]!!.text.toString() != "" && buttons[7][0]!!.text.toString() == "o"
                     )
             && buttons[4][3]!!.text.toString() == ""
             && buttons[4][3]!!.text.toString() != "x"
@@ -3706,9 +3679,9 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
             buttons[4][3]?.setText("o")!!
             player1Turn = !player1Turn
 
-        } else if ((buttons[4][3]!!.text.toString() == buttons[3][4]!!.text.toString() && buttons[4][3]!!.text.toString() == buttons[2][5]!!.text.toString() && buttons[4][3]!!.text.toString() != ""
-                    || buttons[4][3]!!.text.toString() == buttons[3][4]!!.text.toString() && buttons[4][3]!!.text.toString() == buttons[6][1]!!.text.toString() && buttons[4][3]!!.text.toString() != ""
-                    || buttons[4][3]!!.text.toString() == buttons[7][0]!!.text.toString() && buttons[4][3]!!.text.toString() == buttons[6][1]!!.text.toString() && buttons[4][3]!!.text.toString() != ""
+        } else if ((buttons[4][3]!!.text.toString() == buttons[3][4]!!.text.toString() && buttons[4][3]!!.text.toString() == buttons[2][5]!!.text.toString() && buttons[4][3]!!.text.toString() == buttons[1][6]!!.text.toString() && buttons[4][3]!!.text.toString() != ""
+                    || buttons[4][3]!!.text.toString() == buttons[3][4]!!.text.toString() && buttons[4][3]!!.text.toString() == buttons[6][1]!!.text.toString() && buttons[4][3]!!.text.toString() == buttons[2][5]!!.text.toString() && buttons[4][3]!!.text.toString() != ""
+                    || buttons[4][3]!!.text.toString() == buttons[7][0]!!.text.toString() && buttons[4][3]!!.text.toString() == buttons[6][1]!!.text.toString() && buttons[4][3]!!.text.toString() == buttons[3][4]!!.text.toString() && buttons[4][3]!!.text.toString() != ""
                     )
             && buttons[4][3]!!.text.toString() == "o"
             && buttons[5][2]!!.text.toString() == ""
@@ -3719,8 +3692,8 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
             buttons[5][2]?.setText("o")!!
             player1Turn = !player1Turn
 
-        } else if ((buttons[4][3]!!.text.toString() == buttons[3][4]!!.text.toString() && buttons[4][3]!!.text.toString() == buttons[5][2]!!.text.toString() && buttons[4][3]!!.text.toString() != ""
-                    || buttons[4][3]!!.text.toString() == buttons[7][0]!!.text.toString() && buttons[4][3]!!.text.toString() == buttons[5][2]!!.text.toString() && buttons[4][3]!!.text.toString() != ""
+        } else if ((buttons[4][3]!!.text.toString() == buttons[3][4]!!.text.toString() && buttons[4][3]!!.text.toString() == buttons[5][2]!!.text.toString() && buttons[4][3]!!.text.toString() == buttons[2][5]!!.text.toString() && buttons[4][3]!!.text.toString() != ""
+                    || buttons[4][3]!!.text.toString() == buttons[7][0]!!.text.toString() && buttons[4][3]!!.text.toString() == buttons[5][2]!!.text.toString() && buttons[4][3]!!.text.toString() == buttons[3][4]!!.text.toString() && buttons[4][3]!!.text.toString() != ""
                     )
             && buttons[4][3]!!.text.toString() == "o"
             && buttons[6][1]!!.text.toString() == ""
@@ -3731,7 +3704,7 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
             buttons[6][1]?.setText("o")!!
             player1Turn = !player1Turn
 
-        } else if ((buttons[4][3]!!.text.toString() == buttons[5][2]!!.text.toString() && buttons[4][3]!!.text.toString() == buttons[6][1]!!.text.toString() && buttons[4][3]!!.text.toString() != "")
+        } else if ((buttons[4][3]!!.text.toString() == buttons[5][2]!!.text.toString() && buttons[4][3]!!.text.toString() == buttons[6][1]!!.text.toString() && buttons[4][3]!!.text.toString() == buttons[3][4]!!.text.toString() && buttons[4][3]!!.text.toString() != "")
             && buttons[4][3]!!.text.toString() == "o"
             && buttons[7][0]!!.text.toString() == ""
             && buttons[7][0]!!.text.toString() != "x"
@@ -3744,7 +3717,7 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
         }
         /******************-5-*****************/
 
-        else if ((buttons[4][4]!!.text.toString() == buttons[3][5]!!.text.toString() && buttons[4][4]!!.text.toString() == buttons[2][6]!!.text.toString() && buttons[4][4]!!.text.toString() != "")
+        else if ((buttons[4][4]!!.text.toString() == buttons[3][5]!!.text.toString() && buttons[4][4]!!.text.toString() == buttons[2][6]!!.text.toString() && buttons[4][4]!!.text.toString() == buttons[5][3]!!.text.toString() && buttons[4][4]!!.text.toString() != "")
             && buttons[4][4]!!.text.toString() == "o"
             && buttons[1][7]!!.text.toString() == ""
             && buttons[1][7]!!.text.toString() != "x"
@@ -3754,8 +3727,8 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
             buttons[1][7]?.setText("o")!!
             player1Turn = !player1Turn
 
-        } else if ((buttons[4][4]!!.text.toString() == buttons[3][5]!!.text.toString() && buttons[4][4]!!.text.toString() == buttons[1][7]!!.text.toString() && buttons[4][4]!!.text.toString() != ""
-                    || buttons[4][4]!!.text.toString() == buttons[3][5]!!.text.toString() && buttons[4][4]!!.text.toString() == buttons[5][3]!!.text.toString() && buttons[4][4]!!.text.toString() != ""
+        } else if ((buttons[4][4]!!.text.toString() == buttons[3][5]!!.text.toString() && buttons[4][4]!!.text.toString() == buttons[1][7]!!.text.toString() && buttons[4][4]!!.text.toString() == buttons[5][3]!!.text.toString() && buttons[4][4]!!.text.toString() != ""
+                    || buttons[4][4]!!.text.toString() == buttons[3][5]!!.text.toString() && buttons[4][4]!!.text.toString() == buttons[5][3]!!.text.toString() && buttons[4][4]!!.text.toString() == buttons[6][2]!!.text.toString() && buttons[4][4]!!.text.toString() != ""
                     )
             && buttons[4][4]!!.text.toString() == "o"
             && buttons[2][6]!!.text.toString() == ""
@@ -3766,9 +3739,9 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
             buttons[2][6]?.setText("o")!!
             player1Turn = !player1Turn
 
-        } else if ((buttons[4][4]!!.text.toString() == buttons[2][6]!!.text.toString() && buttons[4][4]!!.text.toString() == buttons[1][7]!!.text.toString() && buttons[4][4]!!.text.toString() != ""
-                    || buttons[4][4]!!.text.toString() == buttons[2][6]!!.text.toString() && buttons[4][4]!!.text.toString() == buttons[5][3]!!.text.toString() && buttons[4][4]!!.text.toString() != ""
-                    || buttons[4][4]!!.text.toString() == buttons[6][2]!!.text.toString() && buttons[4][4]!!.text.toString() == buttons[5][3]!!.text.toString() && buttons[4][4]!!.text.toString() != ""
+        } else if ((buttons[4][4]!!.text.toString() == buttons[2][6]!!.text.toString() && buttons[4][4]!!.text.toString() == buttons[1][7]!!.text.toString() && buttons[4][4]!!.text.toString() == buttons[5][3]!!.text.toString() && buttons[4][4]!!.text.toString() != ""
+                    || buttons[4][4]!!.text.toString() == buttons[2][6]!!.text.toString() && buttons[4][4]!!.text.toString() == buttons[5][3]!!.text.toString() && buttons[4][4]!!.text.toString() == buttons[6][2]!!.text.toString() && buttons[4][4]!!.text.toString() != ""
+                    || buttons[4][4]!!.text.toString() == buttons[6][2]!!.text.toString() && buttons[4][4]!!.text.toString() == buttons[5][3]!!.text.toString() && buttons[4][4]!!.text.toString() == buttons[7][1]!!.text.toString() && buttons[4][4]!!.text.toString() != ""
                     )
             && buttons[4][4]!!.text.toString() == "o"
             && buttons[3][5]!!.text.toString() == ""
@@ -3779,10 +3752,9 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
             buttons[3][5]?.setText("o")!!
             player1Turn = !player1Turn
 
-        } else if ((buttons[3][5]!!.text.toString() == buttons[2][6]!!.text.toString() && buttons[3][5]!!.text.toString() == buttons[1][7]!!.text.toString() && buttons[3][5]!!.text.toString() != ""
-                    || buttons[3][5]!!.text.toString() == buttons[2][6]!!.text.toString() && buttons[3][5]!!.text.toString() == buttons[5][3]!!.text.toString() && buttons[3][5]!!.text.toString() != ""
-                    || buttons[3][5]!!.text.toString() == buttons[6][2]!!.text.toString() && buttons[3][5]!!.text.toString() == buttons[5][3]!!.text.toString() && buttons[3][5]!!.text.toString() != ""
-                    || buttons[3][5]!!.text.toString() == buttons[6][2]!!.text.toString() && buttons[3][5]!!.text.toString() == buttons[4][4]!!.text.toString() && buttons[3][5]!!.text.toString() != ""
+        } else if ((buttons[3][5]!!.text.toString() == buttons[2][6]!!.text.toString() && buttons[3][5]!!.text.toString() == buttons[1][7]!!.text.toString() && buttons[3][5]!!.text.toString() == buttons[5][3]!!.text.toString() && buttons[3][5]!!.text.toString() != ""
+                    || buttons[3][5]!!.text.toString() == buttons[2][6]!!.text.toString() && buttons[3][5]!!.text.toString() == buttons[5][3]!!.text.toString() && buttons[3][5]!!.text.toString() == buttons[6][2]!!.text.toString() && buttons[3][5]!!.text.toString() != ""
+                    || buttons[3][5]!!.text.toString() == buttons[6][2]!!.text.toString() && buttons[3][5]!!.text.toString() == buttons[5][3]!!.text.toString() && buttons[3][5]!!.text.toString() == buttons[7][1]!!.text.toString() && buttons[3][5]!!.text.toString() != ""
                     )
             && buttons[3][5]!!.text.toString() == "o"
             && buttons[4][4]!!.text.toString() == ""
@@ -3793,9 +3765,9 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
             buttons[4][4]?.setText("o")!!
             player1Turn = !player1Turn
 
-        } else if ((buttons[4][4]!!.text.toString() == buttons[2][6]!!.text.toString() && buttons[4][4]!!.text.toString() == buttons[3][5]!!.text.toString() && buttons[4][4]!!.text.toString() != ""
-                    || buttons[4][4]!!.text.toString() == buttons[6][2]!!.text.toString() && buttons[4][4]!!.text.toString() == buttons[3][5]!!.text.toString() && buttons[4][4]!!.text.toString() != ""
-                    || buttons[4][4]!!.text.toString() == buttons[6][2]!!.text.toString() && buttons[4][4]!!.text.toString() == buttons[7][1]!!.text.toString() && buttons[4][4]!!.text.toString() != ""
+        } else if ((buttons[4][4]!!.text.toString() == buttons[2][6]!!.text.toString() && buttons[4][4]!!.text.toString() == buttons[3][5]!!.text.toString() && buttons[4][4]!!.text.toString() == buttons[1][7]!!.text.toString() && buttons[4][4]!!.text.toString() != ""
+                    || buttons[4][4]!!.text.toString() == buttons[6][2]!!.text.toString() && buttons[4][4]!!.text.toString() == buttons[3][5]!!.text.toString() && buttons[4][4]!!.text.toString() == buttons[2][6]!!.text.toString() && buttons[4][4]!!.text.toString() != ""
+                    || buttons[4][4]!!.text.toString() == buttons[6][2]!!.text.toString() && buttons[4][4]!!.text.toString() == buttons[7][1]!!.text.toString() && buttons[4][4]!!.text.toString() == buttons[3][5]!!.text.toString() && buttons[4][4]!!.text.toString() != ""
                     )
             && buttons[4][4]!!.text.toString() == "o"
             && buttons[5][3]!!.text.toString() == ""
@@ -3806,8 +3778,8 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
             buttons[5][3]?.setText("o")!!
             player1Turn = !player1Turn
 
-        } else if ((buttons[4][4]!!.text.toString() == buttons[5][3]!!.text.toString() && buttons[4][4]!!.text.toString() == buttons[3][5]!!.text.toString() && buttons[4][4]!!.text.toString() != ""
-                    || buttons[4][4]!!.text.toString() == buttons[7][1]!!.text.toString() && buttons[4][4]!!.text.toString() == buttons[5][3]!!.text.toString() && buttons[4][4]!!.text.toString() != ""
+        } else if ((buttons[4][4]!!.text.toString() == buttons[5][3]!!.text.toString() && buttons[4][4]!!.text.toString() == buttons[3][5]!!.text.toString() && buttons[4][4]!!.text.toString() == buttons[2][6]!!.text.toString() && buttons[4][4]!!.text.toString() != ""
+                    || buttons[4][4]!!.text.toString() == buttons[7][1]!!.text.toString() && buttons[4][4]!!.text.toString() == buttons[5][3]!!.text.toString() && buttons[4][4]!!.text.toString() == buttons[3][5]!!.text.toString() && buttons[4][4]!!.text.toString() != ""
                     )
             && buttons[4][4]!!.text.toString() == "o"
             && buttons[6][2]!!.text.toString() == ""
@@ -3818,7 +3790,7 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
             buttons[6][2]?.setText("o")!!
             player1Turn = !player1Turn
 
-        } else if ((buttons[4][4]!!.text.toString() == buttons[5][3]!!.text.toString() && buttons[4][4]!!.text.toString() == buttons[6][2]!!.text.toString() && buttons[4][4]!!.text.toString() != "")
+        } else if ((buttons[4][4]!!.text.toString() == buttons[5][3]!!.text.toString() && buttons[4][4]!!.text.toString() == buttons[6][2]!!.text.toString() && buttons[4][4]!!.text.toString() == buttons[3][5]!!.text.toString() && buttons[4][4]!!.text.toString() != "")
             && buttons[4][4]!!.text.toString() == "o"
             && buttons[7][1]!!.text.toString() == ""
             && buttons[7][1]!!.text.toString() != "x"
@@ -3832,7 +3804,7 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
 
         /******************-6-*****************/
 
-        else if ((buttons[5][4]!!.text.toString() == buttons[4][5]!!.text.toString() && buttons[5][4]!!.text.toString() == buttons[3][6]!!.text.toString() && buttons[5][4]!!.text.toString() != "")
+        else if ((buttons[5][4]!!.text.toString() == buttons[4][5]!!.text.toString() && buttons[5][4]!!.text.toString() == buttons[3][6]!!.text.toString() && buttons[5][4]!!.text.toString() == buttons[6][3]!!.text.toString() && buttons[5][4]!!.text.toString() != "")
             && buttons[5][4]!!.text.toString() == "o"
             && buttons[2][7]!!.text.toString() == ""
             && buttons[2][7]!!.text.toString() != "x"
@@ -3842,8 +3814,8 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
             buttons[2][7]?.setText("o")!!
             player1Turn = !player1Turn
 
-        } else if ((buttons[5][4]!!.text.toString() == buttons[4][5]!!.text.toString() && buttons[5][4]!!.text.toString() == buttons[2][7]!!.text.toString() && buttons[5][4]!!.text.toString() != ""
-                    || buttons[5][4]!!.text.toString() == buttons[4][5]!!.text.toString() && buttons[5][4]!!.text.toString() == buttons[6][3]!!.text.toString() && buttons[5][4]!!.text.toString() != ""
+        } else if ((buttons[5][4]!!.text.toString() == buttons[4][5]!!.text.toString() && buttons[5][4]!!.text.toString() == buttons[2][7]!!.text.toString() && buttons[5][4]!!.text.toString() == buttons[6][3]!!.text.toString() && buttons[5][4]!!.text.toString() != ""
+                    || buttons[5][4]!!.text.toString() == buttons[4][5]!!.text.toString() && buttons[5][4]!!.text.toString() == buttons[6][3]!!.text.toString() && buttons[5][4]!!.text.toString() == buttons[7][2]!!.text.toString() && buttons[5][4]!!.text.toString() != ""
                     )
             && buttons[5][4]!!.text.toString() == "o"
             && buttons[3][6]!!.text.toString() == ""
@@ -3854,9 +3826,8 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
             buttons[3][6]?.setText("o")!!
             player1Turn = !player1Turn
 
-        } else if ((buttons[5][4]!!.text.toString() == buttons[3][6]!!.text.toString() && buttons[5][4]!!.text.toString() == buttons[2][7]!!.text.toString() && buttons[5][4]!!.text.toString() != ""
-                    || buttons[5][4]!!.text.toString() == buttons[3][6]!!.text.toString() && buttons[5][4]!!.text.toString() == buttons[6][3]!!.text.toString() && buttons[5][4]!!.text.toString() != ""
-                    || buttons[5][4]!!.text.toString() == buttons[7][2]!!.text.toString() && buttons[5][4]!!.text.toString() == buttons[6][3]!!.text.toString() && buttons[5][4]!!.text.toString() != ""
+        } else if ((buttons[5][4]!!.text.toString() == buttons[3][6]!!.text.toString() && buttons[5][4]!!.text.toString() == buttons[2][7]!!.text.toString() && buttons[5][4]!!.text.toString() == buttons[6][3]!!.text.toString() && buttons[5][4]!!.text.toString() != ""
+                    || buttons[5][4]!!.text.toString() == buttons[3][6]!!.text.toString() && buttons[5][4]!!.text.toString() == buttons[6][3]!!.text.toString() && buttons[5][4]!!.text.toString() == buttons[7][2]!!.text.toString() && buttons[5][4]!!.text.toString() != ""
                     )
             && buttons[5][4]!!.text.toString() == "o"
             && buttons[4][5]!!.text.toString() == ""
@@ -3867,9 +3838,8 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
             buttons[4][5]?.setText("o")!!
             player1Turn = !player1Turn
 
-        } else if ((buttons[4][5]!!.text.toString() == buttons[3][6]!!.text.toString() && buttons[4][6]!!.text.toString() == buttons[2][7]!!.text.toString() && buttons[4][5]!!.text.toString() != ""
-                    || buttons[4][5]!!.text.toString() == buttons[3][6]!!.text.toString() && buttons[4][5]!!.text.toString() == buttons[6][3]!!.text.toString() && buttons[4][5]!!.text.toString() != ""
-                    || buttons[4][5]!!.text.toString() == buttons[7][2]!!.text.toString() && buttons[4][5]!!.text.toString() == buttons[6][3]!!.text.toString() && buttons[4][5]!!.text.toString() != ""
+        } else if ((buttons[4][5]!!.text.toString() == buttons[3][6]!!.text.toString() && buttons[4][5]!!.text.toString() == buttons[2][7]!!.text.toString() && buttons[4][5]!!.text.toString() == buttons[6][3]!!.text.toString() && buttons[4][5]!!.text.toString() != ""
+                    || buttons[4][5]!!.text.toString() == buttons[3][6]!!.text.toString() && buttons[4][5]!!.text.toString() == buttons[6][3]!!.text.toString() && buttons[4][5]!!.text.toString() == buttons[7][2]!!.text.toString() && buttons[4][5]!!.text.toString() != ""
                     )
             && buttons[4][5]!!.text.toString() == "o"
             && buttons[5][4]!!.text.toString() == ""
@@ -3880,8 +3850,8 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
             buttons[5][4]?.setText("o")!!
             player1Turn = !player1Turn
 
-        } else if ((buttons[4][5]!!.text.toString() == buttons[3][6]!!.text.toString() && buttons[4][5]!!.text.toString() == buttons[5][4]!!.text.toString() && buttons[4][5]!!.text.toString() != ""
-                    || buttons[4][5]!!.text.toString() == buttons[7][2]!!.text.toString() && buttons[4][5]!!.text.toString() == buttons[5][4]!!.text.toString() && buttons[4][5]!!.text.toString() != ""
+        } else if ((buttons[4][5]!!.text.toString() == buttons[3][6]!!.text.toString() && buttons[4][5]!!.text.toString() == buttons[5][4]!!.text.toString() && buttons[4][5]!!.text.toString() == buttons[2][7]!!.text.toString() && buttons[4][5]!!.text.toString() != ""
+                    || buttons[4][5]!!.text.toString() == buttons[7][2]!!.text.toString() && buttons[4][5]!!.text.toString() == buttons[5][4]!!.text.toString() && buttons[4][5]!!.text.toString() == buttons[3][6]!!.text.toString() && buttons[4][5]!!.text.toString() != ""
                     )
             && buttons[4][5]!!.text.toString() == "o"
             && buttons[6][3]!!.text.toString() == ""
@@ -3892,7 +3862,7 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
             buttons[6][3]?.setText("o")!!
             player1Turn = !player1Turn
 
-        } else if ((buttons[5][4]!!.text.toString() == buttons[4][5]!!.text.toString() && buttons[5][4]!!.text.toString() == buttons[6][3]!!.text.toString() && buttons[5][4]!!.text.toString() != "")
+        } else if ((buttons[5][4]!!.text.toString() == buttons[4][5]!!.text.toString() && buttons[5][4]!!.text.toString() == buttons[6][3]!!.text.toString() && buttons[5][4]!!.text.toString() == buttons[3][6]!!.text.toString() && buttons[5][4]!!.text.toString() != "")
             && buttons[5][4]!!.text.toString() == "o"
             && buttons[7][2]!!.text.toString() == ""
             && buttons[7][2]!!.text.toString() != "x"
@@ -3906,7 +3876,7 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
 
         /******************-7-*****************/
 
-        else if ((buttons[6][4]!!.text.toString() == buttons[5][5]!!.text.toString() && buttons[6][4]!!.text.toString() == buttons[4][6]!!.text.toString() && buttons[6][4]!!.text.toString() != "")
+        else if ((buttons[6][4]!!.text.toString() == buttons[5][5]!!.text.toString() && buttons[6][4]!!.text.toString() == buttons[4][6]!!.text.toString() && buttons[6][4]!!.text.toString() == buttons[7][3]!!.text.toString() && buttons[6][4]!!.text.toString() != "")
             && buttons[6][4]!!.text.toString() == "o"
             && buttons[3][7]!!.text.toString() == ""
             && buttons[3][7]!!.text.toString() != "x"
@@ -3916,8 +3886,7 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
             buttons[3][7]?.setText("o")!!
             player1Turn = !player1Turn
 
-        } else if ((buttons[6][4]!!.text.toString() == buttons[5][5]!!.text.toString() && buttons[6][4]!!.text.toString() == buttons[3][7]!!.text.toString() && buttons[6][4]!!.text.toString() != ""
-                    || buttons[6][4]!!.text.toString() == buttons[5][5]!!.text.toString() && buttons[6][4]!!.text.toString() == buttons[7][3]!!.text.toString() && buttons[6][4]!!.text.toString() != ""
+        } else if ((buttons[6][4]!!.text.toString() == buttons[5][5]!!.text.toString() && buttons[6][4]!!.text.toString() == buttons[3][7]!!.text.toString() && buttons[6][4]!!.text.toString() == buttons[7][3]!!.text.toString() && buttons[6][4]!!.text.toString() != ""
                     )
             && buttons[6][4]!!.text.toString() == "o"
             && buttons[4][6]!!.text.toString() == ""
@@ -3928,8 +3897,7 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
             buttons[4][6]?.setText("o")!!
             player1Turn = !player1Turn
 
-        } else if ((buttons[6][4]!!.text.toString() == buttons[4][6]!!.text.toString() && buttons[6][4]!!.text.toString() == buttons[3][7]!!.text.toString() && buttons[6][4]!!.text.toString() != ""
-                    || buttons[6][4]!!.text.toString() == buttons[4][6]!!.text.toString() && buttons[6][4]!!.text.toString() == buttons[7][3]!!.text.toString() && buttons[6][4]!!.text.toString() != ""
+        } else if ((buttons[6][4]!!.text.toString() == buttons[4][6]!!.text.toString() && buttons[6][4]!!.text.toString() == buttons[3][7]!!.text.toString() && buttons[6][4]!!.text.toString() == buttons[7][3]!!.text.toString() && buttons[6][4]!!.text.toString() != ""
                     )
             && buttons[6][4]!!.text.toString() == "o"
             && buttons[5][5]!!.text.toString() == ""
@@ -3940,8 +3908,7 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
             buttons[5][5]?.setText("o")!!
             player1Turn = !player1Turn
 
-        } else if ((buttons[5][5]!!.text.toString() == buttons[4][6]!!.text.toString() && buttons[5][5]!!.text.toString() == buttons[3][7]!!.text.toString() && buttons[5][5]!!.text.toString() != ""
-                    || buttons[5][5]!!.text.toString() == buttons[4][6]!!.text.toString() && buttons[5][5]!!.text.toString() == buttons[7][3]!!.text.toString() && buttons[5][5]!!.text.toString() != ""
+        } else if ((buttons[5][5]!!.text.toString() == buttons[4][6]!!.text.toString() && buttons[5][5]!!.text.toString() == buttons[3][7]!!.text.toString() && buttons[5][5]!!.text.toString() == buttons[7][3]!!.text.toString() && buttons[5][5]!!.text.toString() != ""
                     )
             && buttons[5][5]!!.text.toString() == "o"
             && buttons[6][4]!!.text.toString() == ""
@@ -3952,8 +3919,1059 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
             buttons[6][4]?.setText("o")!!
             player1Turn = !player1Turn
 
-        } else if ((buttons[5][5]!!.text.toString() == buttons[4][6]!!.text.toString() && buttons[5][5]!!.text.toString() == buttons[6][4]!!.text.toString() && buttons[5][5]!!.text.toString() != "")
+        } else if ((buttons[5][5]!!.text.toString() == buttons[4][6]!!.text.toString() && buttons[5][5]!!.text.toString() == buttons[6][4]!!.text.toString() && buttons[5][5]!!.text.toString() == buttons[3][7]!!.text.toString() && buttons[5][5]!!.text.toString() != "")
             && buttons[5][5]!!.text.toString() == "o"
+            && buttons[7][3]!!.text.toString() == ""
+            && buttons[7][3]!!.text.toString() != "x"
+        ) {
+
+            buttons[7][3]?.background = ContextCompat.getDrawable(this, R.drawable.o)
+            buttons[7][3]?.setText("o")!!
+            player1Turn = !player1Turn
+
+        }
+    }
+
+    // check for X from TopLift to BottomRight to Prevent 5 X in row
+    /*** Done ***/
+    private fun topLiftBottomRight4InRawX() {
+        /****************************-1-********************************/
+        if ((buttons[1][4]!!.text.toString() == buttons[2][5]!!.text.toString() && buttons[1][4]!!.text.toString() == buttons[3][6]!!.text.toString() && buttons[1][4]!!.text.toString() == buttons[4][7]!!.text.toString() && buttons[1][4]!!.text.toString() != "")
+            && buttons[1][4]!!.text.toString() == "x"
+            && buttons[0][3]!!.text.toString() == ""
+            && buttons[0][3]!!.text.toString() != "x"
+        ) {
+
+            buttons[0][3]?.background = ContextCompat.getDrawable(this, R.drawable.o)
+            buttons[0][3]?.setText("o")!!
+            player1Turn = !player1Turn
+
+        } else if ((buttons[0][3]!!.text.toString() == buttons[2][5]!!.text.toString() && buttons[2][5]!!.text.toString() == buttons[3][6]!!.text.toString() && buttons[2][5]!!.text.toString() == buttons[4][7]!!.text.toString() && buttons[2][5]!!.text.toString() != ""
+                    )
+            && buttons[2][5]!!.text.toString() == "x"
+            && buttons[1][4]!!.text.toString() == ""
+            && buttons[1][4]!!.text.toString() != "x"
+        ) {
+
+            buttons[1][4]?.background = ContextCompat.getDrawable(this, R.drawable.o)
+            buttons[1][4]?.setText("o")!!
+            player1Turn = !player1Turn
+
+        } else if ((buttons[3][6]!!.text.toString() == buttons[1][4]!!.text.toString() && buttons[0][3]!!.text.toString() == buttons[3][6]!!.text.toString() && buttons[4][7]!!.text.toString() == buttons[3][6]!!.text.toString() && buttons[3][6]!!.text.toString() != ""
+                    )
+            && buttons[3][6]!!.text.toString() == "x"
+            && buttons[2][5]!!.text.toString() == ""
+            && buttons[2][5]!!.text.toString() != "x"
+        ) {
+
+            buttons[2][5]?.background = ContextCompat.getDrawable(this, R.drawable.o)
+            buttons[2][5]?.setText("o")!!
+            player1Turn = !player1Turn
+
+        } else if ((buttons[0][3]!!.text.toString() == buttons[2][5]!!.text.toString() && buttons[2][5]!!.text.toString() == buttons[1][4]!!.text.toString() && buttons[2][5]!!.text.toString() == buttons[4][7]!!.text.toString() && buttons[2][5]!!.text.toString() != ""
+                    )
+            && buttons[2][5]!!.text.toString() == "x"
+            && buttons[3][6]!!.text.toString() == ""
+            && buttons[3][6]!!.text.toString() != "x"
+        ) {
+
+            buttons[3][6]?.background = ContextCompat.getDrawable(this, R.drawable.o)
+            buttons[3][6]?.setText("o")!!
+            player1Turn = !player1Turn
+
+        } else if ((buttons[3][6]!!.text.toString() == buttons[2][5]!!.text.toString() && buttons[2][5]!!.text.toString() == buttons[1][4]!!.text.toString() && buttons[2][5]!!.text.toString() == buttons[0][3]!!.text.toString() && buttons[2][5]!!.text.toString() != "")
+            && buttons[2][5]!!.text.toString() == "x"
+            && buttons[4][7]!!.text.toString() == ""
+            && buttons[4][7]!!.text.toString() != "x"
+        ) {
+
+            buttons[4][7]?.background = ContextCompat.getDrawable(this, R.drawable.o)
+            buttons[4][7]?.setText("o")!!
+            player1Turn = !player1Turn
+
+        }
+        /*****************************-2-*******************************/
+        else if ((buttons[1][3]!!.text.toString() == buttons[2][4]!!.text.toString() && buttons[1][3]!!.text.toString() == buttons[3][5]!!.text.toString() && buttons[1][3]!!.text.toString() == buttons[4][6]!!.text.toString() && buttons[1][3]!!.text.toString() != "")
+            && buttons[1][3]!!.text.toString() == "x"
+            && buttons[0][2]!!.text.toString() == ""
+            && buttons[0][2]!!.text.toString() != "x"
+        ) {
+
+            buttons[0][2]?.background = ContextCompat.getDrawable(this, R.drawable.o)
+            buttons[0][2]?.setText("o")!!
+            player1Turn = !player1Turn
+
+        } else if ((buttons[2][4]!!.text.toString() == buttons[0][2]!!.text.toString() && buttons[2][4]!!.text.toString() == buttons[3][5]!!.text.toString() && buttons[2][4]!!.text.toString() == buttons[4][6]!!.text.toString() && buttons[2][4]!!.text.toString() != ""
+                    || buttons[2][4]!!.text.toString() == buttons[4][6]!!.text.toString() && buttons[2][4]!!.text.toString() == buttons[3][5]!!.text.toString() && buttons[2][4]!!.text.toString() == buttons[5][7]!!.text.toString() && buttons[2][4]!!.text.toString() != "")
+            && buttons[2][4]!!.text.toString() == "x"
+            && buttons[1][3]!!.text.toString() == ""
+            && buttons[1][3]!!.text.toString() != "x"
+        ) {
+
+            buttons[1][3]?.background = ContextCompat.getDrawable(this, R.drawable.o)
+            buttons[1][3]?.setText("o")!!
+            player1Turn = !player1Turn
+
+        } else if ((buttons[3][5]!!.text.toString() == buttons[1][3]!!.text.toString() && buttons[3][5]!!.text.toString() == buttons[0][2]!!.text.toString() && buttons[3][5]!!.text.toString() == buttons[4][6]!!.text.toString() && buttons[3][5]!!.text.toString() != ""
+                    || buttons[3][5]!!.text.toString() == buttons[1][3]!!.text.toString() && buttons[3][5]!!.text.toString() == buttons[4][6]!!.text.toString() && buttons[3][5]!!.text.toString() == buttons[5][7]!!.text.toString() && buttons[3][5]!!.text.toString() != ""
+                    )
+            && buttons[3][5]!!.text.toString() == "x"
+            && buttons[2][4]!!.text.toString() == ""
+            && buttons[2][4]!!.text.toString() != "x"
+        ) {
+
+            buttons[2][4]?.background = ContextCompat.getDrawable(this, R.drawable.o)
+            buttons[2][4]?.setText("o")!!
+            player1Turn = !player1Turn
+
+        } else if ((buttons[0][2]!!.text.toString() == buttons[2][4]!!.text.toString() && buttons[2][4]!!.text.toString() == buttons[1][3]!!.text.toString() && buttons[2][4]!!.text.toString() == buttons[4][6]!!.text.toString() && buttons[2][4]!!.text.toString() != ""
+                    || buttons[2][4]!!.text.toString() == buttons[4][6]!!.text.toString() && buttons[2][4]!!.text.toString() == buttons[1][3]!!.text.toString() && buttons[2][4]!!.text.toString() == buttons[5][7]!!.text.toString() && buttons[2][4]!!.text.toString() != ""
+                    )
+            && buttons[2][4]!!.text.toString() == "x"
+            && buttons[3][5]!!.text.toString() == ""
+            && buttons[3][5]!!.text.toString() != "x"
+        ) {
+
+            buttons[3][5]?.background = ContextCompat.getDrawable(this, R.drawable.o)
+            buttons[3][5]?.setText("o")!!
+            player1Turn = !player1Turn
+
+        } else if ((buttons[3][5]!!.text.toString() == buttons[1][3]!!.text.toString() && buttons[3][5]!!.text.toString() == buttons[2][4]!!.text.toString() && buttons[3][5]!!.text.toString() == buttons[0][2]!!.text.toString() && buttons[3][5]!!.text.toString() != ""
+                    || buttons[3][5]!!.text.toString() == buttons[2][4]!!.text.toString() && buttons[3][5]!!.text.toString() == buttons[5][7]!!.text.toString() && buttons[3][5]!!.text.toString() == buttons[1][3]!!.text.toString() && buttons[3][5]!!.text.toString() != ""
+                    )
+            && buttons[3][5]!!.text.toString() == "x"
+            && buttons[4][6]!!.text.toString() == ""
+            && buttons[4][6]!!.text.toString() != "x"
+        ) {
+
+            buttons[4][6]?.background = ContextCompat.getDrawable(this, R.drawable.o)
+            buttons[4][6]?.setText("o")!!
+            player1Turn = !player1Turn
+
+        } else if ((buttons[4][6]!!.text.toString() == buttons[3][5]!!.text.toString() && buttons[4][6]!!.text.toString() == buttons[2][4]!!.text.toString() && buttons[4][6]!!.text.toString() == buttons[1][3]!!.text.toString() && buttons[4][6]!!.text.toString() != "")
+            && buttons[4][6]!!.text.toString() == "x"
+            && buttons[5][7]!!.text.toString() == ""
+            && buttons[5][7]!!.text.toString() != "x"
+        ) {
+
+            buttons[5][7]?.background = ContextCompat.getDrawable(this, R.drawable.o)
+            buttons[5][7]?.setText("o")!!
+            player1Turn = !player1Turn
+
+        }
+
+        /*************************-3-**************************/
+        else if ((buttons[1][2]!!.text.toString() == buttons[2][3]!!.text.toString() && buttons[1][2]!!.text.toString() == buttons[3][4]!!.text.toString() && buttons[1][2]!!.text.toString() == buttons[4][5]!!.text.toString() && buttons[1][2]!!.text.toString() != "")
+            && buttons[1][2]!!.text.toString() == "x"
+            && buttons[0][1]!!.text.toString() == ""
+            && buttons[0][1]!!.text.toString() != "x"
+        ) {
+
+            buttons[0][1]?.background = ContextCompat.getDrawable(this, R.drawable.o)
+            buttons[0][1]?.setText("o")!!
+            player1Turn = !player1Turn
+
+        } else if ((buttons[2][3]!!.text.toString() == buttons[0][1]!!.text.toString() && buttons[2][3]!!.text.toString() == buttons[3][4]!!.text.toString() && buttons[2][3]!!.text.toString() == buttons[4][5]!!.text.toString() && buttons[2][3]!!.text.toString() != ""
+                    || buttons[2][3]!!.text.toString() == buttons[4][5]!!.text.toString() && buttons[2][3]!!.text.toString() == buttons[3][4]!!.text.toString() && buttons[2][3]!!.text.toString() == buttons[5][6]!!.text.toString() && buttons[2][3]!!.text.toString() != "")
+            && buttons[2][3]!!.text.toString() == "x"
+            && buttons[1][2]!!.text.toString() == ""
+            && buttons[1][2]!!.text.toString() != "x"
+        ) {
+
+            buttons[1][2]?.background = ContextCompat.getDrawable(this, R.drawable.o)
+            buttons[1][2]?.setText("o")!!
+            player1Turn = !player1Turn
+
+        } else if ((buttons[3][4]!!.text.toString() == buttons[1][2]!!.text.toString() && buttons[3][4]!!.text.toString() == buttons[0][1]!!.text.toString() && buttons[3][4]!!.text.toString() == buttons[4][5]!!.text.toString() && buttons[3][4]!!.text.toString() != ""
+                    || buttons[3][4]!!.text.toString() == buttons[1][2]!!.text.toString() && buttons[3][4]!!.text.toString() == buttons[4][5]!!.text.toString() && buttons[3][4]!!.text.toString() == buttons[5][6]!!.text.toString() && buttons[3][4]!!.text.toString() != ""
+                    || buttons[3][4]!!.text.toString() == buttons[5][6]!!.text.toString() && buttons[3][4]!!.text.toString() == buttons[4][5]!!.text.toString() && buttons[3][4]!!.text.toString() == buttons[6][7]!!.text.toString() && buttons[3][4]!!.text.toString() != ""
+                    )
+            && buttons[3][4]!!.text.toString() == "x"
+            && buttons[2][3]!!.text.toString() == ""
+            && buttons[2][3]!!.text.toString() != "x"
+        ) {
+
+            buttons[2][3]?.background = ContextCompat.getDrawable(this, R.drawable.o)
+            buttons[2][3]?.setText("o")!!
+            player1Turn = !player1Turn
+
+        } else if ((buttons[0][1]!!.text.toString() == buttons[2][3]!!.text.toString() && buttons[2][3]!!.text.toString() == buttons[1][2]!!.text.toString() && buttons[2][3]!!.text.toString() == buttons[4][5]!!.text.toString() && buttons[2][3]!!.text.toString() != ""
+                    || buttons[2][3]!!.text.toString() == buttons[4][5]!!.text.toString() && buttons[2][3]!!.text.toString() == buttons[1][2]!!.text.toString() && buttons[2][3]!!.text.toString() == buttons[5][6]!!.text.toString() && buttons[2][3]!!.text.toString() != ""
+                    || buttons[2][3]!!.text.toString() == buttons[4][5]!!.text.toString() && buttons[2][3]!!.text.toString() == buttons[5][6]!!.text.toString() && buttons[2][3]!!.text.toString() == buttons[6][7]!!.text.toString() && buttons[2][3]!!.text.toString() != ""
+                    )
+            && buttons[2][3]!!.text.toString() == "x"
+            && buttons[3][4]!!.text.toString() == ""
+            && buttons[3][4]!!.text.toString() != "x"
+        ) {
+
+            buttons[3][4]?.background = ContextCompat.getDrawable(this, R.drawable.o)
+            buttons[3][4]?.setText("o")!!
+            player1Turn = !player1Turn
+
+        } else if ((buttons[3][4]!!.text.toString() == buttons[1][2]!!.text.toString() && buttons[3][4]!!.text.toString() == buttons[2][3]!!.text.toString() && buttons[3][4]!!.text.toString() == buttons[0][1]!!.text.toString() && buttons[3][4]!!.text.toString() != ""
+                    || buttons[3][4]!!.text.toString() == buttons[2][3]!!.text.toString() && buttons[3][4]!!.text.toString() == buttons[5][6]!!.text.toString() && buttons[3][4]!!.text.toString() == buttons[1][2]!!.text.toString() && buttons[3][4]!!.text.toString() != ""
+                    || buttons[3][4]!!.text.toString() == buttons[6][7]!!.text.toString() && buttons[3][4]!!.text.toString() == buttons[5][6]!!.text.toString() && buttons[3][4]!!.text.toString() == buttons[2][3]!!.text.toString() && buttons[3][4]!!.text.toString() != ""
+                    )
+            && buttons[3][4]!!.text.toString() == "x"
+            && buttons[4][5]!!.text.toString() == ""
+            && buttons[4][5]!!.text.toString() != "x"
+        ) {
+
+            buttons[4][5]?.background = ContextCompat.getDrawable(this, R.drawable.o)
+            buttons[4][5]?.setText("o")!!
+            player1Turn = !player1Turn
+
+        } else if ((buttons[3][4]!!.text.toString() == buttons[4][5]!!.text.toString() && buttons[3][4]!!.text.toString() == buttons[2][3]!!.text.toString() && buttons[3][4]!!.text.toString() == buttons[1][2]!!.text.toString() && buttons[3][4]!!.text.toString() != ""
+                    || buttons[3][4]!!.text.toString() == buttons[4][5]!!.text.toString() && buttons[3][4]!!.text.toString() == buttons[6][7]!!.text.toString() && buttons[3][4]!!.text.toString() == buttons[2][3]!!.text.toString() && buttons[3][4]!!.text.toString() != ""
+                    )
+            && buttons[3][4]!!.text.toString() == "x"
+            && buttons[5][6]!!.text.toString() == ""
+            && buttons[5][6]!!.text.toString() != "x"
+        ) {
+
+            buttons[5][6]?.background = ContextCompat.getDrawable(this, R.drawable.o)
+            buttons[5][6]?.setText("o")!!
+            player1Turn = !player1Turn
+
+        } else if ((buttons[4][5]!!.text.toString() == buttons[3][4]!!.text.toString() && buttons[5][6]!!.text.toString() == buttons[3][4]!!.text.toString() && buttons[3][4]!!.text.toString() == buttons[2][3]!!.text.toString() && buttons[3][4]!!.text.toString() != "")
+            && buttons[3][4]!!.text.toString() == "x"
+            && buttons[6][7]!!.text.toString() == ""
+            && buttons[6][7]!!.text.toString() != "x"
+        ) {
+
+            buttons[6][7]?.background = ContextCompat.getDrawable(this, R.drawable.o)
+            buttons[6][7]?.setText("o")!!
+            player1Turn = !player1Turn
+
+        }
+
+        /*************************-4-***************************/
+
+        else if ((buttons[1][1]!!.text.toString() == buttons[2][2]!!.text.toString() && buttons[1][1]!!.text.toString() == buttons[3][3]!!.text.toString() && buttons[1][1]!!.text.toString() == buttons[4][4]!!.text.toString() && buttons[1][1]!!.text.toString() != "")
+            && buttons[1][1]!!.text.toString() == "x"
+            && buttons[0][0]!!.text.toString() == ""
+            && buttons[0][0]!!.text.toString() != "x"
+        ) {
+
+            buttons[0][0]?.background = ContextCompat.getDrawable(this, R.drawable.o)
+            buttons[0][0]?.setText("o")!!
+            player1Turn = !player1Turn
+
+        } else if ((buttons[3][3]!!.text.toString() == buttons[2][2]!!.text.toString() && buttons[0][0]!!.text.toString() == buttons[3][3]!!.text.toString() && buttons[3][3]!!.text.toString() == buttons[4][4]!!.text.toString() && buttons[3][3]!!.text.toString() != ""
+                    || buttons[3][3]!!.text.toString() == buttons[2][2]!!.text.toString() && buttons[4][4]!!.text.toString() == buttons[3][3]!!.text.toString() && buttons[3][3]!!.text.toString() == buttons[5][5]!!.text.toString() && buttons[3][3]!!.text.toString() != ""
+                    )
+            && buttons[3][3]!!.text.toString() == "x"
+            && buttons[1][1]!!.text.toString() == ""
+            && buttons[1][1]!!.text.toString() != "x"
+        ) {
+
+            buttons[1][1]?.background = ContextCompat.getDrawable(this, R.drawable.o)
+            buttons[1][1]?.setText("o")!!
+            player1Turn = !player1Turn
+
+        } else if ((buttons[3][3]!!.text.toString() == buttons[1][1]!!.text.toString() && buttons[0][0]!!.text.toString() == buttons[3][3]!!.text.toString() && buttons[3][3]!!.text.toString() == buttons[4][4]!!.text.toString() && buttons[3][3]!!.text.toString() != ""
+                    || buttons[3][3]!!.text.toString() == buttons[4][4]!!.text.toString() && buttons[1][1]!!.text.toString() == buttons[3][3]!!.text.toString() && buttons[3][3]!!.text.toString() == buttons[5][5]!!.text.toString() && buttons[3][3]!!.text.toString() != ""
+                    || buttons[3][3]!!.text.toString() == buttons[4][4]!!.text.toString() && buttons[5][5]!!.text.toString() == buttons[3][3]!!.text.toString() && buttons[3][3]!!.text.toString() == buttons[6][6]!!.text.toString() && buttons[3][3]!!.text.toString() != ""
+                    )
+            && buttons[3][3]!!.text.toString() == "x"
+            && buttons[2][2]!!.text.toString() == ""
+            && buttons[2][2]!!.text.toString() != "x"
+        ) {
+
+            buttons[2][2]?.background = ContextCompat.getDrawable(this, R.drawable.o)
+            buttons[2][2]?.setText("o")!!
+            player1Turn = !player1Turn
+
+        } else if ((buttons[2][2]!!.text.toString() == buttons[1][1]!!.text.toString() && buttons[0][0]!!.text.toString() == buttons[2][2]!!.text.toString() && buttons[2][2]!!.text.toString() == buttons[4][4]!!.text.toString() && buttons[2][2]!!.text.toString() != "" && buttons[2][2]!!.text.toString() == "x"
+                    || buttons[2][2]!!.text.toString() == buttons[4][4]!!.text.toString() && buttons[1][1]!!.text.toString() == buttons[2][2]!!.text.toString() && buttons[2][2]!!.text.toString() == buttons[5][5]!!.text.toString() && buttons[2][2]!!.text.toString() != "" && buttons[2][2]!!.text.toString() == "x"
+                    || buttons[2][2]!!.text.toString() == buttons[4][4]!!.text.toString() && buttons[5][5]!!.text.toString() == buttons[2][2]!!.text.toString() && buttons[2][2]!!.text.toString() == buttons[6][6]!!.text.toString() && buttons[2][2]!!.text.toString() != "" && buttons[2][2]!!.text.toString() == "x"
+                    || buttons[5][5]!!.text.toString() == buttons[4][4]!!.text.toString() && buttons[5][5]!!.text.toString() == buttons[6][6]!!.text.toString() && buttons[5][5]!!.text.toString() == buttons[7][7]!!.text.toString() && buttons[6][6]!!.text.toString() != "" && buttons[6][6]!!.text.toString() == "x"
+                    )
+            && buttons[3][3]!!.text.toString() == ""
+            && buttons[3][3]!!.text.toString() != "x"
+        ) {
+
+            buttons[3][3]?.background = ContextCompat.getDrawable(this, R.drawable.o)
+            buttons[3][3]?.setText("o")!!
+            player1Turn = !player1Turn
+
+        } else if ((buttons[2][2]!!.text.toString() == buttons[1][1]!!.text.toString() && buttons[3][3]!!.text.toString() == buttons[2][2]!!.text.toString() && buttons[2][2]!!.text.toString() == buttons[0][0]!!.text.toString() && buttons[2][2]!!.text.toString() != "" && buttons[2][2]!!.text.toString() == "x"
+                    || buttons[2][2]!!.text.toString() == buttons[3][3]!!.text.toString() && buttons[5][5]!!.text.toString() == buttons[2][2]!!.text.toString() && buttons[2][2]!!.text.toString() == buttons[1][1]!!.text.toString() && buttons[2][2]!!.text.toString() != "" && buttons[2][2]!!.text.toString() == "x"
+                    || buttons[5][5]!!.text.toString() == buttons[6][6]!!.text.toString() && buttons[5][5]!!.text.toString() == buttons[3][3]!!.text.toString() && buttons[5][5]!!.text.toString() == buttons[2][2]!!.text.toString() && buttons[5][5]!!.text.toString() != "" && buttons[5][5]!!.text.toString() == "x"
+                    || buttons[5][5]!!.text.toString() == buttons[6][6]!!.text.toString() && buttons[5][5]!!.text.toString() == buttons[7][7]!!.text.toString() && buttons[5][5]!!.text.toString() == buttons[3][3]!!.text.toString() && buttons[5][5]!!.text.toString() != "" && buttons[5][5]!!.text.toString() == "x"
+                    )
+            && buttons[4][4]!!.text.toString() == ""
+            && buttons[4][4]!!.text.toString() != "x"
+        ) {
+
+            buttons[4][4]?.background = ContextCompat.getDrawable(this, R.drawable.o)
+            buttons[4][4]?.setText("o")!!
+            player1Turn = !player1Turn
+
+        } else if ((buttons[2][2]!!.text.toString() == buttons[4][4]!!.text.toString() && buttons[4][4]!!.text.toString() == buttons[3][3]!!.text.toString() && buttons[4][4]!!.text.toString() == buttons[1][1]!!.text.toString() && buttons[4][4]!!.text.toString() != ""
+                    || buttons[6][6]!!.text.toString() == buttons[4][4]!!.text.toString() && buttons[4][4]!!.text.toString() == buttons[3][3]!!.text.toString() && buttons[4][4]!!.text.toString() == buttons[2][2]!!.text.toString() && buttons[4][4]!!.text.toString() != ""
+                    || buttons[6][6]!!.text.toString() == buttons[4][4]!!.text.toString() && buttons[4][4]!!.text.toString() == buttons[7][7]!!.text.toString() && buttons[4][4]!!.text.toString() == buttons[3][3]!!.text.toString() && buttons[4][4]!!.text.toString() != ""
+                    )
+            && buttons[4][4]!!.text.toString() == "x"
+            && buttons[5][5]!!.text.toString() == ""
+            && buttons[5][5]!!.text.toString() != "x"
+        ) {
+
+            buttons[5][5]?.background = ContextCompat.getDrawable(this, R.drawable.o)
+            buttons[5][5]?.setText("o")!!
+            player1Turn = !player1Turn
+
+        } else if ((buttons[5][5]!!.text.toString() == buttons[4][4]!!.text.toString() && buttons[4][4]!!.text.toString() == buttons[3][3]!!.text.toString() && buttons[4][4]!!.text.toString() == buttons[2][2]!!.text.toString() && buttons[4][4]!!.text.toString() != ""
+                    || buttons[5][5]!!.text.toString() == buttons[4][4]!!.text.toString() && buttons[4][4]!!.text.toString() == buttons[7][7]!!.text.toString() && buttons[4][4]!!.text.toString() == buttons[3][3]!!.text.toString() && buttons[4][4]!!.text.toString() != ""
+                    )
+            && buttons[4][4]!!.text.toString() == "x"
+            && buttons[6][6]!!.text.toString() == ""
+            && buttons[6][6]!!.text.toString() != "x"
+        ) {
+
+            buttons[6][6]?.background = ContextCompat.getDrawable(this, R.drawable.o)
+            buttons[6][6]?.setText("o")!!
+            player1Turn = !player1Turn
+
+        } else if ((buttons[5][5]!!.text.toString() == buttons[4][4]!!.text.toString() && buttons[4][4]!!.text.toString() == buttons[6][6]!!.text.toString() && buttons[4][4]!!.text.toString() == buttons[3][3]!!.text.toString() && buttons[4][4]!!.text.toString() != "")
+            && buttons[4][4]!!.text.toString() == "x"
+            && buttons[7][7]!!.text.toString() == ""
+            && buttons[7][7]!!.text.toString() != "x"
+        ) {
+
+            buttons[7][7]?.background = ContextCompat.getDrawable(this, R.drawable.o)
+            buttons[7][7]?.setText("o")!!
+            player1Turn = !player1Turn
+
+        }
+        /**********************-5-*************************/
+        else if ((buttons[2][1]!!.text.toString() == buttons[3][2]!!.text.toString() && buttons[2][1]!!.text.toString() == buttons[4][3]!!.text.toString() && buttons[2][1]!!.text.toString() == buttons[5][4]!!.text.toString() && buttons[2][1]!!.text.toString() != "")
+            && buttons[2][1]!!.text.toString() == "x"
+            && buttons[1][0]!!.text.toString() == ""
+            && buttons[1][0]!!.text.toString() != "x"
+        ) {
+
+            buttons[1][0]?.background = ContextCompat.getDrawable(this, R.drawable.o)
+            buttons[1][0]?.setText("o")!!
+            player1Turn = !player1Turn
+
+        } else if ((buttons[3][2]!!.text.toString() == buttons[1][0]!!.text.toString() && buttons[3][2]!!.text.toString() == buttons[4][3]!!.text.toString() && buttons[3][2]!!.text.toString() == buttons[5][4]!!.text.toString() && buttons[3][2]!!.text.toString() != ""
+                    || buttons[3][2]!!.text.toString() == buttons[5][4]!!.text.toString() && buttons[3][2]!!.text.toString() == buttons[4][3]!!.text.toString() && buttons[3][2]!!.text.toString() == buttons[6][5]!!.text.toString() && buttons[3][2]!!.text.toString() != "")
+            && buttons[3][2]!!.text.toString() == "x"
+            && buttons[2][1]!!.text.toString() == ""
+            && buttons[2][1]!!.text.toString() != "x"
+        ) {
+
+            buttons[2][1]?.background = ContextCompat.getDrawable(this, R.drawable.o)
+            buttons[2][1]?.setText("o")!!
+            player1Turn = !player1Turn
+
+        } else if ((buttons[4][3]!!.text.toString() == buttons[2][1]!!.text.toString() && buttons[4][3]!!.text.toString() == buttons[1][0]!!.text.toString() && buttons[4][3]!!.text.toString() == buttons[5][4]!!.text.toString() && buttons[4][3]!!.text.toString() != ""
+                    || buttons[4][3]!!.text.toString() == buttons[2][1]!!.text.toString() && buttons[4][3]!!.text.toString() == buttons[5][4]!!.text.toString() && buttons[4][3]!!.text.toString() == buttons[6][5]!!.text.toString() && buttons[4][3]!!.text.toString() != ""
+                    || buttons[4][3]!!.text.toString() == buttons[6][5]!!.text.toString() && buttons[4][3]!!.text.toString() == buttons[5][4]!!.text.toString() && buttons[4][3]!!.text.toString() == buttons[7][6]!!.text.toString() && buttons[4][3]!!.text.toString() != ""
+                    )
+            && buttons[4][3]!!.text.toString() == "x"
+            && buttons[3][2]!!.text.toString() == ""
+            && buttons[3][2]!!.text.toString() != "x"
+        ) {
+
+            buttons[3][2]?.background = ContextCompat.getDrawable(this, R.drawable.o)
+            buttons[3][2]?.setText("o")!!
+            player1Turn = !player1Turn
+
+        } else if ((buttons[1][0]!!.text.toString() == buttons[3][2]!!.text.toString() && buttons[3][2]!!.text.toString() == buttons[2][1]!!.text.toString() && buttons[3][2]!!.text.toString() == buttons[5][4]!!.text.toString() && buttons[3][2]!!.text.toString() != ""
+                    || buttons[3][2]!!.text.toString() == buttons[5][4]!!.text.toString() && buttons[3][2]!!.text.toString() == buttons[2][1]!!.text.toString() && buttons[3][2]!!.text.toString() == buttons[6][5]!!.text.toString() && buttons[3][2]!!.text.toString() != ""
+                    || buttons[3][2]!!.text.toString() == buttons[5][4]!!.text.toString() && buttons[3][2]!!.text.toString() == buttons[6][5]!!.text.toString() && buttons[3][2]!!.text.toString() == buttons[7][6]!!.text.toString() && buttons[3][2]!!.text.toString() != ""
+                    )
+            && buttons[3][2]!!.text.toString() == "x"
+            && buttons[4][3]!!.text.toString() == ""
+            && buttons[4][3]!!.text.toString() != "x"
+        ) {
+
+            buttons[4][3]?.background = ContextCompat.getDrawable(this, R.drawable.o)
+            buttons[4][3]?.setText("o")!!
+            player1Turn = !player1Turn
+
+        } else if ((buttons[4][3]!!.text.toString() == buttons[2][1]!!.text.toString() && buttons[4][3]!!.text.toString() == buttons[3][2]!!.text.toString() && buttons[4][3]!!.text.toString() == buttons[1][0]!!.text.toString() && buttons[4][3]!!.text.toString() != ""
+                    || buttons[4][3]!!.text.toString() == buttons[3][2]!!.text.toString() && buttons[4][3]!!.text.toString() == buttons[6][5]!!.text.toString() && buttons[4][3]!!.text.toString() == buttons[2][1]!!.text.toString() && buttons[4][3]!!.text.toString() != ""
+                    || buttons[4][3]!!.text.toString() == buttons[7][6]!!.text.toString() && buttons[4][3]!!.text.toString() == buttons[6][5]!!.text.toString() && buttons[4][3]!!.text.toString() == buttons[3][2]!!.text.toString() && buttons[4][3]!!.text.toString() != ""
+                    )
+            && buttons[4][3]!!.text.toString() == "x"
+            && buttons[5][4]!!.text.toString() == ""
+            && buttons[5][4]!!.text.toString() != "x"
+        ) {
+
+            buttons[5][4]?.background = ContextCompat.getDrawable(this, R.drawable.o)
+            buttons[5][4]?.setText("o")!!
+            player1Turn = !player1Turn
+
+        } else if ((buttons[4][3]!!.text.toString() == buttons[5][4]!!.text.toString() && buttons[4][3]!!.text.toString() == buttons[3][2]!!.text.toString() && buttons[4][3]!!.text.toString() == buttons[2][1]!!.text.toString() && buttons[4][3]!!.text.toString() != ""
+                    || buttons[4][3]!!.text.toString() == buttons[5][4]!!.text.toString() && buttons[4][3]!!.text.toString() == buttons[7][6]!!.text.toString() && buttons[4][3]!!.text.toString() == buttons[3][2]!!.text.toString() && buttons[4][3]!!.text.toString() != ""
+                    )
+            && buttons[4][3]!!.text.toString() == "x"
+            && buttons[6][5]!!.text.toString() == ""
+            && buttons[6][5]!!.text.toString() != "x"
+        ) {
+
+            buttons[6][5]?.background = ContextCompat.getDrawable(this, R.drawable.o)
+            buttons[6][5]?.setText("o")!!
+            player1Turn = !player1Turn
+
+        } else if ((buttons[5][4]!!.text.toString() == buttons[4][3]!!.text.toString() && buttons[6][5]!!.text.toString() == buttons[4][3]!!.text.toString() && buttons[4][3]!!.text.toString() == buttons[3][2]!!.text.toString() && buttons[4][3]!!.text.toString() != "")
+            && buttons[4][3]!!.text.toString() == "x"
+            && buttons[7][6]!!.text.toString() == ""
+            && buttons[7][6]!!.text.toString() != "x"
+        ) {
+
+            buttons[7][6]?.background = ContextCompat.getDrawable(this, R.drawable.o)
+            buttons[7][6]?.setText("o")!!
+            player1Turn = !player1Turn
+
+        }
+        /***********************-6-************************/
+        else if ((buttons[3][1]!!.text.toString() == buttons[4][2]!!.text.toString() && buttons[3][1]!!.text.toString() == buttons[5][3]!!.text.toString() && buttons[3][1]!!.text.toString() == buttons[6][4]!!.text.toString() && buttons[3][1]!!.text.toString() != "")
+            && buttons[3][1]!!.text.toString() == "x"
+            && buttons[2][0]!!.text.toString() == ""
+            && buttons[2][0]!!.text.toString() != "x"
+        ) {
+
+            buttons[2][0]?.background = ContextCompat.getDrawable(this, R.drawable.o)
+            buttons[2][0]?.setText("o")!!
+            player1Turn = !player1Turn
+
+        } else if ((buttons[4][2]!!.text.toString() == buttons[2][0]!!.text.toString() && buttons[4][2]!!.text.toString() == buttons[5][3]!!.text.toString() && buttons[4][2]!!.text.toString() == buttons[6][4]!!.text.toString() && buttons[4][2]!!.text.toString() != ""
+                    || buttons[4][2]!!.text.toString() == buttons[6][4]!!.text.toString() && buttons[4][2]!!.text.toString() == buttons[5][3]!!.text.toString() && buttons[4][2]!!.text.toString() == buttons[7][5]!!.text.toString() && buttons[4][2]!!.text.toString() != "")
+            && buttons[4][2]!!.text.toString() == "x"
+            && buttons[3][1]!!.text.toString() == ""
+            && buttons[3][1]!!.text.toString() != "x"
+        ) {
+
+            buttons[3][1]?.background = ContextCompat.getDrawable(this, R.drawable.o)
+            buttons[3][1]?.setText("o")!!
+            player1Turn = !player1Turn
+
+        } else if ((buttons[5][3]!!.text.toString() == buttons[3][1]!!.text.toString() && buttons[5][3]!!.text.toString() == buttons[2][0]!!.text.toString() && buttons[5][3]!!.text.toString() == buttons[6][4]!!.text.toString() && buttons[5][3]!!.text.toString() != ""
+                    || buttons[5][3]!!.text.toString() == buttons[3][1]!!.text.toString() && buttons[5][3]!!.text.toString() == buttons[6][4]!!.text.toString() && buttons[5][3]!!.text.toString() == buttons[7][5]!!.text.toString() && buttons[5][3]!!.text.toString() != ""
+                    )
+            && buttons[5][3]!!.text.toString() == "x"
+            && buttons[4][2]!!.text.toString() == ""
+            && buttons[4][2]!!.text.toString() != "x"
+        ) {
+
+            buttons[4][2]?.background = ContextCompat.getDrawable(this, R.drawable.o)
+            buttons[4][2]?.setText("o")!!
+            player1Turn = !player1Turn
+
+        } else if ((buttons[2][0]!!.text.toString() == buttons[4][2]!!.text.toString() && buttons[4][2]!!.text.toString() == buttons[3][1]!!.text.toString() && buttons[4][2]!!.text.toString() == buttons[6][4]!!.text.toString() && buttons[4][2]!!.text.toString() != ""
+                    || buttons[4][2]!!.text.toString() == buttons[6][4]!!.text.toString() && buttons[4][2]!!.text.toString() == buttons[3][1]!!.text.toString() && buttons[4][2]!!.text.toString() == buttons[7][5]!!.text.toString() && buttons[4][2]!!.text.toString() != ""
+                    )
+            && buttons[4][2]!!.text.toString() == "x"
+            && buttons[5][3]!!.text.toString() == ""
+            && buttons[5][3]!!.text.toString() != "x"
+        ) {
+
+            buttons[5][3]?.background = ContextCompat.getDrawable(this, R.drawable.o)
+            buttons[5][3]?.setText("o")!!
+            player1Turn = !player1Turn
+
+        } else if ((buttons[5][3]!!.text.toString() == buttons[3][1]!!.text.toString() && buttons[5][3]!!.text.toString() == buttons[4][2]!!.text.toString() && buttons[5][3]!!.text.toString() == buttons[2][0]!!.text.toString() && buttons[5][3]!!.text.toString() != ""
+                    || buttons[5][3]!!.text.toString() == buttons[4][2]!!.text.toString() && buttons[5][3]!!.text.toString() == buttons[7][5]!!.text.toString() && buttons[5][3]!!.text.toString() == buttons[3][1]!!.text.toString() && buttons[5][3]!!.text.toString() != ""
+                    )
+            && buttons[5][3]!!.text.toString() == "x"
+            && buttons[6][4]!!.text.toString() == ""
+            && buttons[6][4]!!.text.toString() != "x"
+        ) {
+
+            buttons[6][4]?.background = ContextCompat.getDrawable(this, R.drawable.o)
+            buttons[6][4]?.setText("o")!!
+            player1Turn = !player1Turn
+
+        } else if ((buttons[6][4]!!.text.toString() == buttons[5][3]!!.text.toString() && buttons[6][4]!!.text.toString() == buttons[4][2]!!.text.toString() && buttons[6][4]!!.text.toString() == buttons[3][1]!!.text.toString() && buttons[6][4]!!.text.toString() != "")
+            && buttons[6][4]!!.text.toString() == "x"
+            && buttons[7][5]!!.text.toString() == ""
+            && buttons[7][5]!!.text.toString() != "x"
+        ) {
+
+            buttons[7][5]?.background = ContextCompat.getDrawable(this, R.drawable.o)
+            buttons[7][5]?.setText("o")!!
+            player1Turn = !player1Turn
+
+        }
+        /***********************-7-************************/
+        else if ((buttons[4][1]!!.text.toString() == buttons[5][2]!!.text.toString() && buttons[4][1]!!.text.toString() == buttons[6][3]!!.text.toString() && buttons[4][1]!!.text.toString() == buttons[7][4]!!.text.toString() && buttons[4][1]!!.text.toString() != "")
+            && buttons[4][1]!!.text.toString() == "x"
+            && buttons[3][0]!!.text.toString() == ""
+            && buttons[3][0]!!.text.toString() != "x"
+        ) {
+
+            buttons[3][0]?.background = ContextCompat.getDrawable(this, R.drawable.o)
+            buttons[3][0]?.setText("o")!!
+            player1Turn = !player1Turn
+
+        } else if ((buttons[3][0]!!.text.toString() == buttons[5][2]!!.text.toString() && buttons[5][2]!!.text.toString() == buttons[6][3]!!.text.toString() && buttons[5][2]!!.text.toString() == buttons[7][4]!!.text.toString() && buttons[5][2]!!.text.toString() != ""
+                    )
+            && buttons[5][2]!!.text.toString() == "x"
+            && buttons[4][1]!!.text.toString() == ""
+            && buttons[4][1]!!.text.toString() != "x"
+        ) {
+
+            buttons[4][1]?.background = ContextCompat.getDrawable(this, R.drawable.o)
+            buttons[4][1]?.setText("o")!!
+            player1Turn = !player1Turn
+
+        } else if ((buttons[6][3]!!.text.toString() == buttons[4][1]!!.text.toString() && buttons[3][0]!!.text.toString() == buttons[6][3]!!.text.toString() && buttons[6][3]!!.text.toString() == buttons[7][4]!!.text.toString() && buttons[6][3]!!.text.toString() != ""
+                    )
+            && buttons[6][3]!!.text.toString() == "x"
+            && buttons[5][2]!!.text.toString() == ""
+            && buttons[5][2]!!.text.toString() != "x"
+        ) {
+
+            buttons[5][2]?.background = ContextCompat.getDrawable(this, R.drawable.o)
+            buttons[5][2]?.setText("o")!!
+            player1Turn = !player1Turn
+
+        } else if ((buttons[3][0]!!.text.toString() == buttons[5][2]!!.text.toString() && buttons[5][2]!!.text.toString() == buttons[4][1]!!.text.toString() && buttons[5][2]!!.text.toString() == buttons[7][4]!!.text.toString() && buttons[5][2]!!.text.toString() != ""
+                    )
+            && buttons[5][2]!!.text.toString() == "x"
+            && buttons[6][3]!!.text.toString() == ""
+            && buttons[6][3]!!.text.toString() != "x"
+        ) {
+
+            buttons[6][3]?.background = ContextCompat.getDrawable(this, R.drawable.o)
+            buttons[6][3]?.setText("o")!!
+            player1Turn = !player1Turn
+
+        } else if ((buttons[6][3]!!.text.toString() == buttons[5][2]!!.text.toString() && buttons[5][2]!!.text.toString() == buttons[4][1]!!.text.toString() && buttons[5][2]!!.text.toString() == buttons[3][0]!!.text.toString() && buttons[5][2]!!.text.toString() != "")
+            && buttons[5][2]!!.text.toString() == "x"
+            && buttons[7][4]!!.text.toString() == ""
+            && buttons[7][4]!!.text.toString() != "x"
+        ) {
+
+            buttons[7][4]?.background = ContextCompat.getDrawable(this, R.drawable.o)
+            buttons[7][4]?.setText("o")!!
+            player1Turn = !player1Turn
+
+        }
+    }
+
+    // check for X from TopRight to BottomLift to Prevent 5 X in row
+    /*** Done ***/
+    private fun topRightBottomLift4InRawX() {
+
+        /************************-1-*********************/
+        if ((buttons[3][1]!!.text.toString() == buttons[2][2]!!.text.toString() && buttons[3][1]!!.text.toString() == buttons[1][3]!!.text.toString() && buttons[3][1]!!.text.toString() == buttons[4][0]!!.text.toString() && buttons[3][1]!!.text.toString() != "")
+            && buttons[3][1]!!.text.toString() == "x"
+            && buttons[0][4]!!.text.toString() == ""
+            && buttons[0][4]!!.text.toString() != "x"
+        ) {
+
+            buttons[0][4]?.background = ContextCompat.getDrawable(this, R.drawable.o)
+            buttons[0][4]?.setText("o")!!
+            player1Turn = !player1Turn
+
+        } else if ((buttons[3][1]!!.text.toString() == buttons[2][2]!!.text.toString() && buttons[3][1]!!.text.toString() == buttons[0][4]!!.text.toString() && buttons[3][1]!!.text.toString() == buttons[4][0]!!.text.toString() && buttons[3][1]!!.text.toString() != ""
+                    )
+            && buttons[3][1]!!.text.toString() == "x"
+            && buttons[1][3]!!.text.toString() == ""
+            && buttons[1][3]!!.text.toString() != "x"
+        ) {
+
+            buttons[1][3]?.background = ContextCompat.getDrawable(this, R.drawable.o)
+            buttons[1][3]?.setText("o")!!
+            player1Turn = !player1Turn
+
+        } else if ((buttons[3][1]!!.text.toString() == buttons[1][3]!!.text.toString() && buttons[3][1]!!.text.toString() == buttons[0][4]!!.text.toString() && buttons[3][1]!!.text.toString() == buttons[4][0]!!.text.toString() && buttons[3][1]!!.text.toString() != ""
+                    )
+            && buttons[3][1]!!.text.toString() == "x"
+            && buttons[2][2]!!.text.toString() == ""
+            && buttons[2][2]!!.text.toString() != "x"
+        ) {
+
+            buttons[2][2]?.background = ContextCompat.getDrawable(this, R.drawable.o)
+            buttons[2][2]?.setText("o")!!
+            player1Turn = !player1Turn
+
+        } else if ((buttons[2][2]!!.text.toString() == buttons[1][3]!!.text.toString() && buttons[2][2]!!.text.toString() == buttons[0][4]!!.text.toString() && buttons[2][2]!!.text.toString() == buttons[4][0]!!.text.toString() && buttons[2][2]!!.text.toString() != ""
+                    )
+            && buttons[2][2]!!.text.toString() == "x"
+            && buttons[3][1]!!.text.toString() == ""
+            && buttons[3][1]!!.text.toString() != "x"
+        ) {
+
+            buttons[3][1]?.background = ContextCompat.getDrawable(this, R.drawable.o)
+            buttons[3][1]?.setText("o")!!
+            player1Turn = !player1Turn
+
+        } else if ((buttons[2][2]!!.text.toString() == buttons[1][3]!!.text.toString() && buttons[2][2]!!.text.toString() == buttons[3][1]!!.text.toString() && buttons[2][2]!!.text.toString() == buttons[0][4]!!.text.toString() && buttons[2][2]!!.text.toString() != "")
+            && buttons[2][2]!!.text.toString() == "x"
+            && buttons[4][0]!!.text.toString() == ""
+            && buttons[4][0]!!.text.toString() != "x"
+        ) {
+
+            buttons[4][0]?.background = ContextCompat.getDrawable(this, R.drawable.o)
+            buttons[4][0]?.setText("o")!!
+            player1Turn = !player1Turn
+
+        }
+        /*************-2-****************/
+        else if ((buttons[3][2]!!.text.toString() == buttons[2][3]!!.text.toString() && buttons[3][2]!!.text.toString() == buttons[1][4]!!.text.toString() && buttons[3][2]!!.text.toString() == buttons[4][1]!!.text.toString() && buttons[3][2]!!.text.toString() != "")
+            && buttons[3][2]!!.text.toString() == "x"
+            && buttons[0][5]!!.text.toString() == ""
+            && buttons[0][5]!!.text.toString() != "x"
+        ) {
+
+            buttons[0][5]?.background = ContextCompat.getDrawable(this, R.drawable.o)
+            buttons[0][5]?.setText("o")!!
+            player1Turn = !player1Turn
+
+        } else if ((buttons[3][2]!!.text.toString() == buttons[2][3]!!.text.toString() && buttons[3][2]!!.text.toString() == buttons[0][5]!!.text.toString() && buttons[3][2]!!.text.toString() == buttons[4][1]!!.text.toString() && buttons[3][2]!!.text.toString() != ""
+                    || buttons[3][2]!!.text.toString() == buttons[2][3]!!.text.toString() && buttons[3][2]!!.text.toString() == buttons[4][1]!!.text.toString() && buttons[3][2]!!.text.toString() == buttons[5][0]!!.text.toString() && buttons[3][2]!!.text.toString() != ""
+                    )
+            && buttons[3][2]!!.text.toString() == "x"
+            && buttons[1][4]!!.text.toString() == ""
+            && buttons[1][4]!!.text.toString() != "x"
+        ) {
+
+            buttons[1][4]?.background = ContextCompat.getDrawable(this, R.drawable.o)
+            buttons[1][4]?.setText("o")!!
+            player1Turn = !player1Turn
+
+        } else if ((buttons[3][2]!!.text.toString() == buttons[1][4]!!.text.toString() && buttons[3][2]!!.text.toString() == buttons[0][5]!!.text.toString() && buttons[3][2]!!.text.toString() == buttons[4][1]!!.text.toString() && buttons[3][2]!!.text.toString() != ""
+                    || buttons[3][2]!!.text.toString() == buttons[5][0]!!.text.toString() && buttons[3][2]!!.text.toString() == buttons[4][1]!!.text.toString() && buttons[3][2]!!.text.toString() == buttons[1][4]!!.text.toString() && buttons[3][2]!!.text.toString() != ""
+                    )
+            && buttons[3][2]!!.text.toString() == "x"
+            && buttons[2][3]!!.text.toString() == ""
+            && buttons[2][3]!!.text.toString() != "x"
+        ) {
+
+            buttons[2][3]?.background = ContextCompat.getDrawable(this, R.drawable.o)
+            buttons[2][3]?.setText("o")!!
+            player1Turn = !player1Turn
+
+        } else if ((buttons[2][3]!!.text.toString() == buttons[1][4]!!.text.toString() && buttons[2][3]!!.text.toString() == buttons[0][5]!!.text.toString() && buttons[2][3]!!.text.toString() == buttons[4][1]!!.text.toString() && buttons[2][3]!!.text.toString() != ""
+                    || buttons[2][3]!!.text.toString() == buttons[5][0]!!.text.toString() && buttons[2][3]!!.text.toString() == buttons[4][1]!!.text.toString() && buttons[2][3]!!.text.toString() == buttons[1][4]!!.text.toString() && buttons[2][3]!!.text.toString() != ""
+                    )
+            && buttons[2][3]!!.text.toString() == "x"
+            && buttons[3][2]!!.text.toString() == ""
+            && buttons[3][2]!!.text.toString() != "x"
+        ) {
+
+            buttons[3][2]?.background = ContextCompat.getDrawable(this, R.drawable.o)
+            buttons[3][2]?.setText("o")!!
+            player1Turn = !player1Turn
+
+        } else if ((buttons[2][3]!!.text.toString() == buttons[1][4]!!.text.toString() && buttons[2][3]!!.text.toString() == buttons[3][2]!!.text.toString() && buttons[2][3]!!.text.toString() == buttons[0][5]!!.text.toString() && buttons[2][3]!!.text.toString() != ""
+                    || buttons[2][3]!!.text.toString() == buttons[5][0]!!.text.toString() && buttons[2][3]!!.text.toString() == buttons[3][2]!!.text.toString() && buttons[2][3]!!.text.toString() == buttons[1][4]!!.text.toString() && buttons[2][3]!!.text.toString() != ""
+                    )
+            && buttons[2][3]!!.text.toString() == "x"
+            && buttons[4][1]!!.text.toString() == ""
+            && buttons[4][1]!!.text.toString() != "x"
+        ) {
+
+            buttons[4][1]?.background = ContextCompat.getDrawable(this, R.drawable.o)
+            buttons[4][1]?.setText("o")!!
+            player1Turn = !player1Turn
+
+        } else if ((buttons[3][2]!!.text.toString() == buttons[2][3]!!.text.toString() && buttons[3][2]!!.text.toString() == buttons[4][1]!!.text.toString() && buttons[2][3]!!.text.toString() == buttons[1][4]!!.text.toString() && buttons[3][2]!!.text.toString() != "")
+            && buttons[3][2]!!.text.toString() == "o"
+            && buttons[5][0]!!.text.toString() == ""
+            && buttons[5][0]!!.text.toString() != "x"
+        ) {
+
+            buttons[5][0]?.background = ContextCompat.getDrawable(this, R.drawable.o)
+            buttons[5][0]?.setText("o")!!
+            player1Turn = !player1Turn
+
+        }
+        /*************-3-****************/
+        else if ((buttons[3][3]!!.text.toString() == buttons[2][4]!!.text.toString() && buttons[3][3]!!.text.toString() == buttons[1][5]!!.text.toString() && buttons[3][3]!!.text.toString() == buttons[4][2]!!.text.toString() && buttons[3][3]!!.text.toString() != "")
+            && buttons[3][3]!!.text.toString() == "x"
+            && buttons[0][6]!!.text.toString() == ""
+            && buttons[0][6]!!.text.toString() != "x"
+        ) {
+
+            buttons[0][6]?.background = ContextCompat.getDrawable(this, R.drawable.o)
+            buttons[0][6]?.setText("o")!!
+            player1Turn = !player1Turn
+
+        } else if ((buttons[3][3]!!.text.toString() == buttons[2][4]!!.text.toString() && buttons[3][3]!!.text.toString() == buttons[0][6]!!.text.toString() && buttons[3][3]!!.text.toString() == buttons[4][2]!!.text.toString() && buttons[3][3]!!.text.toString() != ""
+                    || buttons[3][3]!!.text.toString() == buttons[2][4]!!.text.toString() && buttons[3][3]!!.text.toString() == buttons[4][2]!!.text.toString() && buttons[3][3]!!.text.toString() == buttons[5][1]!!.text.toString() && buttons[3][3]!!.text.toString() != ""
+                    )
+            && buttons[3][3]!!.text.toString() == "x"
+            && buttons[1][5]!!.text.toString() == ""
+            && buttons[1][5]!!.text.toString() != "x"
+        ) {
+
+            buttons[1][5]?.background = ContextCompat.getDrawable(this, R.drawable.o)
+            buttons[1][5]?.setText("o")!!
+            player1Turn = !player1Turn
+
+        } else if ((buttons[3][3]!!.text.toString() == buttons[1][5]!!.text.toString() && buttons[3][3]!!.text.toString() == buttons[0][6]!!.text.toString() && buttons[3][3]!!.text.toString() == buttons[4][2]!!.text.toString() && buttons[3][3]!!.text.toString() != ""
+                    || buttons[3][3]!!.text.toString() == buttons[1][5]!!.text.toString() && buttons[3][3]!!.text.toString() == buttons[4][2]!!.text.toString() && buttons[3][3]!!.text.toString() == buttons[5][1]!!.text.toString() && buttons[3][3]!!.text.toString() != ""
+                    || buttons[3][3]!!.text.toString() == buttons[5][1]!!.text.toString() && buttons[3][3]!!.text.toString() == buttons[4][2]!!.text.toString() && buttons[3][3]!!.text.toString() == buttons[6][0]!!.text.toString() && buttons[3][3]!!.text.toString() != ""
+                    )
+            && buttons[3][3]!!.text.toString() == "x"
+            && buttons[2][4]!!.text.toString() == ""
+            && buttons[2][4]!!.text.toString() != "x"
+        ) {
+
+            buttons[2][4]?.background = ContextCompat.getDrawable(this, R.drawable.o)
+            buttons[2][4]?.setText("o")!!
+            player1Turn = !player1Turn
+
+        } else if ((buttons[2][4]!!.text.toString() == buttons[1][5]!!.text.toString() && buttons[2][4]!!.text.toString() == buttons[0][6]!!.text.toString() && buttons[2][4]!!.text.toString() == buttons[4][2]!!.text.toString() && buttons[2][4]!!.text.toString() != ""
+                    || buttons[2][4]!!.text.toString() == buttons[1][5]!!.text.toString() && buttons[2][4]!!.text.toString() == buttons[4][2]!!.text.toString() && buttons[2][4]!!.text.toString() == buttons[5][1]!!.text.toString() && buttons[2][4]!!.text.toString() != ""
+                    || buttons[2][4]!!.text.toString() == buttons[5][1]!!.text.toString() && buttons[2][4]!!.text.toString() == buttons[4][2]!!.text.toString() && buttons[2][4]!!.text.toString() == buttons[6][0]!!.text.toString() && buttons[2][4]!!.text.toString() != ""
+                    )
+            && buttons[2][4]!!.text.toString() == "x"
+            && buttons[3][3]!!.text.toString() == ""
+            && buttons[3][3]!!.text.toString() != "x"
+        ) {
+
+            buttons[3][3]?.background = ContextCompat.getDrawable(this, R.drawable.o)
+            buttons[3][3]?.setText("o")!!
+            player1Turn = !player1Turn
+
+        } else if ((buttons[3][3]!!.text.toString() == buttons[1][5]!!.text.toString() && buttons[3][3]!!.text.toString() == buttons[2][4]!!.text.toString() && buttons[3][3]!!.text.toString() == buttons[6][0]!!.text.toString() && buttons[3][3]!!.text.toString() != ""
+                    || buttons[3][3]!!.text.toString() == buttons[5][1]!!.text.toString() && buttons[3][3]!!.text.toString() == buttons[2][4]!!.text.toString() && buttons[3][3]!!.text.toString() == buttons[1][5]!!.text.toString() && buttons[3][3]!!.text.toString() != ""
+                    || buttons[3][3]!!.text.toString() == buttons[5][1]!!.text.toString() && buttons[3][3]!!.text.toString() == buttons[6][0]!!.text.toString() && buttons[3][3]!!.text.toString() == buttons[2][4]!!.text.toString() && buttons[3][3]!!.text.toString() != ""
+                    )
+            && buttons[3][3]!!.text.toString() == "x"
+            && buttons[4][2]!!.text.toString() == ""
+            && buttons[4][2]!!.text.toString() != "x"
+        ) {
+
+            buttons[4][2]?.background = ContextCompat.getDrawable(this, R.drawable.o)
+            buttons[4][2]?.setText("o")!!
+            player1Turn = !player1Turn
+
+        } else if ((buttons[3][3]!!.text.toString() == buttons[4][2]!!.text.toString() && buttons[3][3]!!.text.toString() == buttons[2][4]!!.text.toString() && buttons[3][3]!!.text.toString() == buttons[1][5]!!.text.toString() && buttons[3][3]!!.text.toString() != ""
+                    || buttons[3][3]!!.text.toString() == buttons[6][0]!!.text.toString() && buttons[3][3]!!.text.toString() == buttons[4][2]!!.text.toString() && buttons[3][3]!!.text.toString() == buttons[2][4]!!.text.toString() && buttons[3][3]!!.text.toString() != ""
+                    )
+            && buttons[3][3]!!.text.toString() == "x"
+            && buttons[5][1]!!.text.toString() == ""
+            && buttons[5][1]!!.text.toString() != "x"
+        ) {
+
+            buttons[5][1]?.background = ContextCompat.getDrawable(this, R.drawable.o)
+            buttons[5][1]?.setText("o")!!
+            player1Turn = !player1Turn
+
+        } else if ((buttons[3][3]!!.text.toString() == buttons[4][2]!!.text.toString() && buttons[3][3]!!.text.toString() == buttons[5][1]!!.text.toString() && buttons[3][3]!!.text.toString() == buttons[2][4]!!.text.toString() && buttons[3][3]!!.text.toString() != "")
+            && buttons[3][3]!!.text.toString() == "x"
+            && buttons[6][0]!!.text.toString() == ""
+            && buttons[6][0]!!.text.toString() != "x"
+        ) {
+
+            buttons[6][0]?.background = ContextCompat.getDrawable(this, R.drawable.o)
+            buttons[6][0]?.setText("o")!!
+            player1Turn = !player1Turn
+
+        }
+        /******************-4-*****************/
+        else if ((buttons[3][4]!!.text.toString() == buttons[2][5]!!.text.toString() && buttons[3][4]!!.text.toString() == buttons[1][6]!!.text.toString() && buttons[3][4]!!.text.toString() == buttons[4][3]!!.text.toString() && buttons[3][4]!!.text.toString() != "")
+            && buttons[3][4]!!.text.toString() == "x"
+            && buttons[0][7]!!.text.toString() == ""
+            && buttons[0][7]!!.text.toString() != "x"
+        ) {
+
+            buttons[0][7]?.background = ContextCompat.getDrawable(this, R.drawable.o)
+            buttons[0][7]?.setText("o")!!
+            player1Turn = !player1Turn
+
+        } else if ((buttons[3][4]!!.text.toString() == buttons[2][5]!!.text.toString() && buttons[3][4]!!.text.toString() == buttons[0][7]!!.text.toString() && buttons[3][4]!!.text.toString() == buttons[4][3]!!.text.toString() && buttons[3][4]!!.text.toString() != ""
+                    || buttons[3][4]!!.text.toString() == buttons[2][5]!!.text.toString() && buttons[3][4]!!.text.toString() == buttons[4][3]!!.text.toString() && buttons[3][4]!!.text.toString() == buttons[5][2]!!.text.toString() && buttons[3][4]!!.text.toString() != ""
+                    )
+            && buttons[3][4]!!.text.toString() == "x"
+            && buttons[1][6]!!.text.toString() == ""
+            && buttons[1][6]!!.text.toString() != "x"
+        ) {
+
+            buttons[1][6]?.background = ContextCompat.getDrawable(this, R.drawable.o)
+            buttons[1][6]?.setText("o")!!
+            player1Turn = !player1Turn
+
+        } else if ((buttons[3][4]!!.text.toString() == buttons[1][6]!!.text.toString() && buttons[3][4]!!.text.toString() == buttons[0][7]!!.text.toString() && buttons[3][4]!!.text.toString() == buttons[4][3]!!.text.toString() && buttons[3][4]!!.text.toString() != ""
+                    || buttons[3][4]!!.text.toString() == buttons[1][6]!!.text.toString() && buttons[3][4]!!.text.toString() == buttons[4][3]!!.text.toString() && buttons[3][4]!!.text.toString() == buttons[5][2]!!.text.toString() && buttons[3][4]!!.text.toString() != ""
+                    || buttons[3][4]!!.text.toString() == buttons[5][2]!!.text.toString() && buttons[3][4]!!.text.toString() == buttons[4][3]!!.text.toString() && buttons[3][4]!!.text.toString() == buttons[6][1]!!.text.toString() && buttons[3][4]!!.text.toString() != ""
+                    )
+            && buttons[3][4]!!.text.toString() == "x"
+            && buttons[2][5]!!.text.toString() == ""
+            && buttons[2][5]!!.text.toString() != "x"
+        ) {
+
+            buttons[2][5]?.background = ContextCompat.getDrawable(this, R.drawable.o)
+            buttons[2][5]?.setText("o")!!
+            player1Turn = !player1Turn
+
+        } else if ((buttons[2][5]!!.text.toString() == buttons[1][6]!!.text.toString() && buttons[2][5]!!.text.toString() == buttons[0][7]!!.text.toString() && buttons[2][5]!!.text.toString() == buttons[4][3]!!.text.toString() && buttons[2][5]!!.text.toString() != "" && buttons[2][5]!!.text.toString() == "x"
+                    || buttons[2][5]!!.text.toString() == buttons[1][6]!!.text.toString() && buttons[2][5]!!.text.toString() == buttons[4][3]!!.text.toString() && buttons[2][5]!!.text.toString() == buttons[5][2]!!.text.toString() && buttons[2][5]!!.text.toString() != "" && buttons[2][5]!!.text.toString() == "x"
+                    || buttons[2][5]!!.text.toString() == buttons[5][2]!!.text.toString() && buttons[2][5]!!.text.toString() == buttons[4][3]!!.text.toString() && buttons[2][5]!!.text.toString() == buttons[6][1]!!.text.toString() && buttons[2][5]!!.text.toString() != "" && buttons[2][5]!!.text.toString() == "x"
+                    || buttons[6][1]!!.text.toString() == buttons[5][2]!!.text.toString() && buttons[6][1]!!.text.toString() == buttons[4][3]!!.text.toString() && buttons[6][1]!!.text.toString() == buttons[7][0]!!.text.toString() && buttons[6][1]!!.text.toString() != "" && buttons[6][1]!!.text.toString() == "x"
+                    )
+            && buttons[3][4]!!.text.toString() == ""
+            && buttons[3][4]!!.text.toString() != "x"
+        ) {
+
+            buttons[3][4]?.background = ContextCompat.getDrawable(this, R.drawable.o)
+            buttons[3][4]?.setText("o")!!
+            player1Turn = !player1Turn
+
+        } else if ((buttons[3][4]!!.text.toString() == buttons[1][6]!!.text.toString() && buttons[3][4]!!.text.toString() == buttons[2][5]!!.text.toString() && buttons[3][4]!!.text.toString() == buttons[0][7]!!.text.toString() && buttons[3][4]!!.text.toString() != "" && buttons[3][4]!!.text.toString() == "x"
+                    || buttons[3][4]!!.text.toString() == buttons[2][5]!!.text.toString() && buttons[3][4]!!.text.toString() == buttons[5][2]!!.text.toString() && buttons[3][4]!!.text.toString() == buttons[1][6]!!.text.toString() && buttons[3][4]!!.text.toString() != "" && buttons[3][4]!!.text.toString() == "x"
+                    || buttons[3][4]!!.text.toString() == buttons[6][1]!!.text.toString() && buttons[3][4]!!.text.toString() == buttons[5][2]!!.text.toString() && buttons[3][4]!!.text.toString() == buttons[2][5]!!.text.toString() && buttons[3][4]!!.text.toString() != "" && buttons[3][4]!!.text.toString() == "x"
+                    || buttons[7][0]!!.text.toString() == buttons[6][1]!!.text.toString() && buttons[7][0]!!.text.toString() == buttons[5][2]!!.text.toString() && buttons[7][0]!!.text.toString() == buttons[3][4]!!.text.toString() && buttons[7][0]!!.text.toString() != "" && buttons[7][0]!!.text.toString() == "x"
+                    )
+            && buttons[4][3]!!.text.toString() == ""
+            && buttons[4][3]!!.text.toString() != "x"
+        ) {
+
+            buttons[4][3]?.background = ContextCompat.getDrawable(this, R.drawable.o)
+            buttons[4][3]?.setText("o")!!
+            player1Turn = !player1Turn
+
+        } else if ((buttons[4][3]!!.text.toString() == buttons[3][4]!!.text.toString() && buttons[4][3]!!.text.toString() == buttons[2][5]!!.text.toString() && buttons[4][3]!!.text.toString() == buttons[1][6]!!.text.toString() && buttons[4][3]!!.text.toString() != ""
+                    || buttons[4][3]!!.text.toString() == buttons[3][4]!!.text.toString() && buttons[4][3]!!.text.toString() == buttons[6][1]!!.text.toString() && buttons[4][3]!!.text.toString() == buttons[2][5]!!.text.toString() && buttons[4][3]!!.text.toString() != ""
+                    || buttons[4][3]!!.text.toString() == buttons[7][0]!!.text.toString() && buttons[4][3]!!.text.toString() == buttons[6][1]!!.text.toString() && buttons[4][3]!!.text.toString() == buttons[3][4]!!.text.toString() && buttons[4][3]!!.text.toString() != ""
+                    )
+            && buttons[4][3]!!.text.toString() == "x"
+            && buttons[5][2]!!.text.toString() == ""
+            && buttons[5][2]!!.text.toString() != "x"
+        ) {
+
+            buttons[5][2]?.background = ContextCompat.getDrawable(this, R.drawable.o)
+            buttons[5][2]?.setText("o")!!
+            player1Turn = !player1Turn
+
+        } else if ((buttons[4][3]!!.text.toString() == buttons[3][4]!!.text.toString() && buttons[4][3]!!.text.toString() == buttons[5][2]!!.text.toString() && buttons[4][3]!!.text.toString() == buttons[2][5]!!.text.toString() && buttons[4][3]!!.text.toString() != ""
+                    || buttons[4][3]!!.text.toString() == buttons[7][0]!!.text.toString() && buttons[4][3]!!.text.toString() == buttons[5][2]!!.text.toString() && buttons[4][3]!!.text.toString() == buttons[3][4]!!.text.toString() && buttons[4][3]!!.text.toString() != ""
+                    )
+            && buttons[4][3]!!.text.toString() == "x"
+            && buttons[6][1]!!.text.toString() == ""
+            && buttons[6][1]!!.text.toString() != "x"
+        ) {
+
+            buttons[6][1]?.background = ContextCompat.getDrawable(this, R.drawable.o)
+            buttons[6][1]?.setText("o")!!
+            player1Turn = !player1Turn
+
+        } else if ((buttons[4][3]!!.text.toString() == buttons[5][2]!!.text.toString() && buttons[4][3]!!.text.toString() == buttons[6][1]!!.text.toString() && buttons[4][3]!!.text.toString() == buttons[3][4]!!.text.toString() && buttons[4][3]!!.text.toString() != "")
+            && buttons[4][3]!!.text.toString() == "x"
+            && buttons[7][0]!!.text.toString() == ""
+            && buttons[7][0]!!.text.toString() != "x"
+        ) {
+
+            buttons[7][0]?.background = ContextCompat.getDrawable(this, R.drawable.o)
+            buttons[7][0]?.setText("o")!!
+            player1Turn = !player1Turn
+
+        }
+        /******************-5-*****************/
+
+        else if ((buttons[4][4]!!.text.toString() == buttons[3][5]!!.text.toString() && buttons[4][4]!!.text.toString() == buttons[2][6]!!.text.toString() && buttons[4][4]!!.text.toString() == buttons[5][3]!!.text.toString() && buttons[4][4]!!.text.toString() != "")
+            && buttons[4][4]!!.text.toString() == "x"
+            && buttons[1][7]!!.text.toString() == ""
+            && buttons[1][7]!!.text.toString() != "x"
+        ) {
+
+            buttons[1][7]?.background = ContextCompat.getDrawable(this, R.drawable.o)
+            buttons[1][7]?.setText("o")!!
+            player1Turn = !player1Turn
+
+        } else if ((buttons[4][4]!!.text.toString() == buttons[3][5]!!.text.toString() && buttons[4][4]!!.text.toString() == buttons[1][7]!!.text.toString() && buttons[4][4]!!.text.toString() == buttons[5][3]!!.text.toString() && buttons[4][4]!!.text.toString() != ""
+                    || buttons[4][4]!!.text.toString() == buttons[3][5]!!.text.toString() && buttons[4][4]!!.text.toString() == buttons[5][3]!!.text.toString() && buttons[4][4]!!.text.toString() == buttons[6][2]!!.text.toString() && buttons[4][4]!!.text.toString() != ""
+                    )
+            && buttons[4][4]!!.text.toString() == "x"
+            && buttons[2][6]!!.text.toString() == ""
+            && buttons[2][6]!!.text.toString() != "x"
+        ) {
+
+            buttons[2][6]?.background = ContextCompat.getDrawable(this, R.drawable.o)
+            buttons[2][6]?.setText("o")!!
+            player1Turn = !player1Turn
+
+        } else if ((buttons[4][4]!!.text.toString() == buttons[2][6]!!.text.toString() && buttons[4][4]!!.text.toString() == buttons[1][7]!!.text.toString() && buttons[4][4]!!.text.toString() == buttons[5][3]!!.text.toString() && buttons[4][4]!!.text.toString() != ""
+                    || buttons[4][4]!!.text.toString() == buttons[2][6]!!.text.toString() && buttons[4][4]!!.text.toString() == buttons[5][3]!!.text.toString() && buttons[4][4]!!.text.toString() == buttons[6][2]!!.text.toString() && buttons[4][4]!!.text.toString() != ""
+                    || buttons[4][4]!!.text.toString() == buttons[6][2]!!.text.toString() && buttons[4][4]!!.text.toString() == buttons[5][3]!!.text.toString() && buttons[4][4]!!.text.toString() == buttons[7][1]!!.text.toString() && buttons[4][4]!!.text.toString() != ""
+                    )
+            && buttons[4][4]!!.text.toString() == "x"
+            && buttons[3][5]!!.text.toString() == ""
+            && buttons[3][5]!!.text.toString() != "x"
+        ) {
+
+            buttons[3][5]?.background = ContextCompat.getDrawable(this, R.drawable.o)
+            buttons[3][5]?.setText("o")!!
+            player1Turn = !player1Turn
+
+        } else if ((buttons[3][5]!!.text.toString() == buttons[2][6]!!.text.toString() && buttons[3][5]!!.text.toString() == buttons[1][7]!!.text.toString() && buttons[3][5]!!.text.toString() == buttons[5][3]!!.text.toString() && buttons[3][5]!!.text.toString() != ""
+                    || buttons[3][5]!!.text.toString() == buttons[2][6]!!.text.toString() && buttons[3][5]!!.text.toString() == buttons[5][3]!!.text.toString() && buttons[3][5]!!.text.toString() == buttons[6][2]!!.text.toString() && buttons[3][5]!!.text.toString() != ""
+                    || buttons[3][5]!!.text.toString() == buttons[6][2]!!.text.toString() && buttons[3][5]!!.text.toString() == buttons[5][3]!!.text.toString() && buttons[3][5]!!.text.toString() == buttons[7][1]!!.text.toString() && buttons[3][5]!!.text.toString() != ""
+                    )
+            && buttons[3][5]!!.text.toString() == "x"
+            && buttons[4][4]!!.text.toString() == ""
+            && buttons[4][4]!!.text.toString() != "x"
+        ) {
+
+            buttons[4][4]?.background = ContextCompat.getDrawable(this, R.drawable.o)
+            buttons[4][4]?.setText("o")!!
+            player1Turn = !player1Turn
+
+        } else if ((buttons[4][4]!!.text.toString() == buttons[2][6]!!.text.toString() && buttons[4][4]!!.text.toString() == buttons[3][5]!!.text.toString() && buttons[4][4]!!.text.toString() == buttons[1][7]!!.text.toString() && buttons[4][4]!!.text.toString() != ""
+                    || buttons[4][4]!!.text.toString() == buttons[6][2]!!.text.toString() && buttons[4][4]!!.text.toString() == buttons[3][5]!!.text.toString() && buttons[4][4]!!.text.toString() == buttons[2][6]!!.text.toString() && buttons[4][4]!!.text.toString() != ""
+                    || buttons[4][4]!!.text.toString() == buttons[6][2]!!.text.toString() && buttons[4][4]!!.text.toString() == buttons[7][1]!!.text.toString() && buttons[4][4]!!.text.toString() == buttons[3][5]!!.text.toString() && buttons[4][4]!!.text.toString() != ""
+                    )
+            && buttons[4][4]!!.text.toString() == "x"
+            && buttons[5][3]!!.text.toString() == ""
+            && buttons[5][3]!!.text.toString() != "x"
+        ) {
+
+            buttons[5][3]?.background = ContextCompat.getDrawable(this, R.drawable.o)
+            buttons[5][3]?.setText("o")!!
+            player1Turn = !player1Turn
+
+        } else if ((buttons[4][4]!!.text.toString() == buttons[5][3]!!.text.toString() && buttons[4][4]!!.text.toString() == buttons[3][5]!!.text.toString() && buttons[4][4]!!.text.toString() == buttons[2][6]!!.text.toString() && buttons[4][4]!!.text.toString() != ""
+                    || buttons[4][4]!!.text.toString() == buttons[7][1]!!.text.toString() && buttons[4][4]!!.text.toString() == buttons[5][3]!!.text.toString() && buttons[4][4]!!.text.toString() == buttons[3][5]!!.text.toString() && buttons[4][4]!!.text.toString() != ""
+                    )
+            && buttons[4][4]!!.text.toString() == "x"
+            && buttons[6][2]!!.text.toString() == ""
+            && buttons[6][2]!!.text.toString() != "x"
+        ) {
+
+            buttons[6][2]?.background = ContextCompat.getDrawable(this, R.drawable.o)
+            buttons[6][2]?.setText("o")!!
+            player1Turn = !player1Turn
+
+        } else if ((buttons[4][4]!!.text.toString() == buttons[5][3]!!.text.toString() && buttons[4][4]!!.text.toString() == buttons[6][2]!!.text.toString() && buttons[4][4]!!.text.toString() == buttons[3][5]!!.text.toString() && buttons[4][4]!!.text.toString() != "")
+            && buttons[4][4]!!.text.toString() == "x"
+            && buttons[7][1]!!.text.toString() == ""
+            && buttons[7][1]!!.text.toString() != "x"
+        ) {
+
+            buttons[7][1]?.background = ContextCompat.getDrawable(this, R.drawable.o)
+            buttons[7][1]?.setText("o")!!
+            player1Turn = !player1Turn
+
+        }
+
+        /******************-6-*****************/
+
+        else if ((buttons[5][4]!!.text.toString() == buttons[4][5]!!.text.toString() && buttons[5][4]!!.text.toString() == buttons[3][6]!!.text.toString() && buttons[5][4]!!.text.toString() == buttons[6][3]!!.text.toString() && buttons[5][4]!!.text.toString() != "")
+            && buttons[5][4]!!.text.toString() == "x"
+            && buttons[2][7]!!.text.toString() == ""
+            && buttons[2][7]!!.text.toString() != "x"
+        ) {
+
+            buttons[2][7]?.background = ContextCompat.getDrawable(this, R.drawable.o)
+            buttons[2][7]?.setText("o")!!
+            player1Turn = !player1Turn
+
+        } else if ((buttons[5][4]!!.text.toString() == buttons[4][5]!!.text.toString() && buttons[5][4]!!.text.toString() == buttons[2][7]!!.text.toString() && buttons[5][4]!!.text.toString() == buttons[6][3]!!.text.toString() && buttons[5][4]!!.text.toString() != ""
+                    || buttons[5][4]!!.text.toString() == buttons[4][5]!!.text.toString() && buttons[5][4]!!.text.toString() == buttons[6][3]!!.text.toString() && buttons[5][4]!!.text.toString() == buttons[7][2]!!.text.toString() && buttons[5][4]!!.text.toString() != ""
+                    )
+            && buttons[5][4]!!.text.toString() == "x"
+            && buttons[3][6]!!.text.toString() == ""
+            && buttons[3][6]!!.text.toString() != "x"
+        ) {
+
+            buttons[3][6]?.background = ContextCompat.getDrawable(this, R.drawable.o)
+            buttons[3][6]?.setText("o")!!
+            player1Turn = !player1Turn
+
+        } else if ((buttons[5][4]!!.text.toString() == buttons[3][6]!!.text.toString() && buttons[5][4]!!.text.toString() == buttons[2][7]!!.text.toString() && buttons[5][4]!!.text.toString() == buttons[6][3]!!.text.toString() && buttons[5][4]!!.text.toString() != ""
+                    || buttons[5][4]!!.text.toString() == buttons[3][6]!!.text.toString() && buttons[5][4]!!.text.toString() == buttons[6][3]!!.text.toString() && buttons[5][4]!!.text.toString() == buttons[7][2]!!.text.toString() && buttons[5][4]!!.text.toString() != ""
+                    )
+            && buttons[5][4]!!.text.toString() == "x"
+            && buttons[4][5]!!.text.toString() == ""
+            && buttons[4][5]!!.text.toString() != "x"
+        ) {
+
+            buttons[5][5]?.background = ContextCompat.getDrawable(this, R.drawable.o)
+            buttons[4][5]?.setText("o")!!
+            player1Turn = !player1Turn
+
+        } else if ((buttons[4][5]!!.text.toString() == buttons[3][6]!!.text.toString() && buttons[4][5]!!.text.toString() == buttons[2][7]!!.text.toString() && buttons[4][5]!!.text.toString() == buttons[6][3]!!.text.toString() && buttons[4][5]!!.text.toString() != ""
+                    || buttons[4][5]!!.text.toString() == buttons[3][6]!!.text.toString() && buttons[4][5]!!.text.toString() == buttons[6][3]!!.text.toString() && buttons[4][5]!!.text.toString() == buttons[7][2]!!.text.toString() && buttons[4][5]!!.text.toString() != ""
+                    )
+            && buttons[4][5]!!.text.toString() == "x"
+            && buttons[5][4]!!.text.toString() == ""
+            && buttons[5][4]!!.text.toString() != "x"
+        ) {
+
+            buttons[5][4]?.background = ContextCompat.getDrawable(this, R.drawable.o)
+            buttons[5][4]?.setText("o")!!
+            player1Turn = !player1Turn
+
+        } else if ((buttons[4][5]!!.text.toString() == buttons[3][6]!!.text.toString() && buttons[4][5]!!.text.toString() == buttons[5][4]!!.text.toString() && buttons[4][5]!!.text.toString() == buttons[2][7]!!.text.toString() && buttons[4][5]!!.text.toString() != ""
+                    || buttons[4][5]!!.text.toString() == buttons[7][2]!!.text.toString() && buttons[4][5]!!.text.toString() == buttons[5][4]!!.text.toString() && buttons[4][5]!!.text.toString() == buttons[3][6]!!.text.toString() && buttons[4][5]!!.text.toString() != ""
+                    )
+            && buttons[4][5]!!.text.toString() == "x"
+            && buttons[6][3]!!.text.toString() == ""
+            && buttons[6][3]!!.text.toString() != "x"
+        ) {
+
+            buttons[6][3]?.background = ContextCompat.getDrawable(this, R.drawable.o)
+            buttons[6][3]?.setText("o")!!
+            player1Turn = !player1Turn
+
+        } else if ((buttons[5][4]!!.text.toString() == buttons[4][5]!!.text.toString() && buttons[5][4]!!.text.toString() == buttons[6][3]!!.text.toString() && buttons[5][4]!!.text.toString() == buttons[3][6]!!.text.toString() && buttons[5][4]!!.text.toString() != "")
+            && buttons[5][4]!!.text.toString() == "x"
+            && buttons[7][2]!!.text.toString() == ""
+            && buttons[7][2]!!.text.toString() != "x"
+        ) {
+
+            buttons[7][2]?.background = ContextCompat.getDrawable(this, R.drawable.o)
+            buttons[7][2]?.setText("o")!!
+            player1Turn = !player1Turn
+
+        }
+
+        /******************-7-*****************/
+
+        else if ((buttons[6][4]!!.text.toString() == buttons[5][5]!!.text.toString() && buttons[6][4]!!.text.toString() == buttons[4][6]!!.text.toString() && buttons[6][4]!!.text.toString() == buttons[7][3]!!.text.toString() && buttons[6][4]!!.text.toString() != "")
+            && buttons[6][4]!!.text.toString() == "x"
+            && buttons[3][7]!!.text.toString() == ""
+            && buttons[3][7]!!.text.toString() != "x"
+        ) {
+
+            buttons[3][7]?.background = ContextCompat.getDrawable(this, R.drawable.o)
+            buttons[3][7]?.setText("o")!!
+            player1Turn = !player1Turn
+
+        } else if ((buttons[6][4]!!.text.toString() == buttons[5][5]!!.text.toString() && buttons[6][4]!!.text.toString() == buttons[3][7]!!.text.toString() && buttons[6][4]!!.text.toString() == buttons[7][3]!!.text.toString() && buttons[6][4]!!.text.toString() != ""
+                    )
+            && buttons[6][4]!!.text.toString() == "x"
+            && buttons[4][6]!!.text.toString() == ""
+            && buttons[4][6]!!.text.toString() != "x"
+        ) {
+
+            buttons[4][6]?.background = ContextCompat.getDrawable(this, R.drawable.o)
+            buttons[4][6]?.setText("o")!!
+            player1Turn = !player1Turn
+
+        } else if ((buttons[6][4]!!.text.toString() == buttons[4][6]!!.text.toString() && buttons[6][4]!!.text.toString() == buttons[3][7]!!.text.toString() && buttons[6][4]!!.text.toString() == buttons[7][3]!!.text.toString() && buttons[6][4]!!.text.toString() != ""
+                    )
+            && buttons[6][4]!!.text.toString() == "x"
+            && buttons[5][5]!!.text.toString() == ""
+            && buttons[5][5]!!.text.toString() != "x"
+        ) {
+
+            buttons[5][5]?.background = ContextCompat.getDrawable(this, R.drawable.o)
+            buttons[5][5]?.setText("o")!!
+            player1Turn = !player1Turn
+
+        } else if ((buttons[5][5]!!.text.toString() == buttons[4][6]!!.text.toString() && buttons[5][5]!!.text.toString() == buttons[3][7]!!.text.toString() && buttons[5][5]!!.text.toString() == buttons[7][3]!!.text.toString() && buttons[5][5]!!.text.toString() != ""
+                    )
+            && buttons[5][5]!!.text.toString() == "x"
+            && buttons[6][4]!!.text.toString() == ""
+            && buttons[6][4]!!.text.toString() != "x"
+        ) {
+
+            buttons[6][4]?.background = ContextCompat.getDrawable(this, R.drawable.o)
+            buttons[6][4]?.setText("o")!!
+            player1Turn = !player1Turn
+
+        } else if ((buttons[5][5]!!.text.toString() == buttons[4][6]!!.text.toString() && buttons[5][5]!!.text.toString() == buttons[6][4]!!.text.toString() && buttons[5][5]!!.text.toString() == buttons[3][7]!!.text.toString() && buttons[5][5]!!.text.toString() != "")
+            && buttons[5][5]!!.text.toString() == "x"
             && buttons[7][3]!!.text.toString() == ""
             && buttons[7][3]!!.text.toString() != "x"
         ) {
@@ -4225,7 +5243,7 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
         }
     }
     // check for o on Horizontal and Vertical to get 5 O in row
-    /*** Required ***/
+    /*** Done ***/
     private fun oFourInRow() {
         for (i in 0..7) {
             /******************************* Horizontal Lines********************************/
@@ -4479,14 +5497,18 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
 
             }
         }
-
         /**************** TopRight to BottomLeft ************************/
-
+        if (player1Turn) {
+            topRightBottomLift4InRawO()
+        }
         /**************** TopLeft To BottomRight ************************/
+        if (player1Turn) {
+            topLiftBottomRight4InRawO()
+        }
     }
 
     // check for o on Horizontal and Vertical to prevent 5 X in row
-    /*** Required ***/
+    /*** Done ***/
     private fun xFourInRow() {
         for (i in 0..7) {
             /******************************* Horizontal Lines********************************/
@@ -4740,11 +5762,14 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
 
             }
         }
-
         /**************** TopRight to BottomLeft ************************/
-
+        if (player1Turn) {
+            topRightBottomLift4InRawX()
+        }
         /**************** TopLeft To BottomRight ************************/
-
+        if (player1Turn) {
+            topLiftBottomRight4InRawX()
+        }
     }
 
     /*** Done ***/
@@ -5962,6 +6987,7 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
         }
     }
 
+/*
     // check for x from TopLift to BottomRight to prevent 5 x in row
     /*** Done ***/
     private fun xTopLiftBottomRightFourInRow() {
@@ -6989,6 +8015,7 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
 
         }
     }
+*/
 
     // method to prevent player from getting 3 in row in two dimension
     /*** Done ***/
@@ -7351,14 +8378,14 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
         adView.loadAd(adRequest)
         val adView = AdView(this)
         adView.adSize = AdSize.SMART_BANNER
-        adView.adUnitId = "ca-app-pub-3940256099942544/6300978111"
+        adView.adUnitId = "ca-app-pub-4454440016331822/1368931886"
         // Real Ads : ca-app-pub-4454440016331822/1368931886
 
     }
 
     private fun interstitialAd() {
         mInterstitialAd = InterstitialAd(this)
-        mInterstitialAd.adUnitId = "ca-app-pub-3940256099942544/1033173712"
+        mInterstitialAd.adUnitId = "ca-app-pub-4454440016331822/8097991769"
         mInterstitialAd.loadAd(AdRequest.Builder().build())
         // Real Ads : ca-app-pub-4454440016331822/8097991769
         mInterstitialAd.adListener = object : AdListener() {
@@ -7401,10 +8428,11 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
         mRewardedVideoAd.rewardedVideoAdListener = this
 
         mRewardedVideoAd.loadAd(
-            "ca-app-pub-3940256099942544/5224354917",
+            "ca-app-pub-4454440016331822/7531570468",
             AdRequest.Builder().build()
         )
         // real Reward ads: ca-app-pub-4454440016331822/7531570468
+        // for test : ca-app-pub-3940256099942544/5224354917
     }
 
     override fun onRewarded(reward: RewardItem) {

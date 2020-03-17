@@ -87,9 +87,8 @@ class MediumLevelVsComputer : AppCompatActivity(), View.OnClickListener, Rewarde
         canNotLoadAd = getString(R.string.CanNotLoadAd)
 
 
-        //bannerAds()
+        bannerAds()
         interstitialAd()
-
         loadRewardedVideoAd()
 
         txt_Help.setOnClickListener {
@@ -409,7 +408,7 @@ class MediumLevelVsComputer : AppCompatActivity(), View.OnClickListener, Rewarde
 
     private fun interstitialAd() {
         mInterstitialAd = InterstitialAd(this)
-        mInterstitialAd.adUnitId = "ca-app-pub-3940256099942544/1033173712"
+        mInterstitialAd.adUnitId = "ca-app-pub-4454440016331822/6500297073"
         // for test: ca-app-pub-3940256099942544/1033173712
         // for real: ca-app-pub-4454440016331822/6500297073
         mInterstitialAd.loadAd(AdRequest.Builder().build())
@@ -1495,7 +1494,7 @@ class MediumLevelVsComputer : AppCompatActivity(), View.OnClickListener, Rewarde
         mRewardedVideoAd.rewardedVideoAdListener = this
 
         mRewardedVideoAd.loadAd(
-            "ca-app-pub-3940256099942544/5224354917",
+            "ca-app-pub-4454440016331822/7531570468",
             AdRequest.Builder().build()
         )
         // real Reward ads: ca-app-pub-4454440016331822/7531570468

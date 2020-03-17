@@ -68,7 +68,7 @@ class MediumLevel : AppCompatActivity(), View.OnClickListener {
 
         chooseFirstPlayerDialog()
 
-        //bannerAds()
+        bannerAds()
         interstitialAd()
     }
 
@@ -327,7 +327,7 @@ class MediumLevel : AppCompatActivity(), View.OnClickListener {
 
     private fun interstitialAd() {
         mInterstitialAd = InterstitialAd(this)
-        mInterstitialAd.adUnitId = "ca-app-pub-3940256099942544/1033173712"
+        mInterstitialAd.adUnitId = "ca-app-pub-4454440016331822/2369480375"
         //for real: ca-app-pub-4454440016331822/2369480375
         mInterstitialAd.loadAd(AdRequest.Builder().build())
 
@@ -465,6 +465,16 @@ class MediumLevel : AppCompatActivity(), View.OnClickListener {
         view.dialogNewRound.typeface = typeface
 
         var playerSelected = false
+
+        /********************Banner Ad************************/
+        MobileAds.initialize(this) {}
+        val adRequest = AdRequest.Builder().build()
+        view.adView1.loadAd(adRequest)
+        val adView = AdView(this)
+        adView.adSize = AdSize.SMART_BANNER
+        adView.adUnitId = "ca-app-pub-4454440016331822/5478764952"
+        // for real: ca-app-pub-4454440016331822/5478764952
+        /********************************************/
 
         view.imageX.setOnClickListener {
             view.imageO.setImageResource(R.drawable.o1)
