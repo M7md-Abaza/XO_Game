@@ -8378,16 +8378,16 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
         adView.loadAd(adRequest)
         val adView = AdView(this)
         adView.adSize = AdSize.SMART_BANNER
-        adView.adUnitId = "ca-app-pub-4454440016331822/1368931886"
-        // Real Ads : ca-app-pub-4454440016331822/1368931886
+        adView.adUnitId = ""
+        
 
     }
 
     private fun interstitialAd() {
         mInterstitialAd = InterstitialAd(this)
-        mInterstitialAd.adUnitId = "ca-app-pub-4454440016331822/8097991769"
+        mInterstitialAd.adUnitId = ""
         mInterstitialAd.loadAd(AdRequest.Builder().build())
-        // Real Ads : ca-app-pub-4454440016331822/8097991769
+        
         mInterstitialAd.adListener = object : AdListener() {
             override fun onAdLoaded() {
                 // Code to be executed when an ad finishes loading.
@@ -8428,11 +8428,10 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
         mRewardedVideoAd.rewardedVideoAdListener = this
 
         mRewardedVideoAd.loadAd(
-            "ca-app-pub-4454440016331822/7531570468",
+            "ca-app-pub-3940256099942544/5224354917",
             AdRequest.Builder().build()
         )
-        // real Reward ads: ca-app-pub-4454440016331822/7531570468
-        // for test : ca-app-pub-3940256099942544/5224354917
+        
     }
 
     override fun onRewarded(reward: RewardItem) {
