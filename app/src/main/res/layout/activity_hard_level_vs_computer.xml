@@ -1627,7 +1627,7 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="16dp"
         app:adSize="SMART_BANNER"
-        app:adUnitId="ca-app-pub-4454440016331822/1368931886"
+        app:adUnitId=""
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
