@@ -454,12 +454,12 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="16dp"
         app:adSize="SMART_BANNER"
-        app:adUnitId="ca-app-pub-4454440016331822/1754402706"
+        app:adUnitId=""
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/constraintLayout3" />
-    <!-- ca-app-pub-4454440016331822/1754402706 -->
+    <!--  -->
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 
