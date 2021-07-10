@@ -44,9 +44,9 @@ class MainActivity : AppCompatActivity() {
         adView.loadAd(adRequest)
         val adView = AdView(this)
         adView.adSize = AdSize.SMART_BANNER
-        adView.adUnitId = "ca-app-pub-4454440016331822/8758794756"
-        // for test: ca-app-pub-3940256099942544/6300978111
-        // for real: ca-app-pub-4454440016331822/8758794756
+        adView.adUnitId = "ca-app-pub-3940256099942544/6300978111"
+      
+        
     }
     private fun clickSound() {
         val mediaPlayer: MediaPlayer = MediaPlayer.create(this, R.raw.click)
