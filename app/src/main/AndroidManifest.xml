@@ -7,7 +7,7 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.VIBRATE" />
 
-    <!-- ca-app-pub-4454440016331822~9464823022 -->
+    <!--  -->
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -19,7 +19,7 @@
 
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="ca-app-pub-4454440016331822~9464823022" />
+            android:value="" />
 
         <activity
             android:name="com.m7mdabaza.xogame.onePlayer.HardLevelVsComputer"
