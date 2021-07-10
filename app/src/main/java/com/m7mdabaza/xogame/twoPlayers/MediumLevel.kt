@@ -321,14 +321,14 @@ class MediumLevel : AppCompatActivity(), View.OnClickListener {
         adView.loadAd(adRequest)
         val adView = AdView(this)
         adView.adSize = AdSize.SMART_BANNER
-        adView.adUnitId = "ca-app-pub-4454440016331822/9832682202"
-        //for real: ca-app-pub-4454440016331822/9832682202
+        adView.adUnitId = ""
+       
     }
 
     private fun interstitialAd() {
         mInterstitialAd = InterstitialAd(this)
-        mInterstitialAd.adUnitId = "ca-app-pub-4454440016331822/2369480375"
-        //for real: ca-app-pub-4454440016331822/2369480375
+        mInterstitialAd.adUnitId = ""
+       
         mInterstitialAd.loadAd(AdRequest.Builder().build())
 
 
@@ -472,8 +472,8 @@ class MediumLevel : AppCompatActivity(), View.OnClickListener {
         view.adView1.loadAd(adRequest)
         val adView = AdView(this)
         adView.adSize = AdSize.SMART_BANNER
-        adView.adUnitId = "ca-app-pub-4454440016331822/5478764952"
-        // for real: ca-app-pub-4454440016331822/5478764952
+        adView.adUnitId = ""
+        
         /********************************************/
 
         view.imageX.setOnClickListener {
