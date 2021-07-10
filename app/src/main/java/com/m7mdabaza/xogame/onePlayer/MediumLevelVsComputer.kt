@@ -401,16 +401,14 @@ class MediumLevelVsComputer : AppCompatActivity(), View.OnClickListener, Rewarde
         adView.loadAd(adRequest)
         val adView = AdView(this)
         adView.adSize = AdSize.SMART_BANNER
-        adView.adUnitId = "ca-app-pub-4454440016331822/1558961582"
-        //for test: ca-app-pub-3940256099942544/6300978111
-        // for real: ca-app-pub-4454440016331822/1558961582
+        adView.adUnitId = ""
+        
     }
 
     private fun interstitialAd() {
         mInterstitialAd = InterstitialAd(this)
-        mInterstitialAd.adUnitId = "ca-app-pub-4454440016331822/6500297073"
-        // for test: ca-app-pub-3940256099942544/1033173712
-        // for real: ca-app-pub-4454440016331822/6500297073
+        mInterstitialAd.adUnitId = ""
+        
         mInterstitialAd.loadAd(AdRequest.Builder().build())
 
 
@@ -1488,16 +1486,16 @@ class MediumLevelVsComputer : AppCompatActivity(), View.OnClickListener, Rewarde
     /************************* Start of reward ads ************************/
 
     private fun loadRewardedVideoAd() {
-        MobileAds.initialize(this, "ca-app-pub-4454440016331822~9464823022")
+        MobileAds.initialize(this, ")
 
         mRewardedVideoAd = MobileAds.getRewardedVideoAdInstance(this)
         mRewardedVideoAd.rewardedVideoAdListener = this
 
         mRewardedVideoAd.loadAd(
-            "ca-app-pub-4454440016331822/7531570468",
+            "",
             AdRequest.Builder().build()
         )
-        // real Reward ads: ca-app-pub-4454440016331822/7531570468
+        
     }
 
     override fun onRewarded(reward: RewardItem) {
