@@ -100,6 +100,6 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
         app:adSize="SMART_BANNER"
-        app:adUnitId="ca-app-pub-4454440016331822/5478764952" />
+        app:adUnitId="" />
 
 </LinearLayout>
