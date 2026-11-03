@@ -5,8 +5,8 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 
 android {
+    namespace "com.m7mdabaza.xogame"
     compileSdkVersion 29
-    buildToolsVersion "29.0.3"
     defaultConfig {
         applicationId "com.m7mdabaza.x_ogame"
         minSdkVersion 16
@@ -16,7 +16,37 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
+        debug {
+            // Google's public test AdMob IDs (never click real ads during development)
+            manifestPlaceholders = [admobAppId: "ca-app-pub-3940256099942544~3347511713"]
+            ["main", "easy_vs_computer", "medium_vs_computer", "hard_vs_computer",
+             "easy_level", "medium_level", "hard_level", "x_or_o_dialog"].each {
+                resValue "string", "banner_$it", "ca-app-pub-3940256099942544/6300978111"
+            }
+            ["easy_vs_computer", "medium_vs_computer", "hard_vs_computer",
+             "easy_level", "medium_level", "hard_level"].each {
+                resValue "string", "interstitial_$it", "ca-app-pub-3940256099942544/1033173712"
+            }
+            resValue "string", "rewarded_vs_computer", "ca-app-pub-3940256099942544/5224354917"
+        }
         release {
+            // Real per-screen AdMob IDs (restored from Release_1.1, commit e69ce27)
+            manifestPlaceholders = [admobAppId: "ca-app-pub-4454440016331822~9464823022"]
+            resValue "string", "banner_main", "ca-app-pub-4454440016331822/8758794756"
+            resValue "string", "banner_easy_vs_computer", "ca-app-pub-4454440016331822/1754402706"
+            resValue "string", "banner_medium_vs_computer", "ca-app-pub-4454440016331822/1558961582"
+            resValue "string", "banner_hard_vs_computer", "ca-app-pub-4454440016331822/1368931886"
+            resValue "string", "banner_easy_level", "ca-app-pub-4454440016331822/4895022629"
+            resValue "string", "banner_medium_level", "ca-app-pub-4454440016331822/9832682202"
+            resValue "string", "banner_hard_level", "ca-app-pub-4454440016331822/9625153867"
+            resValue "string", "banner_x_or_o_dialog", "ca-app-pub-4454440016331822/5478764952"
+            resValue "string", "interstitial_easy_vs_computer", "ca-app-pub-4454440016331822/8898874481"
+            resValue "string", "interstitial_medium_vs_computer", "ca-app-pub-4454440016331822/6500297073"
+            resValue "string", "interstitial_hard_vs_computer", "ca-app-pub-4454440016331822/8097991769"
+            resValue "string", "interstitial_easy_level", "ca-app-pub-4454440016331822/3000035763"
+            resValue "string", "interstitial_medium_level", "ca-app-pub-4454440016331822/2369480375"
+            resValue "string", "interstitial_hard_level", "ca-app-pub-4454440016331822/5845690957"
+            resValue "string", "rewarded_vs_computer", "ca-app-pub-4454440016331822/7531570468"
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }

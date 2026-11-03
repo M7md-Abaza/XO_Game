@@ -401,13 +401,13 @@ class MediumLevelVsComputer : AppCompatActivity(), View.OnClickListener, Rewarde
         adView.loadAd(adRequest)
         val adView = AdView(this)
         adView.adSize = AdSize.SMART_BANNER
-        adView.adUnitId = ""
+        adView.adUnitId = getString(R.string.banner_medium_vs_computer)
         
     }
 
     private fun interstitialAd() {
         mInterstitialAd = InterstitialAd(this)
-        mInterstitialAd.adUnitId = ""
+        mInterstitialAd.adUnitId = getString(R.string.interstitial_medium_vs_computer)
         
         mInterstitialAd.loadAd(AdRequest.Builder().build())
 
@@ -1486,13 +1486,13 @@ class MediumLevelVsComputer : AppCompatActivity(), View.OnClickListener, Rewarde
     /************************* Start of reward ads ************************/
 
     private fun loadRewardedVideoAd() {
-        MobileAds.initialize(this, ")
+        MobileAds.initialize(this, "ca-app-pub-4454440016331822~9464823022")
 
         mRewardedVideoAd = MobileAds.getRewardedVideoAdInstance(this)
         mRewardedVideoAd.rewardedVideoAdListener = this
 
         mRewardedVideoAd.loadAd(
-            "",
+            getString(R.string.rewarded_vs_computer),
             AdRequest.Builder().build()
         )
         

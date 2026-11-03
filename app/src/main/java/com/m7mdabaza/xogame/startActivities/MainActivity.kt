@@ -44,7 +44,7 @@ class MainActivity : AppCompatActivity() {
         adView.loadAd(adRequest)
         val adView = AdView(this)
         adView.adSize = AdSize.SMART_BANNER
-        adView.adUnitId = "ca-app-pub-3940256099942544/6300978111"
+        adView.adUnitId = getString(R.string.banner_main)
       
         
     }

@@ -100,6 +100,6 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
         app:adSize="SMART_BANNER"
-        app:adUnitId="" />
+        app:adUnitId="@string/banner_x_or_o_dialog" />
 
 </LinearLayout>

@@ -321,13 +321,13 @@ class MediumLevel : AppCompatActivity(), View.OnClickListener {
         adView.loadAd(adRequest)
         val adView = AdView(this)
         adView.adSize = AdSize.SMART_BANNER
-        adView.adUnitId = ""
+        adView.adUnitId = getString(R.string.banner_medium_level)
        
     }
 
     private fun interstitialAd() {
         mInterstitialAd = InterstitialAd(this)
-        mInterstitialAd.adUnitId = ""
+        mInterstitialAd.adUnitId = getString(R.string.interstitial_medium_level)
        
         mInterstitialAd.loadAd(AdRequest.Builder().build())
 
@@ -472,7 +472,7 @@ class MediumLevel : AppCompatActivity(), View.OnClickListener {
         view.adView1.loadAd(adRequest)
         val adView = AdView(this)
         adView.adSize = AdSize.SMART_BANNER
-        adView.adUnitId = ""
+        adView.adUnitId = getString(R.string.banner_x_or_o_dialog)
         
         /********************************************/
 

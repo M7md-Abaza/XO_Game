@@ -8378,14 +8378,14 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
         adView.loadAd(adRequest)
         val adView = AdView(this)
         adView.adSize = AdSize.SMART_BANNER
-        adView.adUnitId = ""
+        adView.adUnitId = getString(R.string.banner_hard_vs_computer)
         
 
     }
 
     private fun interstitialAd() {
         mInterstitialAd = InterstitialAd(this)
-        mInterstitialAd.adUnitId = ""
+        mInterstitialAd.adUnitId = getString(R.string.interstitial_hard_vs_computer)
         mInterstitialAd.loadAd(AdRequest.Builder().build())
         
         mInterstitialAd.adListener = object : AdListener() {
@@ -8428,7 +8428,7 @@ class HardLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedV
         mRewardedVideoAd.rewardedVideoAdListener = this
 
         mRewardedVideoAd.loadAd(
-            "ca-app-pub-3940256099942544/5224354917",
+            getString(R.string.rewarded_vs_computer),
             AdRequest.Builder().build()
         )
         

@@ -236,7 +236,7 @@
             android:layout_centerHorizontal="true"
             android:layout_marginTop="16dp"
             app:adSize="SMART_BANNER"
-            app:adUnitId=""
+            app:adUnitId="@string/banner_main"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
