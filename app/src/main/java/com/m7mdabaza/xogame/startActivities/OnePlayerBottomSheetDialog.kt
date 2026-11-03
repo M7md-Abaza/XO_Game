@@ -13,9 +13,6 @@ import com.m7mdabaza.xogame.onePlayer.MediumLevelVsComputer
 import com.m7mdabaza.xogame.R
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.m7mdabaza.xogame.onePlayer.HardLevelVsComputer
-import kotlinx.android.synthetic.main.one_player_bottom_sheet.view.*
-
-
 class OnePlayerBottomSheetDialog : BottomSheetDialogFragment() {
 
     @Nullable
@@ -58,3 +55,9 @@ class OnePlayerBottomSheetDialog : BottomSheetDialogFragment() {
 
 
 }
+
+// View accessors (replace the removed kotlin-android-extensions synthetics)
+private val android.view.View.easy: android.widget.TextView get() = findViewById(R.id.easy)
+private val android.view.View.hard: android.widget.TextView get() = findViewById(R.id.hard)
+private val android.view.View.medium: android.widget.TextView get() = findViewById(R.id.medium)
+private val android.view.View.textView4: android.widget.TextView get() = findViewById(R.id.textView4)

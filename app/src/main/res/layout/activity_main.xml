@@ -244,4 +244,18 @@
         <!--  -->
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!-- Shown only when the EU consent (UMP) requires a way to change consent -->
+    <TextView
+        android:id="@+id/privacySettings"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|end"
+        android:layout_margin="8dp"
+        android:padding="8dp"
+        android:text="@string/privacy_settings"
+        android:textColor="@color/black"
+        android:textSize="14sp"
+        android:visibility="gone" />
+
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

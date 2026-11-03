@@ -45,4 +45,5 @@
     <string name="required">*Required*</string>
     <!--**********************************************************-->
 
+    <string name="privacy_settings">Privacy settings</string>
 </resources>

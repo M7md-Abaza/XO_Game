@@ -1,5 +1,10 @@
 package com.m7mdabaza.xogame.onePlayer
 
+import com.m7mdabaza.xogame.ads.loadAdIfAllowed
+import com.m7mdabaza.xogame.ui.setupEdgeToEdge
+import com.m7mdabaza.xogame.ads.InterstitialAdManager
+import com.google.android.gms.ads.rewarded.RewardItem
+import com.m7mdabaza.xogame.ads.RewardedAdManager
 import android.annotation.SuppressLint
 import android.app.Dialog
 import android.graphics.Color
@@ -8,6 +13,7 @@ import android.graphics.drawable.ColorDrawable
 import android.media.MediaPlayer
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
+import android.os.Looper
 import android.os.Bundle
 import android.os.Handler
 import android.util.Log
@@ -18,19 +24,12 @@ import android.widget.Button
 import androidx.core.content.ContextCompat
 import com.m7mdabaza.xogame.R
 import com.google.android.gms.ads.*
-import kotlinx.android.synthetic.main.activity_medium_level_vs_computer.*
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.MobileAds
-import com.google.android.gms.ads.reward.RewardItem
-import com.google.android.gms.ads.reward.RewardedVideoAd
-import com.google.android.gms.ads.reward.RewardedVideoAdListener
-import kotlinx.android.synthetic.main.rewaed_ads_pop_up.view.*
-import kotlinx.android.synthetic.main.win_pop_up_dialog.view.*
+class MediumLevelVsComputer : AppCompatActivity(), View.OnClickListener {
 
-class MediumLevelVsComputer : AppCompatActivity(), View.OnClickListener, RewardedVideoAdListener {
-
-    private lateinit var mRewardedVideoAd: RewardedVideoAd
-    private lateinit var mInterstitialAd: InterstitialAd
+    private lateinit var mRewardedVideoAd: RewardedAdManager
+    private lateinit var mInterstitialAd: InterstitialAdManager
 
     private val buttons: Array<Array<Button?>> =
         Array(4) { arrayOfNulls<Button>(4) }
@@ -56,13 +55,14 @@ class MediumLevelVsComputer : AppCompatActivity(), View.OnClickListener, Rewarde
     private var theGameBecameEasier: String = ""
     private var canNotLoadAd: String = ""
 
-    private val handler: Handler = Handler()
+    private val handler: Handler = Handler(Looper.getMainLooper())
     private val r: Runnable = Runnable {
         computerTurn()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setupEdgeToEdge()
         setContentView(R.layout.activity_medium_level_vs_computer)
 
         getButtonPosition()
@@ -324,6 +324,7 @@ class MediumLevelVsComputer : AppCompatActivity(), View.OnClickListener, Rewarde
                 mInterstitialAd.show()
             } else {
                 Log.d("TAG", "The interstitial wasn't loaded yet.")
+                mInterstitialAd.load()
             }
         } else if (displayAdsCount == 18) {
             displayAdsCount = 0
@@ -396,48 +397,13 @@ class MediumLevelVsComputer : AppCompatActivity(), View.OnClickListener, Rewarde
     }
 
     private fun bannerAds() {
-        MobileAds.initialize(this) {}
-        val adRequest = AdRequest.Builder().build()
-        adView.loadAd(adRequest)
-        val adView = AdView(this)
-        adView.adSize = AdSize.SMART_BANNER
-        adView.adUnitId = getString(R.string.banner_medium_vs_computer)
+        adView.loadAdIfAllowed()
         
     }
 
     private fun interstitialAd() {
-        mInterstitialAd = InterstitialAd(this)
-        mInterstitialAd.adUnitId = getString(R.string.interstitial_medium_vs_computer)
-        
-        mInterstitialAd.loadAd(AdRequest.Builder().build())
-
-
-        mInterstitialAd.adListener = object : AdListener() {
-            override fun onAdLoaded() {
-                // Code to be executed when an ad finishes loading.
-            }
-
-            override fun onAdFailedToLoad(errorCode: Int) {
-                // Code to be executed when an ad request fails.
-            }
-
-            override fun onAdOpened() {
-                // Code to be executed when the ad is displayed.
-            }
-
-            override fun onAdClicked() {
-                // Code to be executed when the user clicks on an ad.
-            }
-
-            override fun onAdLeftApplication() {
-                // Code to be executed when the user has left the app.
-            }
-
-            override fun onAdClosed() {
-                // Code to be executed when the interstitial ad is closed.
-                mInterstitialAd.loadAd(AdRequest.Builder().build())
-            }
-        }
+        mInterstitialAd = InterstitialAdManager(this, getString(R.string.interstitial_medium_vs_computer))
+        mInterstitialAd.load()
     }
 
     /************************* Start of all Methods for Computer Turn Algorithm ************************/
@@ -1486,68 +1452,17 @@ class MediumLevelVsComputer : AppCompatActivity(), View.OnClickListener, Rewarde
     /************************* Start of reward ads ************************/
 
     private fun loadRewardedVideoAd() {
-        MobileAds.initialize(this, "ca-app-pub-4454440016331822~9464823022")
-
-        mRewardedVideoAd = MobileAds.getRewardedVideoAdInstance(this)
-        mRewardedVideoAd.rewardedVideoAdListener = this
-
-        mRewardedVideoAd.loadAd(
-            getString(R.string.rewarded_vs_computer),
-            AdRequest.Builder().build()
-        )
-        
+        if (!::mRewardedVideoAd.isInitialized) {
+            mRewardedVideoAd = RewardedAdManager(this, getString(R.string.rewarded_vs_computer)) { onRewarded(it) }
+        }
+        mRewardedVideoAd.load()
     }
 
-    override fun onRewarded(reward: RewardItem) {
+    private fun onRewarded(@Suppress("UNUSED_PARAMETER") reward: RewardItem) {
         //Toast.makeText(this, "onRewarded! currency: ${reward.type} amount: ${reward.amount}", Toast.LENGTH_SHORT).show()
         // Reward the user.
         adWatched1 = true
 
-    }
-
-    override fun onRewardedVideoAdLeftApplication() {
-        //Toast.makeText(this, "onRewardedVideoAdLeftApplication", Toast.LENGTH_SHORT).show()
-    }
-
-    override fun onRewardedVideoAdClosed() {
-        //Toast.makeText(this, "onRewardedVideoAdClosed", Toast.LENGTH_SHORT).show()
-        loadRewardedVideoAd()
-
-    }
-
-    override fun onRewardedVideoAdFailedToLoad(errorCode: Int) {
-        //Toast.makeText(this, "onRewardedVideoAdFailedToLoad", Toast.LENGTH_SHORT).show()
-    }
-
-    override fun onRewardedVideoAdLoaded() {
-        //Toast.makeText(this, "onRewardedVideoAdLoaded", Toast.LENGTH_SHORT).show()
-    }
-
-    override fun onRewardedVideoAdOpened() {
-        //Toast.makeText(this, "onRewardedVideoAdOpened", Toast.LENGTH_SHORT).show()
-    }
-
-    override fun onRewardedVideoStarted() {
-        //Toast.makeText(this, "onRewardedVideoStarted", Toast.LENGTH_SHORT).show()
-    }
-
-    override fun onRewardedVideoCompleted() {
-        //Toast.makeText(this, "onRewardedVideoCompleted", Toast.LENGTH_SHORT).show()
-    }
-
-    override fun onPause() {
-        super.onPause()
-        mRewardedVideoAd.pause(this)
-    }
-
-    override fun onResume() {
-        super.onResume()
-        mRewardedVideoAd.resume(this)
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        mRewardedVideoAd.destroy(this)
     }
 
     /************************* End of reward ads ************************/
@@ -1691,3 +1606,20 @@ class MediumLevelVsComputer : AppCompatActivity(), View.OnClickListener, Rewarde
 
 
 }
+
+// View accessors (replace the removed kotlin-android-extensions synthetics)
+private val MediumLevelVsComputer.adView: com.google.android.gms.ads.AdView get() = findViewById(R.id.adView)
+private val MediumLevelVsComputer.textView2: android.widget.TextView get() = findViewById(R.id.textView2)
+private val MediumLevelVsComputer.textView5: android.widget.TextView get() = findViewById(R.id.textView5)
+private val MediumLevelVsComputer.textView6: android.widget.TextView get() = findViewById(R.id.textView6)
+private val MediumLevelVsComputer.textView7: android.widget.TextView get() = findViewById(R.id.textView7)
+private val MediumLevelVsComputer.txt_Help: android.widget.TextView get() = findViewById(R.id.txt_Help)
+private val MediumLevelVsComputer.txt_player_1M: android.widget.TextView get() = findViewById(R.id.txt_player_1M)
+private val MediumLevelVsComputer.txt_player_2M: android.widget.TextView get() = findViewById(R.id.txt_player_2M)
+private val android.view.View.adsText: android.widget.TextView get() = findViewById(R.id.adsText)
+private val android.view.View.cancel: android.widget.TextView get() = findViewById(R.id.cancel)
+private val android.view.View.dialogNewRound: android.widget.TextView get() = findViewById(R.id.dialogNewRound)
+private val android.view.View.progress_circular: android.widget.ProgressBar get() = findViewById(R.id.progress_circular)
+private val android.view.View.textView10: android.widget.TextView get() = findViewById(R.id.textView10)
+private val android.view.View.textView11: android.widget.TextView get() = findViewById(R.id.textView11)
+private val android.view.View.watchAd: android.widget.TextView get() = findViewById(R.id.watchAd)

@@ -13,9 +13,6 @@ import com.m7mdabaza.xogame.twoPlayers.EasyLevel
 import com.m7mdabaza.xogame.twoPlayers.HardLevel
 import com.m7mdabaza.xogame.twoPlayers.MediumLevel
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import kotlinx.android.synthetic.main.two_player_bottom_sheet.view.*
-
-
 class TwoPlayerBottomSheetDialog : BottomSheetDialogFragment() {
 
 
@@ -58,3 +55,9 @@ class TwoPlayerBottomSheetDialog : BottomSheetDialogFragment() {
 
 
 }
+
+// View accessors (replace the removed kotlin-android-extensions synthetics)
+private val android.view.View.easy: android.widget.TextView get() = findViewById(R.id.easy)
+private val android.view.View.hard: android.widget.TextView get() = findViewById(R.id.hard)
+private val android.view.View.medium: android.widget.TextView get() = findViewById(R.id.medium)
+private val android.view.View.textView4: android.widget.TextView get() = findViewById(R.id.textView4)

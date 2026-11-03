@@ -1,5 +1,8 @@
 package com.m7mdabaza.xogame.twoPlayers
 
+import com.m7mdabaza.xogame.ads.loadAdIfAllowed
+import com.m7mdabaza.xogame.ui.setupEdgeToEdge
+import com.m7mdabaza.xogame.ads.InterstitialAdManager
 import android.annotation.SuppressLint
 import android.app.Dialog
 import android.graphics.Color
@@ -18,15 +21,9 @@ import android.view.Window
 import android.widget.Toast
 import com.m7mdabaza.xogame.R
 import com.google.android.gms.ads.*
-import kotlinx.android.synthetic.main.medium_level.*
-import kotlinx.android.synthetic.main.win_pop_up_dialog.view.*
-import kotlinx.android.synthetic.main.win_pop_up_dialog.view.dialogNewRound
-import kotlinx.android.synthetic.main.x_or_o_dialog.view.*
-
-
 class MediumLevel : AppCompatActivity(), View.OnClickListener {
 
-    private lateinit var mInterstitialAd: InterstitialAd
+    private lateinit var mInterstitialAd: InterstitialAdManager
 
 
     private val buttons: Array<Array<Button?>> =
@@ -49,6 +46,7 @@ class MediumLevel : AppCompatActivity(), View.OnClickListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setupEdgeToEdge()
         setContentView(R.layout.medium_level)
 
         getButtonPosition()
@@ -249,6 +247,7 @@ class MediumLevel : AppCompatActivity(), View.OnClickListener {
                 mInterstitialAd.show()
             } else {
                 Log.d("TAG", "The interstitial wasn't loaded yet.")
+                mInterstitialAd.load()
             }
         } else if (playTimeCount == 18) {
             playTimeCount = 0
@@ -316,48 +315,13 @@ class MediumLevel : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun bannerAds() {
-        MobileAds.initialize(this) {}
-        val adRequest = AdRequest.Builder().build()
-        adView.loadAd(adRequest)
-        val adView = AdView(this)
-        adView.adSize = AdSize.SMART_BANNER
-        adView.adUnitId = getString(R.string.banner_medium_level)
+        adView.loadAdIfAllowed()
        
     }
 
     private fun interstitialAd() {
-        mInterstitialAd = InterstitialAd(this)
-        mInterstitialAd.adUnitId = getString(R.string.interstitial_medium_level)
-       
-        mInterstitialAd.loadAd(AdRequest.Builder().build())
-
-
-        mInterstitialAd.adListener = object : AdListener() {
-            override fun onAdLoaded() {
-                // Code to be executed when an ad finishes loading.
-            }
-
-            override fun onAdFailedToLoad(errorCode: Int) {
-                // Code to be executed when an ad request fails.
-            }
-
-            override fun onAdOpened() {
-                // Code to be executed when the ad is displayed.
-            }
-
-            override fun onAdClicked() {
-                // Code to be executed when the user clicks on an ad.
-            }
-
-            override fun onAdLeftApplication() {
-                // Code to be executed when the user has left the app.
-            }
-
-            override fun onAdClosed() {
-                // Code to be executed when the interstitial ad is closed.
-                mInterstitialAd.loadAd(AdRequest.Builder().build())
-            }
-        }
+        mInterstitialAd = InterstitialAdManager(this, getString(R.string.interstitial_medium_level))
+        mInterstitialAd.load()
     }
 
     @SuppressLint("InflateParams")
@@ -467,12 +431,7 @@ class MediumLevel : AppCompatActivity(), View.OnClickListener {
         var playerSelected = false
 
         /********************Banner Ad************************/
-        MobileAds.initialize(this) {}
-        val adRequest = AdRequest.Builder().build()
-        view.adView1.loadAd(adRequest)
-        val adView = AdView(this)
-        adView.adSize = AdSize.SMART_BANNER
-        adView.adUnitId = getString(R.string.banner_x_or_o_dialog)
+        view.adView1.loadAdIfAllowed()
         
         /********************************************/
 
@@ -506,3 +465,19 @@ class MediumLevel : AppCompatActivity(), View.OnClickListener {
     }
 
 }
+
+// View accessors (replace the removed kotlin-android-extensions synthetics)
+private val MediumLevel.adView: com.google.android.gms.ads.AdView get() = findViewById(R.id.adView)
+private val MediumLevel.textView: android.widget.TextView get() = findViewById(R.id.textView)
+private val MediumLevel.textView2: android.widget.TextView get() = findViewById(R.id.textView2)
+private val MediumLevel.textView6: android.widget.TextView get() = findViewById(R.id.textView6)
+private val MediumLevel.textView7: android.widget.TextView get() = findViewById(R.id.textView7)
+private val MediumLevel.txt_player_1M: android.widget.TextView get() = findViewById(R.id.txt_player_1M)
+private val MediumLevel.txt_player_2M: android.widget.TextView get() = findViewById(R.id.txt_player_2M)
+private val android.view.View.adView1: com.google.android.gms.ads.AdView get() = findViewById(R.id.adView1)
+private val android.view.View.dialogNewRound: android.widget.TextView get() = findViewById(R.id.dialogNewRound)
+private val android.view.View.imageO: android.widget.ImageView get() = findViewById(R.id.imageO)
+private val android.view.View.imageX: android.widget.ImageView get() = findViewById(R.id.imageX)
+private val android.view.View.textView10: android.widget.TextView get() = findViewById(R.id.textView10)
+private val android.view.View.textView11: android.widget.TextView get() = findViewById(R.id.textView11)
+private val android.view.View.textView12: android.widget.TextView get() = findViewById(R.id.textView12)

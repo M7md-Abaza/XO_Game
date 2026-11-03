@@ -8,7 +8,7 @@ Single-module Android app (`:app`): a Kotlin XO (tic-tac-toe style) game with Ad
 
 ## Build / test
 
-The toolchain is AGP 7.4.2, Gradle 7.6.4 wrapper, Kotlin 1.7.22 (the last Kotlin with kotlin-android-extensions; do not go to Kotlin 1.8+ or AGP 8+ without migrating off synthetics), compileSdk/targetSdk 29, minSdk 16. Gradle 7.6.4 cannot run on JDK 20+ (the Android Studio JBR is JDK 25), so in Studio set the Gradle JDK to JDK 11 or 17. Point `JAVA_HOME` at JDK 11 first, e.g. in Git Bash: `export JAVA_HOME=~/.jdks/jbr_dcevm-11.0.16`.
+The toolchain is AGP 9.5.0 (built-in Kotlin, so there is no `kotlin-android` plugin), Gradle 9.8.2 wrapper, compileSdk/targetSdk 36, and minSdk 24 (required by Google Mobile Ads 25). AGP 9 needs JDK 17+. In Git Bash: `export JAVA_HOME=~/.jdks/jbr-21.0.11`. In Studio, set the Gradle JDK to 17 or 21. `buildFeatures.resValues` must stay on because the AdMob IDs are resValues.
 
 ```sh
 ./gradlew assembleDebug                 # build debug APK
@@ -21,15 +21,16 @@ The toolchain is AGP 7.4.2, Gradle 7.6.4 wrapper, Kotlin 1.7.22 (the last Kotlin
 
 The only tests are the template `Example*Test` files. No game logic is covered.
 
-`app/build.gradle` mixes `com.android.support:*` with AndroidX and declares an odd `cardview-v7:280.0`. All of it still resolves and builds, so leave it unless you're deliberately upgrading.
+Dependencies are all AndroidX/Material plus `play-services-ads`. Jetifier is off, so do not reintroduce `com.android.support:*`.
 
-AdMob IDs are set per build type in `app/build.gradle`. The app ID goes into the manifest as `${admobAppId}`. Every screen has its own unit IDs as `resValue` strings: `banner_<screen>` (used by the layout XML), `interstitial_<screen>`, and one shared `rewarded_vs_computer`. Screens are `main`, `easy/medium/hard_vs_computer`, `easy/medium/hard_level`, and `x_or_o_dialog`. Release has the real IDs (from Release_1.1). Debug uses Google's public test IDs for all of them. A blank ID crashes the app at startup. Release lint currently fails on `ExpiredTargetSdkVersion` (targetSdk 29 < 31).
+AdMob IDs are set per build type in `app/build.gradle`. The app ID goes into the manifest as `${admobAppId}`. Every screen has its own unit IDs as `resValue` strings: `banner_<screen>` (used by the layout XML), `interstitial_<screen>`, and one shared `rewarded_vs_computer`. Screens are `main`, `easy/medium/hard_vs_computer`, `easy/medium/hard_level`, and `x_or_o_dialog`. Release has the real IDs (from Release_1.1). Debug uses Google's public test IDs for all of them. A blank ID crashes the app at startup.
 
 Installing on a device that has the Play Store build fails with `INSTALL_FAILED_VERSION_DOWNGRADE`: the Play build has a higher versionCode and a different signing key. Uninstall it first. Only `startActivities.splash` is exported, so launch with `adb shell am start -n com.m7mdabaza.x_ogame/com.m7mdabaza.xogame.startActivities.splash`.
 
 ## Architecture
 
-- Views are bound through **kotlin-android-extensions synthetics** (`kotlinx.android.synthetic.main.<layout>.*`), so view IDs in the XML layouts are referenced directly as Kotlin properties. Renaming an ID in a layout breaks the activity that uses it.
+- The old kotlin-android-extensions synthetics were replaced by generated **file-private extension properties** at the bottom of each Kotlin file. Examples: `private val EasyLevel.btn_00: Button get() = findViewById(R.id.btn_00)`, and `private val View.adView1: AdView ...` for inflated dialog views. View IDs are therefore still used directly as Kotlin properties. When you use a new layout ID, add a matching accessor. Renaming an ID in a layout breaks the activity that uses it.
+- Every activity calls `setupEdgeToEdge()` (`ui/EdgeToEdge.kt`) right before `setContentView`. Android 15+ forces edge-to-edge, so this pads the root view by the system-bar insets and uses dark bar icons over the light background.
 - Flow: `startActivities/splash` (launcher) → `MainActivity` → `OnePlayerBottomSheetDialog` / `TwoPlayerBottomSheetDialog` → one of six game activities.
 - Game activities come in two parallel sets. Each activity is fully self-contained, with no shared base class or game engine:
   - `twoPlayers/EasyLevel`, `MediumLevel`, `HardLevel`: local 2-player games. A start dialog (`x_or_o_dialog.xml`) chooses who plays first (`xPlayFirst`).
@@ -39,7 +40,8 @@ Installing on a device that has the Play Store build fails with `INSTALL_FAILED_
   - `roundCount` counts moves and is used for draw detection. `playTimeCount` counts games and drives both interstitial ad frequency and, in vs-computer modes, which fallback move order the AI uses.
 - **Computer AI is hand-written, hard-coded pattern matching** with no search algorithm. `computerTurn()` calls a chain of pattern functions (e.g. `oMainPattern`, `xMainPattern`, `xTwoInRaw`, `ifNothingToDo1..N`). Each one checks specific cell combinations, places an O, and flips `player1Turn`. Later functions are guarded by `if (player1Turn)`, so the first function to move "wins". `HardLevelVsComputer.kt` is about 8.6k lines of this. Edit it with targeted searches, not full reads.
 - Because logic is copy-pasted across all six activities (win check, dialogs, sounds, ads, save/restore state), a fix usually needs to be applied to every relevant variant.
-- Ads (Google Mobile Ads SDK 19): every game screen has a banner, interstitials, and in vs-computer modes a rewarded video. Watching it (`showAdsDialog` → `onRewarded`, `adWatched*` flags) changes the AI's behavior as a help mechanic. The `adView.adUnitId = ...` lines in each `bannerAds()` set the ID on an unused local `AdView`; the real banner ID comes from the layout XML.
+- Ads (Google Mobile Ads SDK 25): every game screen has a banner (layout XML) and interstitials, and vs-computer modes also have a rewarded ad. These go through `ads/AdManagers.kt` (`InterstitialAdManager`, `RewardedAdManager`), which keep the old `isLoaded`/`show()` shape and preload the next ad after each dismissal. The reward (`onRewarded` → `adWatched*` flags) changes the AI as a help mechanic, but the `txt_Help` button that opens it is `visibility="gone"` and never shown.
+- EU consent uses Google UMP (`ads/ConsentManager.kt`). `splash` calls `gatherConsent()` and waits for it before opening `MainActivity`. Every ad request is gated on `canRequestAds()`: banners go through `AdView.loadAdIfAllowed()`, and the AdManagers check it in `load()`. Don't call `MobileAds.initialize` or `adView.loadAd` directly. MainActivity shows a `privacySettings` link only when UMP says privacy options are required. Debug builds force EEA geography, so the form shows on emulators. The real message text is configured in AdMob → Privacy & messaging.
 - Shared resources: custom font `app/src/assets/sukar.ttf` (an extra assets srcDir in `app/build.gradle`), loaded per-screen via `Typeface.createFromAsset`. Sounds are in `res/raw`. Strings in `res/values/strings.xml` are used for win/draw messages.
 
 ## Known inconsistencies

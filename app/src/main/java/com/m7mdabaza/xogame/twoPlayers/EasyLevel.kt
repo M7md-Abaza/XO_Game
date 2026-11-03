@@ -1,5 +1,8 @@
 package com.m7mdabaza.xogame.twoPlayers
 
+import com.m7mdabaza.xogame.ads.loadAdIfAllowed
+import com.m7mdabaza.xogame.ui.setupEdgeToEdge
+import com.m7mdabaza.xogame.ads.InterstitialAdManager
 
 import android.annotation.SuppressLint
 import android.app.Dialog
@@ -20,18 +23,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.m7mdabaza.xogame.R
 import com.google.android.gms.ads.*
-import kotlinx.android.synthetic.main.easy_level.*
-import kotlinx.android.synthetic.main.easy_level.view.*
-import kotlinx.android.synthetic.main.win_pop_up_dialog.view.*
-import kotlinx.android.synthetic.main.win_pop_up_dialog.view.dialogNewRound
-import kotlinx.android.synthetic.main.x_or_o_dialog.*
-import kotlinx.android.synthetic.main.x_or_o_dialog.view.*
-import kotlinx.android.synthetic.main.x_or_o_dialog.view.textView12
-
-
 class EasyLevel : AppCompatActivity(), View.OnClickListener {
 
-    private lateinit var mInterstitialAd: InterstitialAd
+    private lateinit var mInterstitialAd: InterstitialAdManager
 
 
     private val buttons: Array<Array<Button?>> =
@@ -55,6 +49,7 @@ class EasyLevel : AppCompatActivity(), View.OnClickListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setupEdgeToEdge()
         setContentView(R.layout.easy_level)
 
         getButtonPosition()
@@ -261,6 +256,7 @@ class EasyLevel : AppCompatActivity(), View.OnClickListener {
                 mInterstitialAd.show()
             } else {
                 Log.d("TAG", "The interstitial wasn't loaded yet.")
+                mInterstitialAd.load()
             }
         } else if (playTimeCount == 20) {
             playTimeCount = 0
@@ -329,48 +325,13 @@ class EasyLevel : AppCompatActivity(), View.OnClickListener {
 
 
     private fun bannerAds() {
-        MobileAds.initialize(this) {}
-        val adRequest = AdRequest.Builder().build()
-        adView.loadAd(adRequest)
-        val adView = AdView(this)
-        adView.adSize = AdSize.SMART_BANNER
-        adView.adUnitId = getString(R.string.banner_easy_level)
+        adView.loadAdIfAllowed()
         
     }
 
     private fun interstitialAd() {
-        mInterstitialAd = InterstitialAd(this)
-        mInterstitialAd.adUnitId = getString(R.string.interstitial_easy_level)
-        
-        mInterstitialAd.loadAd(AdRequest.Builder().build())
-
-
-        mInterstitialAd.adListener = object : AdListener() {
-            override fun onAdLoaded() {
-                // Code to be executed when an ad finishes loading.
-            }
-
-            override fun onAdFailedToLoad(errorCode: Int) {
-                // Code to be executed when an ad request fails.
-            }
-
-            override fun onAdOpened() {
-                // Code to be executed when the ad is displayed.
-            }
-
-            override fun onAdClicked() {
-                // Code to be executed when the user clicks on an ad.
-            }
-
-            override fun onAdLeftApplication() {
-                // Code to be executed when the user has left the app.
-            }
-
-            override fun onAdClosed() {
-                // Code to be executed when the interstitial ad is closed.
-                mInterstitialAd.loadAd(AdRequest.Builder().build())
-            }
-        }
+        mInterstitialAd = InterstitialAdManager(this, getString(R.string.interstitial_easy_level))
+        mInterstitialAd.load()
     }
 
 
@@ -481,12 +442,7 @@ class EasyLevel : AppCompatActivity(), View.OnClickListener {
         var playerSelected = false
 
         /********************Banner Ad************************/
-        MobileAds.initialize(this) {}
-        val adRequest = AdRequest.Builder().build()
-        view.adView1.loadAd(adRequest)
-        val adView = AdView(this)
-        adView.adSize = AdSize.SMART_BANNER
-        adView.adUnitId = getString(R.string.banner_x_or_o_dialog)
+        view.adView1.loadAdIfAllowed()
         
         /********************************************/
 
@@ -522,4 +478,18 @@ class EasyLevel : AppCompatActivity(), View.OnClickListener {
 
 }
 
-
+// View accessors (replace the removed kotlin-android-extensions synthetics)
+private val EasyLevel.adView: com.google.android.gms.ads.AdView get() = findViewById(R.id.adView)
+private val EasyLevel.textView2: android.widget.TextView get() = findViewById(R.id.textView2)
+private val EasyLevel.textView6: android.widget.TextView get() = findViewById(R.id.textView6)
+private val EasyLevel.textView7: android.widget.TextView get() = findViewById(R.id.textView7)
+private val EasyLevel.textView8: android.widget.TextView get() = findViewById(R.id.textView8)
+private val EasyLevel.txt_player_1: android.widget.TextView get() = findViewById(R.id.txt_player_1)
+private val EasyLevel.txt_player_2: android.widget.TextView get() = findViewById(R.id.txt_player_2)
+private val android.view.View.adView1: com.google.android.gms.ads.AdView get() = findViewById(R.id.adView1)
+private val android.view.View.dialogNewRound: android.widget.TextView get() = findViewById(R.id.dialogNewRound)
+private val android.view.View.imageO: android.widget.ImageView get() = findViewById(R.id.imageO)
+private val android.view.View.imageX: android.widget.ImageView get() = findViewById(R.id.imageX)
+private val android.view.View.textView10: android.widget.TextView get() = findViewById(R.id.textView10)
+private val android.view.View.textView11: android.widget.TextView get() = findViewById(R.id.textView11)
+private val android.view.View.textView12: android.widget.TextView get() = findViewById(R.id.textView12)
