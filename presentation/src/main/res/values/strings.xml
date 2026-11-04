@@ -17,4 +17,64 @@
     <string name="level_hard">Hard</string>
     <!-- %1$d = board size (e.g. 3 for a 3×3 board), %2$d = marks in a row needed to win -->
     <string name="level_rules">%1$d×%1$d board · %2$d in a row</string>
+
+
+    <!-- Game screen -->
+    <string name="game_back">Back</string>
+    <string name="game_new_match">New match</string>
+    <string name="game_mode_vs_computer">Against the phone</string>
+    <string name="game_mode_two_players">Two players</string>
+    <string name="game_you">You</string>
+    <string name="game_phone">Phone</string>
+    <!-- %1$s = the player's mark, X or O -->
+    <string name="game_player_default">Player %1$s</string>
+    <string name="game_turn_you">Your turn</string>
+    <!-- %1$s = player name -->
+    <string name="game_turn_player">%1$s\'s turn</string>
+    <string name="game_thinking">The phone is thinking…</string>
+    <string name="game_hint_loading">Finding the best move…</string>
+    <string name="game_hint_shown">Try the highlighted square</string>
+    <string name="game_result_you_win">You win!</string>
+    <string name="game_result_phone_wins">The phone wins!</string>
+    <!-- %1$s = player name -->
+    <string name="game_result_player_wins">%1$s wins!</string>
+    <string name="game_result_draw">It\'s a draw!</string>
+    <string name="game_match_you_win">You won the match!</string>
+    <string name="game_match_phone_wins">The phone won the match</string>
+    <!-- %1$s = player name -->
+    <string name="game_match_player_wins">%1$s won the match!</string>
+    <string name="game_match_draw">The match is a draw</string>
+    <!-- %1$d = X score, %2$d = O score -->
+    <string name="game_match_score">Final score %1$d – %2$d</string>
+    <!-- %1$d = current round, %2$d = rounds in the match -->
+    <string name="game_round_of">Round %1$d of %2$d</string>
+    <!-- %1$d = number of drawn rounds -->
+    <string name="game_draws">Draws: %1$d</string>
+    <string name="game_undo">Undo</string>
+    <string name="game_hint">Hint</string>
+    <string name="game_restart">Restart</string>
+    <string name="game_next_round">Next round</string>
+    <string name="game_play_again">Play again</string>
+    <string name="game_close">Close</string>
+    <string name="game_settings">Settings</string>
+    <!-- Spoken by screen readers for a board square. %1$d = row, %2$d = column, %3$s = X, O or "empty" -->
+    <string name="game_cell_description">Row %1$d, column %2$d, %3$s</string>
+    <string name="game_cell_empty">empty</string>
+    <string name="game_cell_hint">suggested move</string>
+
+    <!-- Match setup -->
+    <string name="setup_title">Game setup</string>
+    <string name="setup_play_as">Play as</string>
+    <string name="setup_names">Player names</string>
+    <!-- %1$s = the player's mark, X or O -->
+    <string name="setup_name_label">Player %1$s name</string>
+    <string name="setup_who_starts">Who starts</string>
+    <string name="setup_starter_random">Random</string>
+    <string name="setup_match">Match</string>
+    <string name="setup_match_single">Single</string>
+    <!-- %1$d = number of rounds, 3 or 5 -->
+    <string name="setup_match_best_of">Best of %1$d</string>
+    <string name="setup_take_turns">Players take turns to start each round.</string>
+    <string name="setup_start">Start</string>
+    <string name="setup_cancel">Cancel</string>
 </resources>

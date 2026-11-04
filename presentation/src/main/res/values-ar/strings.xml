@@ -16,4 +16,54 @@
     <string name="level_medium">متوسط</string>
     <string name="level_hard">صعب</string>
     <string name="level_rules">لوحة %1$d×%1$d · %2$d على التوالي</string>
+
+
+    <!-- Game screen -->
+    <string name="game_back">رجوع</string>
+    <string name="game_new_match">مباراة جديدة</string>
+    <string name="game_mode_vs_computer">ضد الهاتف</string>
+    <string name="game_mode_two_players">لاعبان</string>
+    <string name="game_you">أنت</string>
+    <string name="game_phone">الهاتف</string>
+    <string name="game_player_default">اللاعب %1$s</string>
+    <string name="game_turn_you">دورك</string>
+    <string name="game_turn_player">دور %1$s</string>
+    <string name="game_thinking">الهاتف يفكر…</string>
+    <string name="game_hint_loading">جارٍ البحث عن أفضل حركة…</string>
+    <string name="game_hint_shown">جرّب المربع المميَّز</string>
+    <string name="game_result_you_win">لقد فزت!</string>
+    <string name="game_result_phone_wins">فاز الهاتف!</string>
+    <string name="game_result_player_wins">فاز %1$s!</string>
+    <string name="game_result_draw">تعادل!</string>
+    <string name="game_match_you_win">لقد فزت بالمباراة!</string>
+    <string name="game_match_phone_wins">فاز الهاتف بالمباراة</string>
+    <string name="game_match_player_wins">فاز %1$s بالمباراة!</string>
+    <string name="game_match_draw">انتهت المباراة بالتعادل</string>
+    <string name="game_match_score">النتيجة النهائية %1$d – %2$d</string>
+    <string name="game_round_of">الجولة %1$d من %2$d</string>
+    <string name="game_draws">التعادلات: %1$d</string>
+    <string name="game_undo">تراجع</string>
+    <string name="game_hint">تلميح</string>
+    <string name="game_restart">إعادة</string>
+    <string name="game_next_round">الجولة التالية</string>
+    <string name="game_play_again">العب مجددًا</string>
+    <string name="game_close">إغلاق</string>
+    <string name="game_settings">الإعدادات</string>
+    <string name="game_cell_description">الصف %1$d، العمود %2$d، %3$s</string>
+    <string name="game_cell_empty">فارغ</string>
+    <string name="game_cell_hint">الحركة المقترحة</string>
+
+    <!-- Match setup -->
+    <string name="setup_title">إعداد اللعبة</string>
+    <string name="setup_play_as">العب بـ</string>
+    <string name="setup_names">أسماء اللاعبين</string>
+    <string name="setup_name_label">اسم اللاعب %1$s</string>
+    <string name="setup_who_starts">من يبدأ</string>
+    <string name="setup_starter_random">عشوائي</string>
+    <string name="setup_match">المباراة</string>
+    <string name="setup_match_single">جولة واحدة</string>
+    <string name="setup_match_best_of">الأفضل من %1$d</string>
+    <string name="setup_take_turns">يتناوب اللاعبان على البدء في كل جولة.</string>
+    <string name="setup_start">ابدأ</string>
+    <string name="setup_cancel">إلغاء</string>
 </resources>

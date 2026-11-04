@@ -20,38 +20,21 @@
             android:name="com.google.android.gms.ads.APPLICATION_ID"
             android:value="${admobAppId}" />
 
-        <activity
-            android:name="com.m7mdabaza.xogame.onePlayer.HardLevelVsComputer"
-            android:exported="false"
-            tools:ignore="InnerclassSeparator" />
-        <activity
-            android:name="com.m7mdabaza.xogame.onePlayer.MediumLevelVsComputer"
-            android:exported="false"
-            tools:ignore="InnerclassSeparator" />
-        <activity
-            android:name="com.m7mdabaza.xogame.onePlayer.EasyLevelVsComputer"
-            android:exported="false"
-            tools:ignore="InnerclassSeparator" />
-        <activity
-            android:name="com.m7mdabaza.xogame.twoPlayers.HardLevel"
-            android:exported="false"
-            tools:ignore="InnerclassSeparator" />
-        <activity
-            android:name="com.m7mdabaza.xogame.twoPlayers.MediumLevel"
-            android:exported="false"
-            tools:ignore="InnerclassSeparator" />
-        <activity
-            android:name="com.m7mdabaza.xogame.twoPlayers.EasyLevel"
-            android:exported="false"
-            tools:ignore="InnerclassSeparator" />
+        <!--
+          Portrait only (product decision). Phones honour it; Android 16+ may ignore it on
+          large screens, which the Compose game screen handles with a wide-window layout.
+        -->
         <activity
             android:name="com.m7mdabaza.xogame.MainActivity"
+            android:screenOrientation="portrait"
             android:exported="false"
-            android:theme="@style/Theme.XoGame" />
+            android:theme="@style/Theme.XoGame"
+            tools:ignore="LockedOrientationActivity,DiscouragedApi" />
         <activity
             android:name="com.m7mdabaza.xogame.startActivities.splash"
+            android:screenOrientation="portrait"
             android:exported="true"
-            tools:ignore="InnerclassSeparator">
+            tools:ignore="InnerclassSeparator,LockedOrientationActivity,DiscouragedApi">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

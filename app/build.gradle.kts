@@ -12,7 +12,7 @@ private val testRewarded = "ca-app-pub-3940256099942544/5224354917"
 
 private val bannerPlacements = listOf(
     "main", "easy_vs_computer", "medium_vs_computer", "hard_vs_computer",
-    "easy_level", "medium_level", "hard_level", "x_or_o_dialog",
+    "easy_level", "medium_level", "hard_level",
 )
 private val interstitialPlacements = listOf(
     "easy_vs_computer", "medium_vs_computer", "hard_vs_computer",
@@ -62,7 +62,6 @@ android {
             resValue("string", "banner_easy_level", "ca-app-pub-4454440016331822/4895022629")
             resValue("string", "banner_medium_level", "ca-app-pub-4454440016331822/9832682202")
             resValue("string", "banner_hard_level", "ca-app-pub-4454440016331822/9625153867")
-            resValue("string", "banner_x_or_o_dialog", "ca-app-pub-4454440016331822/5478764952")
             resValue("string", "interstitial_easy_vs_computer", "ca-app-pub-4454440016331822/8898874481")
             resValue("string", "interstitial_medium_vs_computer", "ca-app-pub-4454440016331822/6500297073")
             resValue("string", "interstitial_hard_vs_computer", "ca-app-pub-4454440016331822/8097991769")
@@ -85,7 +84,7 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
 
-    // Legacy screens load the font from assets (src/assets/sukar.ttf).
+    // The legacy splash screen loads the font from assets (src/assets/sukar.ttf).
     sourceSets.getByName("main") {
         assets.directories.add("src/assets")
     }
@@ -108,10 +107,8 @@ dependencies {
     implementation(libs.play.services.ads)
     implementation(libs.ump)
 
-    // Legacy XML game screens (replaced by Compose in milestone 4)
-    implementation(libs.material)
+    // Legacy XML splash screen
     implementation(libs.androidx.constraintlayout)
-    implementation(libs.androidx.cardview)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.junit)

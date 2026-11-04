@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Permissions this library itself needs; they merge into the app manifest. -->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Ads and consent (Mobile Ads SDK, UMP). -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <!-- Move and result vibrations (AndroidGameFeedback). -->
+    <uses-permission android:name="android.permission.VIBRATE" />
+</manifest>

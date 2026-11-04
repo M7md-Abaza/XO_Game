@@ -8,9 +8,10 @@ Branch: `feature/v2-upgrade`
 |---|---|
 | 1. Project setup | **Done and committed.** Modules, version catalog, Kotlin DSL, Hilt, Compose Home + level picker, ads/consent moved to `:presentation`, English + Arabic. Verified on emulator API 37 (en + ar) and phone API 29. |
 | 2. Domain core | **Done and committed** (971aff4). `model/` (`Player`, `Cell`, `Move`, immutable `Board`, `GameConfig`, `GameState`, `GameResult`), `engine/WinChecker` (generic N×N / k-in-row; returns the whole winning run; draw = full board), `usecase/` `StartGameUseCase`, `PlayMoveUseCase` (returns `MoveResult`: Played / GameOver / OutOfBounds / CellOccupied), `UndoMoveUseCase` (vs computer: back to and including the human's last move; null when there is nothing to undo). 51 JVM tests in `domain/src/test`. `MatchState`, `PlayerStats` and `Settings` arrive with the milestones that use them (4 and 5). |
-| 3. AI | **Done and committed.** One alpha-beta engine for all sizes, `ai/SearchAi` over a fast window-counting `ai/SearchBoard`: always wins/blocks in one, detects double threats, perfect on 3×3, top-N pattern-ranked candidates near marks on 8×8, random among equal moves. `ai/DifficultyPolicy` (computer + hint per level, calibrated head to head). `ComputerMoveUseCase`, `GetHintUseCase`. Hard computer looks 5 moves ahead (user decision). 77 domain tests. On the emulator Hilt builds the use cases and the slowest move is about 50 ms. |
-| 4. Game screen | **Next**, once milestone 3 is approved. |
-| 5–9 | Not started (see section 5). |
+| 3. AI | **Done and committed** (c82fcbd). One alpha-beta engine for all sizes, `ai/SearchAi` over a fast window-counting `ai/SearchBoard`: always wins/blocks in one, detects double threats, perfect on 3×3, top-N pattern-ranked candidates near marks on 8×8, random among equal moves. `ai/DifficultyPolicy` (computer + hint per level, calibrated head to head). `ComputerMoveUseCase`, `GetHintUseCase`. Hard computer looks 5 moves ahead (user decision). 77 domain tests. On the emulator Hilt builds the use cases and the slowest move is about 50 ms. |
+| 4. Game screen | **Done and committed.** One Compose `GameScreen` + `GameViewModel` for every mode and level (route `Game(mode, level)`): setup dialog (symbol, names, who starts, single / best of 3 / best of 5), scoreboard, animated marks, win line, hint preview, undo / hint / restart (free until milestone 6), match-over dialog, banner, sounds + vibration (`GameFeedback`), portrait only (wide-window layout kept for split screen and large screens), no undo after a round ends, survives rotation and process death (`SavedSession`). Domain `MatchState`. The six legacy activities, their layouts, drawables, strings and the Material/CardView dependencies are gone; the splash closes itself when reopened into an existing task. 21 ViewModel tests (JVM) + 4 Compose UI tests (emulator). Checked on the API 37 emulator in English and Arabic. |
+| 5. Persistence | **In progress.** |
+| 6–9 | Not started (see section 5). |
 
 How to resume: build with `export JAVA_HOME=~/.jdks/jbr-21.0.11 && ./gradlew assembleDebug test`. Work milestone by milestone; the user reviews each one, and nothing is committed or pushed until the user says so.
 
@@ -28,7 +29,7 @@ How to resume: build with `export JAVA_HOME=~/.jdks/jbr-21.0.11 && ./gradlew ass
 
 Things that must not change:
 - `applicationId` stays `com.m7mdabaza.x_ogame`. Changing it would break Play Store updates.
-- The existing per-screen AdMob unit IDs are kept. They are mapped by mode + level, so AdMob reports stay comparable.
+- The existing per-screen AdMob unit IDs are kept. They are mapped by mode + level, so AdMob reports stay comparable. (Only `banner_x_or_o_dialog` was dropped in milestone 4, because its dialog no longer exists.)
 - UMP consent gates every ad request, as it does today.
 
 ---
@@ -137,7 +138,7 @@ Dependency rule: `presentation → domain ← data`. `:app` depends on all three
 
 1. **Winning line highlight + piece animations.**
 2. **Choose your symbol (X/O) and who starts** (you / phone / random), in both modes.
-3. **Undo:** in vs-computer it costs a rewarded ad (Remove-ads buyers get 1 free per game); in two-player mode it is free.
+3. **Undo:** in vs-computer it costs a rewarded ad (Remove-ads buyers get 1 free per game); in two-player mode it is free. Only while a round is being played: once a round has ended (win, loss or draw) it can't be undone.
 4. **Hint:** costs a rewarded ad (Remove-ads buyers get 1 free per game); shows the best cell with a pulse.
 5. **Match mode:** single round, or best of 3 / 5, with a match-winner dialog.
 6. **Player names** in two-player mode.
@@ -161,6 +162,9 @@ Dependency rule: `presentation → domain ← data`. `:app` depends on all three
 - Create the in-app product `remove_ads`.
 - Update the Data safety form if needed (purchase history is handled by Google Play).
 - Add Arabic store listing text.
+
+**AdMob tasks for you:**
+- Delete (or archive) the banner unit that belonged to the old "who plays first" dialog: `x_or_o_dialog`, `ca-app-pub-4454440016331822/5478764952`. The app stopped using it in milestone 4. Do it once v2 is live, because v1 still requests it until users update.
 
 ## 4. Testing
 
@@ -196,3 +200,6 @@ Each milestone ends with a working build, tests passing and an emulator check. Y
 1. Remove-ads buyers: no unlimited free assists, but 1 free hint **and** 1 free undo per game (two separate free uses, confirmed by the user on 2026-11-04); extras need a rewarded ad.
 2. You set the Remove-ads price in Play Console.
 3. Keep the brand colors (yellow `#d6bd17` / black); the UI can be refreshed freely to fit the new features (Material 3 components, Compose-drawn X/O and board).
+4. No undo after a round ends, whether it was won, lost or drawn (user decision, 2026-11-04). Undo works only while a round is being played.
+5. The app is portrait only (user decision, 2026-11-04): both activities use `screenOrientation="portrait"`. Android 16+ may ignore this on large screens (600 dp and wider), so the game screen keeps a side-by-side layout for wide windows.
+6. `banner_x_or_o_dialog` was removed from the app (user decision, 2026-11-04). Remind the user to delete the unit in AdMob (see "AdMob tasks for you").

@@ -13,13 +13,21 @@ private val LightColors = lightColorScheme(
     onPrimaryContainer = BrandBlack,
     secondary = BrandBlack,
     onSecondary = Color.White,
+    // Selected segmented buttons, tonal buttons: brand tint instead of the Material default purple.
+    secondaryContainer = BrandYellowFaded,
+    onSecondaryContainer = BrandBlack,
     background = SurfaceWhite,
     onBackground = OnSurfaceDark,
     surface = SurfaceWhite,
     onSurface = OnSurfaceDark,
     surfaceVariant = SurfaceVariantLight,
     onSurfaceVariant = OnSurfaceVariantLight,
+    surfaceContainerLowest = SurfaceWhite,
     surfaceContainerLow = SurfaceVariantLight,
+    surfaceContainer = SurfaceVariantLight,
+    // Dialogs (AlertDialog uses surfaceContainerHigh).
+    surfaceContainerHigh = SurfaceWhite,
+    surfaceContainerHighest = SurfaceVariantLight,
 )
 
 @Composable

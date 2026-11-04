@@ -1,6 +1,6 @@
 <resources>
 
-    <!-- Theme of the legacy XML screens (splash + game screens until milestone 4). -->
+    <!-- Theme of the legacy XML splash screen. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>

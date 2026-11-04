@@ -1,0 +1,397 @@
+package com.m7mdabaza.xogame.presentation.game
+
+import androidx.lifecycle.SavedStateHandle
+import com.m7mdabaza.xogame.domain.ai.SearchAi
+import com.m7mdabaza.xogame.domain.engine.WinChecker
+import com.m7mdabaza.xogame.domain.model.Cell
+import com.m7mdabaza.xogame.domain.model.GameMode
+import com.m7mdabaza.xogame.domain.model.GameResult
+import com.m7mdabaza.xogame.domain.model.Level
+import com.m7mdabaza.xogame.domain.model.MatchLength
+import com.m7mdabaza.xogame.domain.model.Player
+import com.m7mdabaza.xogame.domain.usecase.ComputerMoveUseCase
+import com.m7mdabaza.xogame.domain.usecase.GetHintUseCase
+import com.m7mdabaza.xogame.domain.usecase.PlayMoveUseCase
+import com.m7mdabaza.xogame.domain.usecase.StartGameUseCase
+import com.m7mdabaza.xogame.domain.usecase.UndoMoveUseCase
+import com.m7mdabaza.xogame.presentation.ads.AdUnitIds
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.advanceTimeBy
+import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.test.setMain
+import org.junit.After
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
+import org.junit.Before
+import org.junit.Test
+import kotlin.random.Random
+
+@OptIn(ExperimentalCoroutinesApi::class)
+class GameViewModelTest {
+
+    private val dispatcher = StandardTestDispatcher()
+    private val feedback = FakeFeedback()
+
+    @Before
+    fun setUp() = Dispatchers.setMain(dispatcher)
+
+    @After
+    fun tearDown() = Dispatchers.resetMain()
+
+    private class FakeFeedback : GameFeedback {
+        val events = mutableListOf<String>()
+        override fun move(player: Player, byComputer: Boolean) {
+            events += "move $player${if (byComputer) " computer" else ""}"
+        }
+        override fun roundEnded(sound: RoundSound) {
+            events += "end $sound"
+        }
+        override fun newRound() {
+            events += "new round"
+        }
+    }
+
+    private object FakeAdUnitIds : AdUnitIds {
+        override val homeBanner = "home"
+        override fun gameBanner(mode: GameMode, level: Level) = "banner-$mode-$level"
+        override fun interstitial(mode: GameMode, level: Level) = "interstitial"
+        override val rewarded = "rewarded"
+    }
+
+    private fun handle(mode: GameMode, level: Level = Level.EASY) =
+        SavedStateHandle(mapOf(GameViewModel.ARG_MODE to mode.name, GameViewModel.ARG_LEVEL to level.name))
+
+    private fun viewModel(handle: SavedStateHandle, random: Random = Random(1)) = GameViewModel(
+        savedStateHandle = handle,
+        startGame = StartGameUseCase(),
+        playMove = PlayMoveUseCase(WinChecker()),
+        undoMove = UndoMoveUseCase(),
+        computerMove = ComputerMoveUseCase(SearchAi()),
+        getHint = GetHintUseCase(SearchAi()),
+        feedback = feedback,
+        adUnitIds = FakeAdUnitIds,
+        computeDispatcher = dispatcher,
+        random = random,
+    )
+
+    private fun viewModel(mode: GameMode, level: Level = Level.EASY) = viewModel(handle(mode, level))
+
+    private val GameViewModel.state get() = uiState.value
+
+    private fun GameViewModel.tap(vararg cells: Cell) = cells.forEach { onCellClick(it) }
+
+    /** X: top row; O: middle row. X wins on the fifth move. */
+    private val xWinsTopRow = arrayOf(Cell(0, 0), Cell(1, 0), Cell(0, 1), Cell(1, 1), Cell(0, 2))
+
+    // --- Setup -----------------------------------------------------------------
+
+    @Test
+    fun `opens with the setup and an empty board`() {
+        val vm = viewModel(GameMode.TWO_PLAYERS, Level.MEDIUM)
+        assertEquals(GamePhase.SETUP, vm.state.phase)
+        assertFalse(vm.state.hasStarted)
+        assertFalse(vm.state.boardEnabled)
+        assertEquals(4, vm.state.game.board.size)
+        assertEquals("banner-TWO_PLAYERS-MEDIUM", vm.state.bannerAdUnitId)
+        vm.onCellClick(Cell(0, 0))
+        assertTrue(vm.state.game.history.isEmpty())
+    }
+
+    @Test
+    fun `dismissing the setup before the first match does nothing (the screen closes)`() {
+        val vm = viewModel(GameMode.TWO_PLAYERS)
+        vm.onDismissSetup()
+        assertEquals(GamePhase.SETUP, vm.state.phase)
+    }
+
+    @Test
+    fun `names are trimmed and shortened`() {
+        val vm = viewModel(GameMode.TWO_PLAYERS)
+        vm.onStartMatch(MatchSettings(xName = "  Mohamed  ", oName = "A".repeat(40)))
+        assertEquals("Mohamed", vm.state.settings.xName)
+        assertEquals(GameViewModel.MAX_NAME_LENGTH, vm.state.settings.oName.length)
+        assertEquals(listOf("new round"), feedback.events)
+    }
+
+    // --- Two players -------------------------------------------------------------
+
+    @Test
+    fun `two players alternate and a line wins the round`() {
+        val vm = viewModel(GameMode.TWO_PLAYERS)
+        vm.onStartMatch(MatchSettings())
+        assertEquals(GamePhase.PLAYING, vm.state.phase)
+        assertEquals(Player.X, vm.state.game.turn)
+
+        vm.tap(*xWinsTopRow)
+        assertEquals(GamePhase.ROUND_OVER, vm.state.phase)
+        assertEquals(Player.X, (vm.state.game.result as GameResult.Win).player)
+        assertEquals(1, vm.state.match.xWins)
+        assertFalse(vm.state.boardEnabled)
+        assertFalse(vm.state.canUndo)
+        assertEquals("end WIN", feedback.events.last())
+        assertEquals(5, feedback.events.count { it.startsWith("move") })
+    }
+
+    @Test
+    fun `tapping a taken square changes nothing`() {
+        val vm = viewModel(GameMode.TWO_PLAYERS)
+        vm.onStartMatch(MatchSettings())
+        vm.tap(Cell(1, 1), Cell(1, 1))
+        assertEquals(1, vm.state.game.history.size)
+        assertEquals(Player.O, vm.state.game.turn)
+    }
+
+    @Test
+    fun `player two can start`() {
+        val vm = viewModel(GameMode.TWO_PLAYERS)
+        vm.onStartMatch(MatchSettings(starter = Starter.PLAYER_TWO))
+        assertEquals(Player.O, vm.state.game.turn)
+    }
+
+    @Test
+    fun `undo in two-player mode takes back one move`() {
+        val vm = viewModel(GameMode.TWO_PLAYERS)
+        vm.onStartMatch(MatchSettings())
+        assertFalse(vm.state.canUndo)
+        vm.tap(Cell(0, 0), Cell(1, 1))
+        assertTrue(vm.state.canUndo)
+        vm.onUndo()
+        assertEquals(listOf(Cell(0, 0)), vm.state.game.history.map { it.cell })
+        assertEquals(Player.O, vm.state.game.turn)
+    }
+
+    @Test
+    fun `no undo once a round has ended, whoever won`() = runTest(dispatcher) {
+        // Two players: the winner can't take the winning move back.
+        val twoPlayers = viewModel(GameMode.TWO_PLAYERS)
+        twoPlayers.onStartMatch(MatchSettings())
+        twoPlayers.tap(*xWinsTopRow)
+        assertFalse(twoPlayers.state.canUndo)
+        twoPlayers.onUndo()
+        assertEquals(5, twoPlayers.state.game.history.size)
+        assertEquals(GamePhase.ROUND_OVER, twoPlayers.state.phase)
+        assertEquals(1, twoPlayers.state.match.xWins)
+
+        // Against the computer: whatever the result, the finished round stays finished.
+        val vsComputer = viewModel(GameMode.VS_COMPUTER)
+        vsComputer.onStartMatch(MatchSettings())
+        while (vsComputer.state.phase == GamePhase.PLAYING) {
+            vsComputer.onCellClick(vsComputer.state.game.board.emptyCells.last())
+            advanceUntilIdle()
+        }
+        val finished = vsComputer.state
+        assertFalse(finished.canUndo)
+        vsComputer.onUndo()
+        assertEquals(finished.game, vsComputer.state.game)
+        assertEquals(finished.match, vsComputer.state.match)
+    }
+
+    @Test
+    fun `hint shows the winning square and the next move clears it`() = runTest(dispatcher) {
+        val vm = viewModel(GameMode.TWO_PLAYERS)
+        vm.onStartMatch(MatchSettings())
+        vm.tap(Cell(0, 0), Cell(1, 0), Cell(0, 1), Cell(1, 1)) // X to move, wins at (0,2)
+        assertTrue(vm.state.canHint)
+        vm.onHint()
+        assertTrue(vm.state.hintLoading)
+        advanceUntilIdle()
+        assertEquals(Cell(0, 2), vm.state.hint)
+        assertFalse(vm.state.canHint)
+        vm.onCellClick(Cell(2, 2))
+        assertNull(vm.state.hint)
+    }
+
+    @Test
+    fun `restart clears the board without scoring`() {
+        val vm = viewModel(GameMode.TWO_PLAYERS)
+        vm.onStartMatch(MatchSettings())
+        vm.tap(Cell(0, 0), Cell(1, 1))
+        vm.onRestartRound()
+        assertTrue(vm.state.game.history.isEmpty())
+        assertEquals(0, vm.state.match.roundsPlayed)
+        assertEquals(Player.X, vm.state.game.turn)
+    }
+
+    // --- Matches -----------------------------------------------------------------
+
+    @Test
+    fun `single rounds keep a running score and the chosen starter`() {
+        val vm = viewModel(GameMode.TWO_PLAYERS)
+        vm.onStartMatch(MatchSettings(length = MatchLength.SINGLE))
+        vm.tap(*xWinsTopRow)
+        vm.onNextRound()
+        assertEquals(GamePhase.PLAYING, vm.state.phase)
+        assertEquals(Player.X, vm.state.game.turn)
+        vm.tap(*xWinsTopRow)
+        assertEquals(2, vm.state.match.xWins)
+        assertEquals(GamePhase.ROUND_OVER, vm.state.phase)
+    }
+
+    @Test
+    fun `best of 3 alternates the starter and ends with a match winner`() {
+        val vm = viewModel(GameMode.TWO_PLAYERS)
+        vm.onStartMatch(MatchSettings(length = MatchLength.BEST_OF_3))
+        vm.tap(*xWinsTopRow)
+        assertEquals(GamePhase.ROUND_OVER, vm.state.phase)
+
+        vm.onNextRound()
+        assertEquals(Player.O, vm.state.game.turn) // round 2: O starts
+        // O plays the "X" moves of the pattern, so O completes the top row.
+        vm.tap(*xWinsTopRow)
+        assertEquals(1, vm.state.match.oWins)
+
+        vm.onNextRound()
+        assertEquals(Player.X, vm.state.game.turn) // round 3: X again
+        vm.tap(*xWinsTopRow)
+        assertEquals(GamePhase.MATCH_OVER, vm.state.phase)
+        assertEquals(Player.X, vm.state.match.winner)
+
+        vm.onNextRound() // new match, same settings
+        assertEquals(GamePhase.PLAYING, vm.state.phase)
+        assertEquals(0, vm.state.match.roundsPlayed)
+        assertEquals(MatchLength.BEST_OF_3, vm.state.match.length)
+    }
+
+    @Test
+    fun `opening the setup mid-game and closing it resumes the round`() {
+        val vm = viewModel(GameMode.TWO_PLAYERS)
+        vm.onStartMatch(MatchSettings())
+        vm.tap(Cell(0, 0))
+        vm.onOpenSetup()
+        assertEquals(GamePhase.SETUP, vm.state.phase)
+        vm.onDismissSetup()
+        assertEquals(GamePhase.PLAYING, vm.state.phase)
+        assertEquals(1, vm.state.game.history.size)
+    }
+
+    // --- Against the computer ------------------------------------------------------
+
+    @Test
+    fun `the computer replies after a short pause`() = runTest(dispatcher) {
+        val vm = viewModel(GameMode.VS_COMPUTER)
+        vm.onStartMatch(MatchSettings())
+        vm.onCellClick(Cell(1, 1))
+        assertTrue(vm.state.computerThinking)
+        assertFalse(vm.state.boardEnabled)
+        vm.onCellClick(Cell(0, 0)) // ignored while the phone thinks
+        assertEquals(1, vm.state.game.history.size)
+
+        advanceTimeBy(GameViewModel.COMPUTER_DELAY_MS - 1)
+        assertEquals(1, vm.state.game.history.size)
+        advanceUntilIdle()
+        assertEquals(2, vm.state.game.history.size)
+        assertEquals(Player.O, vm.state.game.lastMove?.player)
+        assertFalse(vm.state.computerThinking)
+        assertTrue(vm.state.boardEnabled)
+        assertEquals("move O computer", feedback.events.last())
+    }
+
+    @Test
+    fun `the computer opens when it starts`() = runTest(dispatcher) {
+        val vm = viewModel(GameMode.VS_COMPUTER)
+        vm.onStartMatch(MatchSettings(humanSymbol = Player.O, starter = Starter.PLAYER_TWO))
+        assertTrue(vm.state.computerThinking)
+        advanceUntilIdle()
+        assertEquals(Player.X, vm.state.game.lastMove?.player)
+        assertTrue(vm.state.game.isHumanTurn)
+    }
+
+    @Test
+    fun `undo against the computer removes its reply and the human move`() = runTest(dispatcher) {
+        val vm = viewModel(GameMode.VS_COMPUTER)
+        vm.onStartMatch(MatchSettings())
+        vm.onCellClick(Cell(1, 1))
+        advanceUntilIdle()
+        vm.onUndo()
+        assertTrue(vm.state.game.history.isEmpty())
+        assertTrue(vm.state.boardEnabled)
+    }
+
+    @Test
+    fun `undo while the computer thinks cancels its move`() = runTest(dispatcher) {
+        val vm = viewModel(GameMode.VS_COMPUTER)
+        vm.onStartMatch(MatchSettings())
+        vm.onCellClick(Cell(1, 1))
+        assertTrue(vm.state.canUndo)
+        vm.onUndo()
+        advanceUntilIdle()
+        assertTrue(vm.state.game.history.isEmpty())
+        assertFalse(vm.state.computerThinking)
+    }
+
+    @Test
+    fun `losing to the computer plays the losing sound`() = runTest(dispatcher) {
+        val vm = viewModel(GameMode.VS_COMPUTER)
+        vm.onStartMatch(MatchSettings())
+        // Play badly until the round ends: always the last empty square.
+        while (vm.state.phase == GamePhase.PLAYING) {
+            vm.onCellClick(vm.state.game.board.emptyCells.last())
+            advanceUntilIdle()
+        }
+        val result = vm.state.game.result
+        val expected = when {
+            result is GameResult.Win && result.player == Player.O -> "end LOSE"
+            result is GameResult.Win -> "end WIN"
+            else -> "end DRAW"
+        }
+        assertEquals(expected, feedback.events.last())
+    }
+
+    // --- Saving --------------------------------------------------------------------
+
+    @Test
+    fun `the session survives process death`() {
+        val handle = handle(GameMode.TWO_PLAYERS, Level.MEDIUM)
+        val vm = viewModel(handle)
+        vm.onStartMatch(MatchSettings(length = MatchLength.BEST_OF_5, xName = "Sara", starter = Starter.PLAYER_TWO))
+        vm.tap(Cell(0, 0), Cell(1, 1), Cell(2, 2))
+
+        val restored = viewModel(handle)
+        assertEquals(vm.state.game.board, restored.state.game.board)
+        assertEquals(vm.state.game.history, restored.state.game.history)
+        assertEquals(vm.state.settings, restored.state.settings)
+        assertEquals(vm.state.match, restored.state.match)
+        assertEquals(GamePhase.PLAYING, restored.state.phase)
+        assertEquals(Player.X, restored.state.game.turn)
+    }
+
+    @Test
+    fun `a pending computer move resumes after restore`() = runTest(dispatcher) {
+        val handle = handle(GameMode.VS_COMPUTER)
+        val vm = viewModel(handle)
+        vm.onStartMatch(MatchSettings())
+        vm.onCellClick(Cell(1, 1)) // process dies while the phone is thinking
+
+        val restored = viewModel(handle)
+        assertTrue(restored.state.computerThinking)
+        advanceUntilIdle()
+        assertEquals(2, restored.state.game.history.size)
+    }
+
+    @Test
+    fun `a finished round is restored without scoring it twice`() {
+        val handle = handle(GameMode.TWO_PLAYERS)
+        val vm = viewModel(handle)
+        vm.onStartMatch(MatchSettings(length = MatchLength.BEST_OF_3))
+        vm.tap(*xWinsTopRow)
+
+        val restored = viewModel(handle)
+        assertEquals(GamePhase.ROUND_OVER, restored.state.phase)
+        assertEquals(1, restored.state.match.xWins)
+        restored.onNextRound()
+        assertEquals(Player.O, restored.state.game.turn) // alternation survives too
+    }
+
+    @Test
+    fun `unreadable saved data falls back to a fresh setup`() {
+        val handle = handle(GameMode.TWO_PLAYERS)
+        handle[GameViewModel.KEY_SESSION] = "not json"
+        assertEquals(GamePhase.SETUP, viewModel(handle).state.phase)
+    }
+}

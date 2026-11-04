@@ -1,0 +1,309 @@
+package com.m7mdabaza.xogame.presentation.game
+
+import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.m7mdabaza.xogame.domain.model.Cell
+import com.m7mdabaza.xogame.domain.model.GameConfig
+import com.m7mdabaza.xogame.domain.model.GameMode
+import com.m7mdabaza.xogame.domain.model.GameResult
+import com.m7mdabaza.xogame.domain.model.GameState
+import com.m7mdabaza.xogame.domain.model.Level
+import com.m7mdabaza.xogame.domain.model.MatchLength
+import com.m7mdabaza.xogame.domain.model.MatchState
+import com.m7mdabaza.xogame.domain.model.Player
+import com.m7mdabaza.xogame.domain.usecase.ComputerMoveUseCase
+import com.m7mdabaza.xogame.domain.usecase.GetHintUseCase
+import com.m7mdabaza.xogame.domain.usecase.MoveResult
+import com.m7mdabaza.xogame.domain.usecase.PlayMoveUseCase
+import com.m7mdabaza.xogame.domain.usecase.StartGameUseCase
+import com.m7mdabaza.xogame.domain.usecase.UndoMoveUseCase
+import com.m7mdabaza.xogame.presentation.ads.AdUnitIds
+import com.m7mdabaza.xogame.presentation.di.DefaultDispatcher
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import javax.inject.Inject
+import kotlin.random.Random
+
+/**
+ * One game screen for every mode and level (replaces the six legacy
+ * activities). Owns the match: setup, rounds, the computer's moves, undo,
+ * hints and the score. The whole session is saved in [SavedStateHandle] after
+ * every change, so it survives rotation and process death.
+ *
+ * The navigation route supplies the `mode` and `level` arguments (enum names).
+ */
+@HiltViewModel
+class GameViewModel @Inject constructor(
+    private val savedStateHandle: SavedStateHandle,
+    private val startGame: StartGameUseCase,
+    private val playMove: PlayMoveUseCase,
+    private val undoMove: UndoMoveUseCase,
+    private val computerMove: ComputerMoveUseCase,
+    private val getHint: GetHintUseCase,
+    private val feedback: GameFeedback,
+    adUnitIds: AdUnitIds,
+    @param:DefaultDispatcher private val computeDispatcher: CoroutineDispatcher,
+    private val random: Random,
+) : ViewModel() {
+
+    private val mode = GameMode.valueOf(checkNotNull(savedStateHandle.get<String>(ARG_MODE)) { "Missing $ARG_MODE" })
+    private val level = Level.valueOf(checkNotNull(savedStateHandle.get<String>(ARG_LEVEL)) { "Missing $ARG_LEVEL" })
+
+    /** First player of round 1 of the current match; best-of rounds alternate from it. */
+    private var matchFirstPlayer = Player.X
+
+    private var computerJob: Job? = null
+    private var hintJob: Job? = null
+
+    private val _uiState: MutableStateFlow<GameUiState>
+    val uiState: StateFlow<GameUiState>
+
+    init {
+        val banner = adUnitIds.gameBanner(mode, level)
+        val restored = SavedSession.decode(savedStateHandle[KEY_SESSION])?.let { restore(it, banner) }
+        val initial = restored ?: GameUiState(
+            mode = mode,
+            level = level,
+            settings = MatchSettings(),
+            game = startGame(configFor(MatchSettings(), Player.X)),
+            match = MatchState(MatchLength.SINGLE),
+            showSetup = true,
+            hasStarted = false,
+            bannerAdUnitId = banner,
+        )
+        _uiState = MutableStateFlow(withDerived(initial))
+        uiState = _uiState.asStateFlow()
+        save()
+        if (_uiState.value.phase == GamePhase.PLAYING && _uiState.value.game.isComputerTurn) startComputerTurn()
+    }
+
+    // --- Actions ---------------------------------------------------------------
+
+    fun onCellClick(cell: Cell) {
+        if (!_uiState.value.boardEnabled) return
+        place(cell, byComputer = false)
+    }
+
+    /** Only while a round is being played: a finished round (won, lost or drawn) can't be undone. */
+    fun onUndo() {
+        val state = _uiState.value
+        if (!state.canUndo) return
+        val undone = undoMove(state.game) ?: return
+        cancelJobs()
+        update { it.copy(game = undone, computerThinking = false, hintLoading = false, hint = null) }
+    }
+
+    fun onHint() {
+        val state = _uiState.value
+        if (!state.canHint) return
+        update { it.copy(hintLoading = true) }
+        hintJob = viewModelScope.launch {
+            val cell = withContext(computeDispatcher) { getHint(state.game) }
+            update { it.copy(hintLoading = false, hint = cell) }
+        }
+    }
+
+    /** Starts the current round again from an empty board, without scoring it. */
+    fun onRestartRound() {
+        val state = _uiState.value
+        if (state.phase != GamePhase.PLAYING) return
+        feedback.newRound()
+        startRound(state.settings, state.match, state.game.config.firstPlayer)
+    }
+
+    /** After a round: the next round, or a new match with the same settings when the match is over. */
+    fun onNextRound() {
+        val state = _uiState.value
+        when (state.phase) {
+            GamePhase.ROUND_OVER -> startRound(state.settings, state.match, firstPlayerOfNextRound(state))
+            GamePhase.MATCH_OVER -> startMatch(state.settings)
+            else -> return
+        }
+        feedback.newRound()
+    }
+
+    fun onOpenSetup() {
+        cancelJobs()
+        update { it.copy(showSetup = true, computerThinking = false, hintLoading = false) }
+    }
+
+    /** Closes the setup without changes (only once a match has started; otherwise leave the screen). */
+    fun onDismissSetup() {
+        val state = _uiState.value
+        if (!state.showSetup || !state.hasStarted) return
+        update { it.copy(showSetup = false) }
+        if (_uiState.value.phase == GamePhase.PLAYING && _uiState.value.game.isComputerTurn) startComputerTurn()
+    }
+
+    fun onStartMatch(settings: MatchSettings) {
+        startMatch(
+            settings.copy(
+                xName = settings.xName.trim().take(MAX_NAME_LENGTH),
+                oName = settings.oName.trim().take(MAX_NAME_LENGTH),
+            ),
+        )
+        feedback.newRound()
+    }
+
+    // --- Game flow ------------------------------------------------------------
+
+    private fun startMatch(settings: MatchSettings) {
+        matchFirstPlayer = settings.resolveStarter(mode, random)
+        startRound(settings, MatchState(settings.length), matchFirstPlayer)
+    }
+
+    private fun startRound(settings: MatchSettings, match: MatchState, firstPlayer: Player) {
+        cancelJobs()
+        update {
+            it.copy(
+                settings = settings,
+                match = match,
+                game = startGame(configFor(settings, firstPlayer)),
+                showSetup = false,
+                hasStarted = true,
+                computerThinking = false,
+                hintLoading = false,
+                hint = null,
+            )
+        }
+        if (_uiState.value.game.isComputerTurn) startComputerTurn()
+    }
+
+    /**
+     * Single rounds keep the chosen starter (rolling again for Random). In a
+     * best-of match the players take turns to start.
+     */
+    private fun firstPlayerOfNextRound(state: GameUiState): Player =
+        if (state.match.length == MatchLength.SINGLE) {
+            state.settings.resolveStarter(mode, random)
+        } else if (state.match.roundsPlayed % 2 == 0) {
+            matchFirstPlayer
+        } else {
+            matchFirstPlayer.opponent
+        }
+
+    private fun place(cell: Cell, byComputer: Boolean) {
+        val state = _uiState.value
+        val played = playMove(state.game, cell) as? MoveResult.Played ?: return
+        hintJob?.cancel()
+        feedback.move(state.game.turn, byComputer)
+        update { it.copy(game = played.state, hint = null, hintLoading = false) }
+        afterMove()
+    }
+
+    private fun afterMove() {
+        val state = _uiState.value
+        val game = state.game
+        when {
+            game.isOver -> {
+                update { it.copy(match = it.match.record(game.result), computerThinking = false) }
+                feedback.roundEnded(soundFor(game.result, state))
+            }
+            game.isComputerTurn -> startComputerTurn()
+        }
+    }
+
+    private fun startComputerTurn() {
+        computerJob?.cancel()
+        update { it.copy(computerThinking = true) }
+        computerJob = viewModelScope.launch {
+            delay(COMPUTER_DELAY_MS)
+            val game = _uiState.value.game
+            val cell = withContext(computeDispatcher) { computerMove(game) }
+            update { it.copy(computerThinking = false) }
+            place(cell, byComputer = true)
+        }
+    }
+
+    private fun soundFor(result: GameResult, state: GameUiState): RoundSound = when (result) {
+        is GameResult.Win ->
+            if (mode == GameMode.VS_COMPUTER && result.player != state.settings.humanSymbol) RoundSound.LOSE else RoundSound.WIN
+        else -> RoundSound.DRAW
+    }
+
+    private fun cancelJobs() {
+        computerJob?.cancel()
+        hintJob?.cancel()
+    }
+
+    private fun configFor(settings: MatchSettings, firstPlayer: Player) =
+        GameConfig(mode, level, humanSymbol = settings.playerOne(mode), firstPlayer = firstPlayer)
+
+    // --- State and saving -----------------------------------------------------
+
+    private fun update(transform: (GameUiState) -> GameUiState) {
+        _uiState.value = withDerived(transform(_uiState.value))
+        save()
+    }
+
+    private fun withDerived(state: GameUiState): GameUiState =
+        state.copy(canUndo = state.phase == GamePhase.PLAYING && undoMove(state.game) != null)
+
+    private fun save() {
+        val state = _uiState.value
+        val size = state.game.board.size
+        savedStateHandle[KEY_SESSION] = SavedSession(
+            humanSymbol = state.settings.humanSymbol.name,
+            starter = state.settings.starter.name,
+            length = state.settings.length.name,
+            xName = state.settings.xName,
+            oName = state.settings.oName,
+            showSetup = state.showSetup,
+            hasStarted = state.hasStarted,
+            matchFirstPlayer = matchFirstPlayer.name,
+            roundFirstPlayer = state.game.config.firstPlayer.name,
+            moves = state.game.history.map { it.cell.row * size + it.cell.col },
+            xWins = state.match.xWins,
+            oWins = state.match.oWins,
+            draws = state.match.draws,
+        ).encode()
+    }
+
+    /** Rebuilds the screen state from [saved], or null if it doesn't fit this level any more. */
+    private fun restore(saved: SavedSession, banner: String): GameUiState? = runCatching {
+        val settings = MatchSettings(
+            humanSymbol = Player.valueOf(saved.humanSymbol),
+            starter = Starter.valueOf(saved.starter),
+            length = MatchLength.valueOf(saved.length),
+            xName = saved.xName,
+            oName = saved.oName,
+        )
+        matchFirstPlayer = Player.valueOf(saved.matchFirstPlayer)
+        var game: GameState = startGame(configFor(settings, Player.valueOf(saved.roundFirstPlayer)))
+        for (index in saved.moves) {
+            val size = game.board.size
+            game = (playMove(game, Cell(index / size, index % size)) as MoveResult.Played).state
+        }
+        GameUiState(
+            mode = mode,
+            level = level,
+            settings = settings,
+            game = game,
+            match = MatchState(settings.length, saved.xWins, saved.oWins, saved.draws),
+            showSetup = saved.showSetup,
+            hasStarted = saved.hasStarted,
+            bannerAdUnitId = banner,
+        )
+    }.getOrNull()
+
+    companion object {
+        /** Navigation argument names; they must match the `Game` route's properties. */
+        const val ARG_MODE = "mode"
+        const val ARG_LEVEL = "level"
+
+        internal const val KEY_SESSION = "game_session"
+
+        /** A short pause so the computer's reply doesn't feel instant. */
+        internal const val COMPUTER_DELAY_MS = 450L
+
+        const val MAX_NAME_LENGTH = 16
+    }
+}

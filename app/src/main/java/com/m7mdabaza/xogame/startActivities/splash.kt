@@ -17,6 +17,14 @@ class splash : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // Reopened from the launcher while the app's task still exists (for example after
+        // Android killed the process in the background): this splash finished long ago, so
+        // Android starts a new one on top. Close it to reveal the restored screens instead
+        // of opening a second MainActivity.
+        if (!isTaskRoot && intent.action == Intent.ACTION_MAIN && intent.hasCategory(Intent.CATEGORY_LAUNCHER)) {
+            finish()
+            return
+        }
         setupEdgeToEdge()
         setContentView(R.layout.activity_splash)
 

@@ -1,10 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Used by AppTheme (splash screen). -->
     <color name="colorPrimary">#008577</color>
-    <color name="colorPrimaryDark">#d6bd17</color><!--161616-->
+    <color name="colorPrimaryDark">#d6bd17</color>
     <color name="colorAccent">#D81B60</color>
     <color name="linesAccent">#FFFFFF</color>
-    <color name="playerTextColor">#FFFFFF</color>
-    <color name="yellow">#d6bd17</color>
-    <color name="black">#000000</color>
 </resources>
