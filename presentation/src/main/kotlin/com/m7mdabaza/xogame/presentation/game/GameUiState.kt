@@ -1,5 +1,6 @@
 package com.m7mdabaza.xogame.presentation.game
 
+import com.m7mdabaza.xogame.domain.model.Achievement
 import com.m7mdabaza.xogame.domain.model.AssistAccess
 import com.m7mdabaza.xogame.domain.model.AssistKind
 import com.m7mdabaza.xogame.domain.model.Cell
@@ -73,6 +74,9 @@ sealed interface GameEvent {
 
     /** No rewarded ad is ready yet. */
     data object AdNotReady : GameEvent
+
+    /** Show "achievement unlocked" for each of these. */
+    data class AchievementsUnlocked(val achievements: List<Achievement>) : GameEvent
 }
 
 data class GameUiState(

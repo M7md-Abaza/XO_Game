@@ -6,13 +6,15 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.m7mdabaza.xogame.presentation.achievements.AchievementsRoute
+import com.m7mdabaza.xogame.presentation.challenge.DailyChallengeRoute
 import com.m7mdabaza.xogame.presentation.game.GameRoute
 import com.m7mdabaza.xogame.presentation.home.HomeRoute
 import com.m7mdabaza.xogame.presentation.settings.SettingsRoute
 import com.m7mdabaza.xogame.presentation.stats.StatsRoute
 import kotlinx.serialization.Serializable
 
-/** Type-safe navigation destinations. Daily challenge and achievements come in milestone 8. */
+/** Type-safe navigation destinations. */
 sealed interface Destination {
     @Serializable
     data object Home : Destination
@@ -30,6 +32,12 @@ sealed interface Destination {
 
     @Serializable
     data object Settings : Destination
+
+    @Serializable
+    data object DailyChallenge : Destination
+
+    @Serializable
+    data object Achievements : Destination
 }
 
 @Composable
@@ -49,6 +57,8 @@ fun XoNavHost(
                 },
                 onOpenStats = { navController.navigate(Destination.Stats) { launchSingleTop = true } },
                 onOpenSettings = { navController.navigate(Destination.Settings) { launchSingleTop = true } },
+                onOpenChallenge = { navController.navigate(Destination.DailyChallenge) { launchSingleTop = true } },
+                onOpenAchievements = { navController.navigate(Destination.Achievements) { launchSingleTop = true } },
             )
         }
         composable<Destination.Game> {
@@ -63,6 +73,12 @@ fun XoNavHost(
         }
         composable<Destination.Settings> {
             SettingsRoute(onBack = { navController.popBackStack() })
+        }
+        composable<Destination.DailyChallenge> {
+            DailyChallengeRoute(onBack = { navController.popBackStack(Destination.Home, inclusive = false) })
+        }
+        composable<Destination.Achievements> {
+            AchievementsRoute(onBack = { navController.popBackStack(Destination.Home, inclusive = false) })
         }
     }
 }

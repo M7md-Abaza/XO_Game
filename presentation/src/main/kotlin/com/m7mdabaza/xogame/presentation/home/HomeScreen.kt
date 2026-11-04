@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -52,6 +53,8 @@ fun HomeRoute(
     onStartGame: (GameMode, Level) -> Unit,
     onOpenStats: () -> Unit,
     onOpenSettings: () -> Unit,
+    onOpenChallenge: () -> Unit,
+    onOpenAchievements: () -> Unit,
     viewModel: HomeViewModel = hiltViewModel(),
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
@@ -67,6 +70,8 @@ fun HomeRoute(
         onStartGame = onStartGame,
         onOpenStats = onOpenStats,
         onOpenSettings = onOpenSettings,
+        onOpenChallenge = onOpenChallenge,
+        onOpenAchievements = onOpenAchievements,
     )
 }
 
@@ -76,6 +81,8 @@ fun HomeScreen(
     onStartGame: (GameMode, Level) -> Unit,
     onOpenStats: () -> Unit,
     onOpenSettings: () -> Unit,
+    onOpenChallenge: () -> Unit = {},
+    onOpenAchievements: () -> Unit = {},
 ) {
     var pickerMode by rememberSaveable { mutableStateOf<GameMode?>(null) }
 
@@ -100,6 +107,9 @@ fun HomeScreen(
             ) {
                 IconButton(onClick = onOpenStats) {
                     Icon(painterResource(R.drawable.ic_bar_chart), contentDescription = stringResource(R.string.stats_title))
+                }
+                IconButton(onClick = onOpenAchievements) {
+                    Icon(painterResource(R.drawable.ic_trophy), contentDescription = stringResource(R.string.achievements_title))
                 }
                 IconButton(onClick = onOpenSettings) {
                     Icon(painterResource(R.drawable.ic_settings), contentDescription = stringResource(R.string.settings_title))
@@ -131,6 +141,8 @@ fun HomeScreen(
                 contentColor = MaterialTheme.colorScheme.onSecondary,
                 onClick = { pickerMode = GameMode.TWO_PLAYERS },
             )
+            Spacer(Modifier.height(16.dp))
+            ChallengeButton(solvedToday = state.challengeSolvedToday, streak = state.challengeStreak, onClick = onOpenChallenge)
 
             Spacer(Modifier.weight(1.3f))
             if (state.canRequestAds && !state.adsRemoved) {
@@ -171,6 +183,31 @@ private fun ModeButton(
         Icon(painterResource(icon), contentDescription = null, modifier = Modifier.size(28.dp))
         Spacer(Modifier.width(12.dp))
         Text(text = text, style = MaterialTheme.typography.titleLarge)
+    }
+}
+
+/** Opens today's puzzle; shows whether it's solved and the current streak. */
+@Composable
+private fun ChallengeButton(solvedToday: Boolean, streak: Int, onClick: () -> Unit) {
+    FilledTonalButton(
+        onClick = onClick,
+        shape = CircleShape,
+        // A shadow like the mode buttons, so it stands out from the pale background shapes.
+        elevation = ButtonDefaults.filledTonalButtonElevation(defaultElevation = 4.dp, pressedElevation = 1.dp),
+        modifier = Modifier
+            .widthIn(min = 260.dp)
+            .heightIn(min = 64.dp),
+    ) {
+        Icon(painterResource(R.drawable.ic_calendar), contentDescription = null, modifier = Modifier.size(24.dp))
+        Spacer(Modifier.width(12.dp))
+        Column {
+            Text(stringResource(R.string.challenge_home_button), style = MaterialTheme.typography.titleMedium)
+            val status = stringResource(if (solvedToday) R.string.challenge_home_solved else R.string.challenge_home_new)
+            Text(
+                if (streak > 0) stringResource(R.string.challenge_home_streak, status, streak) else status,
+                style = MaterialTheme.typography.bodySmall,
+            )
+        }
     }
 }
 

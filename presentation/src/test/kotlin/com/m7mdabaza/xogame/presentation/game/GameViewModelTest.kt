@@ -3,6 +3,7 @@ package com.m7mdabaza.xogame.presentation.game
 import androidx.lifecycle.SavedStateHandle
 import com.m7mdabaza.xogame.domain.ai.SearchAi
 import com.m7mdabaza.xogame.domain.engine.WinChecker
+import com.m7mdabaza.xogame.domain.model.Achievement
 import com.m7mdabaza.xogame.domain.model.AssistAccess
 import com.m7mdabaza.xogame.domain.model.AssistKind
 import com.m7mdabaza.xogame.domain.model.Cell
@@ -15,6 +16,7 @@ import com.m7mdabaza.xogame.domain.model.Player
 import com.m7mdabaza.xogame.domain.model.Settings
 import com.m7mdabaza.xogame.domain.model.Starter
 import com.m7mdabaza.xogame.domain.usecase.ComputerMoveUseCase
+import com.m7mdabaza.xogame.domain.usecase.EvaluateAchievementsUseCase
 import com.m7mdabaza.xogame.domain.usecase.GetAssistAccessUseCase
 import com.m7mdabaza.xogame.domain.usecase.GetHintUseCase
 import com.m7mdabaza.xogame.domain.usecase.ObserveAdsRemovedUseCase
@@ -27,8 +29,11 @@ import com.m7mdabaza.xogame.domain.usecase.UpdateSettingsUseCase
 import com.m7mdabaza.xogame.domain.usecase.PlayMoveUseCase
 import com.m7mdabaza.xogame.domain.usecase.StartGameUseCase
 import com.m7mdabaza.xogame.domain.usecase.UndoMoveUseCase
-import com.m7mdabaza.xogame.presentation.ads.AdUnitIds
+import com.m7mdabaza.xogame.presentation.testing.FakeAdUnitIds
+import com.m7mdabaza.xogame.presentation.testing.FakeGameFeedback
+import com.m7mdabaza.xogame.presentation.testing.FakeAchievementsRepository
 import com.m7mdabaza.xogame.presentation.testing.FakeAdPolicyRepository
+import com.m7mdabaza.xogame.presentation.testing.FakeChallengeRepository
 import com.m7mdabaza.xogame.presentation.testing.FakePurchaseRepository
 import com.m7mdabaza.xogame.presentation.testing.FakeSettingsRepository
 import com.m7mdabaza.xogame.presentation.testing.FakeTime
@@ -55,38 +60,20 @@ import kotlin.random.Random
 class GameViewModelTest {
 
     private val dispatcher = StandardTestDispatcher()
-    private val feedback = FakeFeedback()
+    private val feedback = FakeGameFeedback()
     private val settingsRepository = FakeSettingsRepository()
     private val statsRepository = FakeStatsRepository()
     private val adPolicy = FakeAdPolicyRepository()
     private val purchases = FakePurchaseRepository()
     private val time = FakeTime()
+    private val challengeRepository = FakeChallengeRepository()
+    private val achievementsRepository = FakeAchievementsRepository()
 
     @Before
     fun setUp() = Dispatchers.setMain(dispatcher)
 
     @After
     fun tearDown() = Dispatchers.resetMain()
-
-    private class FakeFeedback : GameFeedback {
-        val events = mutableListOf<String>()
-        override fun move(player: Player, byComputer: Boolean) {
-            events += "move $player${if (byComputer) " computer" else ""}"
-        }
-        override fun roundEnded(sound: RoundSound) {
-            events += "end $sound"
-        }
-        override fun newRound() {
-            events += "new round"
-        }
-    }
-
-    private object FakeAdUnitIds : AdUnitIds {
-        override val homeBanner = "home"
-        override fun gameBanner(mode: GameMode, level: Level) = "banner-$mode-$level"
-        override fun interstitial(mode: GameMode, level: Level) = "interstitial"
-        override val rewarded = "rewarded"
-    }
 
     private fun handle(mode: GameMode, level: Level = Level.EASY) =
         SavedStateHandle(mapOf(GameViewModel.ARG_MODE to mode.name, GameViewModel.ARG_LEVEL to level.name))
@@ -106,6 +93,7 @@ class GameViewModelTest {
         shouldShowInterstitial = ShouldShowInterstitialUseCase(adPolicy, purchases, time),
         recordInterstitialShown = RecordInterstitialShownUseCase(adPolicy, time),
         recordRoundForAds = RecordRoundForAdsUseCase(adPolicy),
+        evaluateAchievements = EvaluateAchievementsUseCase(statsRepository, challengeRepository, achievementsRepository, time),
         feedback = feedback,
         adUnitIds = FakeAdUnitIds,
         computeDispatcher = dispatcher,
@@ -493,6 +481,21 @@ class GameViewModelTest {
     }
 
     @Test
+    fun `a finished round announces newly unlocked achievements once`() = runTest(dispatcher) {
+        val vm = viewModel(GameMode.TWO_PLAYERS)
+        vm.onStartMatch(MatchSettings())
+        vm.tap(*xWinsTopRow)
+        advanceUntilIdle()
+        assertEquals(GameEvent.AchievementsUnlocked(listOf(Achievement.TWO_PLAYER_GAME)), vm.events.first())
+        assertEquals(setOf(Achievement.TWO_PLAYER_GAME), achievementsRepository.unlocked.value.keys)
+
+        vm.onNextRound()
+        vm.tap(*xWinsTopRow)
+        advanceUntilIdle()
+        assertEquals("unlocked only once", 1, achievementsRepository.unlocked.value.size)
+    }
+
+    @Test
     fun `restarted rounds are not recorded`() = runTest(dispatcher) {
         val vm = viewModel(GameMode.TWO_PLAYERS)
         vm.onStartMatch(MatchSettings())
@@ -641,7 +644,7 @@ class GameViewModelTest {
 
         finishRound(vm)
         vm.onNextRound()
-        assertEquals(GameEvent.ShowInterstitial, vm.events.first())
+        assertEquals(GameEvent.ShowInterstitial, vm.events.first { it !is GameEvent.AchievementsUnlocked })
         assertEquals("waits for the ad to close", GamePhase.ROUND_OVER, vm.state.phase)
 
         vm.onInterstitialFinished(shown = true)

@@ -5,10 +5,24 @@ import com.m7mdabaza.xogame.domain.model.PurchaseResult
 import com.m7mdabaza.xogame.domain.model.RemoveAdsOffer
 import com.m7mdabaza.xogame.domain.model.RestoreResult
 import kotlinx.coroutines.flow.Flow
+import java.util.TimeZone
 
 /** The current time; an interface so time-based rules can be tested. */
 fun interface TimeProvider {
     fun nowMillis(): Long
+
+    /**
+     * Today's date in the device's time zone, as days since 1970-01-01.
+     * (java.util, not java.time: java.time needs Android 8 without desugaring.)
+     */
+    fun todayEpochDay(): Long {
+        val now = nowMillis()
+        return Math.floorDiv(now + TimeZone.getDefault().getOffset(now), MILLIS_PER_DAY)
+    }
+
+    companion object {
+        const val MILLIS_PER_DAY = 24 * 60 * 60 * 1000L
+    }
 }
 
 interface AdPolicyRepository {

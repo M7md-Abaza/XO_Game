@@ -133,4 +133,47 @@
     <string name="restore_restored">تمت استعادة إزالة الإعلانات.</string>
     <string name="restore_nothing">لا توجد مشتريات لحساب Google هذا.</string>
     <string name="restore_error">تعذّر الاتصال بـ Google Play. حاول مرة أخرى.</string>
+
+
+    <!-- Daily challenge -->
+    <string name="challenge_title">التحدي اليومي</string>
+    <string name="challenge_home_button">التحدي اليومي</string>
+    <string name="challenge_home_new">لغز جديد اليوم</string>
+    <string name="challenge_home_solved">تم حله اليوم</string>
+    <string name="challenge_home_streak">%1$s · السلسلة %2$d</string>
+    <string name="challenge_header">%1$s · السلسلة: %2$d · الأفضل: %3$d</string>
+    <string name="challenge_find_move">أنت X. اصنع تهديدين في وقت واحد لتفوز خلال حركتين.</string>
+    <string name="challenge_finish">والآن أنهِها</string>
+    <string name="challenge_defending">الهاتف يدافع…</string>
+    <string name="challenge_solved">أحسنت! عد غدًا للغز جديد.</string>
+    <string name="challenge_solved_before">لقد حللت لغز اليوم بالفعل. العبه مرة أخرى للمتعة.</string>
+    <string name="challenge_failed_no_fork">ليس تمامًا: يستطيع الهاتف صدّ ذلك. ابحث عن تهديدين في وقت واحد.</string>
+    <string name="challenge_failed_missed">اقتربت كثيرًا! فاتك مربع الفوز.</string>
+    <string name="challenge_try_again">حاول مرة أخرى</string>
+    <string name="challenge_play_again">العب مجددًا</string>
+    <string name="challenge_loading">جارٍ تحضير لغز اليوم…</string>
+
+    <!-- Achievements -->
+    <string name="achievements_title">الإنجازات</string>
+    <string name="achievements_summary">%1$d من %2$d مفتوحة</string>
+    <string name="achievements_unlocked_on">فُتح في %1$s</string>
+    <string name="achievements_progress">%1$d من %2$d</string>
+    <string name="achievements_locked">مقفل</string>
+    <string name="achievements_unlocked_toast">إنجاز جديد: %1$s</string>
+    <string name="achievement_first_win">الفوز الأول</string>
+    <string name="achievement_first_win_desc">فُز بمباراة ضد الهاتف.</string>
+    <string name="achievement_beat_medium">بداية الجدية</string>
+    <string name="achievement_beat_medium_desc">اهزم الهاتف في المستوى المتوسط.</string>
+    <string name="achievement_beat_hard">محترف</string>
+    <string name="achievement_beat_hard_desc">اهزم الهاتف في المستوى الصعب.</string>
+    <string name="achievement_streak_5">لا يُوقف</string>
+    <string name="achievement_streak_5_desc">فُز بـ5 مباريات متتالية ضد الهاتف في مستوى واحد.</string>
+    <string name="achievement_games_100">مخلص للعبة</string>
+    <string name="achievement_games_100_desc">أنهِ 100 مباراة.</string>
+    <string name="achievement_two_player">مباراة ودية</string>
+    <string name="achievement_two_player_desc">أنهِ مباراة بين لاعبين.</string>
+    <string name="achievement_first_challenge">حلّال الألغاز</string>
+    <string name="achievement_first_challenge_desc">حلّ تحديًا يوميًا.</string>
+    <string name="achievement_challenge_streak_7">عادة يومية</string>
+    <string name="achievement_challenge_streak_7_desc">حلّ التحدي اليومي 7 أيام متتالية.</string>
 </resources>

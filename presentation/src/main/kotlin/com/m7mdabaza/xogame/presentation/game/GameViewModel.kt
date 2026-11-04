@@ -16,6 +16,7 @@ import com.m7mdabaza.xogame.domain.model.MatchState
 import com.m7mdabaza.xogame.domain.model.Player
 import com.m7mdabaza.xogame.domain.model.Starter
 import com.m7mdabaza.xogame.domain.usecase.ComputerMoveUseCase
+import com.m7mdabaza.xogame.domain.usecase.EvaluateAchievementsUseCase
 import com.m7mdabaza.xogame.domain.usecase.GetAssistAccessUseCase
 import com.m7mdabaza.xogame.domain.usecase.GetHintUseCase
 import com.m7mdabaza.xogame.domain.usecase.MoveResult
@@ -79,6 +80,7 @@ class GameViewModel @Inject constructor(
     private val shouldShowInterstitial: ShouldShowInterstitialUseCase,
     private val recordInterstitialShown: RecordInterstitialShownUseCase,
     private val recordRoundForAds: RecordRoundForAdsUseCase,
+    private val evaluateAchievements: EvaluateAchievementsUseCase,
     private val feedback: GameFeedback,
     adUnitIds: AdUnitIds,
     @param:DefaultDispatcher private val computeDispatcher: CoroutineDispatcher,
@@ -336,10 +338,12 @@ class GameViewModel @Inject constructor(
                 feedback.roundEnded(soundFor(game.result, state))
                 viewModelScope.launch {
                     // Finish the writes even if the user leaves the screen right away.
-                    withContext(NonCancellable) {
+                    val unlocked = withContext(NonCancellable) {
                         recordGameResult(game)
                         recordRoundForAds()
+                        evaluateAchievements()
                     }
+                    if (unlocked.isNotEmpty()) _events.trySend(GameEvent.AchievementsUnlocked(unlocked))
                     interstitialDue = shouldShowInterstitial()
                 }
             }

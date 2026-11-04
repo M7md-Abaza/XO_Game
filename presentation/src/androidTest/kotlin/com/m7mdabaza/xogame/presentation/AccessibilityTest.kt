@@ -12,7 +12,10 @@ import androidx.compose.ui.test.tryPerformAccessibilityChecks
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.m7mdabaza.xogame.domain.engine.WinChecker
+import com.m7mdabaza.xogame.domain.model.Achievement
+import com.m7mdabaza.xogame.domain.model.AchievementStatus
 import com.m7mdabaza.xogame.domain.model.Cell
+import com.m7mdabaza.xogame.domain.model.ChallengeProgress
 import com.m7mdabaza.xogame.domain.model.GameConfig
 import com.m7mdabaza.xogame.domain.model.GameMode
 import com.m7mdabaza.xogame.domain.model.GameState
@@ -21,9 +24,17 @@ import com.m7mdabaza.xogame.domain.model.LevelStats
 import com.m7mdabaza.xogame.domain.model.MatchLength
 import com.m7mdabaza.xogame.domain.model.MatchState
 import com.m7mdabaza.xogame.domain.model.Stats
+import com.m7mdabaza.xogame.domain.repository.TimeProvider
+import com.m7mdabaza.xogame.domain.usecase.GetDailyChallengeUseCase
 import com.m7mdabaza.xogame.domain.usecase.MoveResult
 import com.m7mdabaza.xogame.domain.usecase.PlayMoveUseCase
+import com.m7mdabaza.xogame.domain.usecase.StartChallengeUseCase
 import com.m7mdabaza.xogame.domain.usecase.StartGameUseCase
+import com.m7mdabaza.xogame.presentation.achievements.AchievementsScreen
+import com.m7mdabaza.xogame.presentation.challenge.ChallengePhase
+import com.m7mdabaza.xogame.presentation.challenge.ChallengeUiState
+import com.m7mdabaza.xogame.presentation.challenge.DailyChallengeScreen
+import com.m7mdabaza.xogame.presentation.challenge.FailReason
 import com.m7mdabaza.xogame.presentation.game.GameActions
 import com.m7mdabaza.xogame.presentation.game.GameScreen
 import com.m7mdabaza.xogame.presentation.game.GameUiState
@@ -121,6 +132,48 @@ class AccessibilityTest {
             onBack = {},
             onReset = {},
         )
+    }
+
+    @Test
+    fun achievements() = check {
+        AchievementsScreen(
+            Achievement.entries.mapIndexed { i, a -> AchievementStatus(a, progress = if (i == 4) 37 else 0, unlockedAtMillis = if (i < 2) 1_700_000_000_000 else null) },
+            onBack = {},
+        )
+    }
+
+    private val today = 20_396L
+
+    private fun challengeState(phase: ChallengePhase, failReason: FailReason? = null): ChallengeUiState {
+        val challenge = GetDailyChallengeUseCase { today * TimeProvider.MILLIS_PER_DAY }()
+        return ChallengeUiState(
+            phase = phase,
+            challenge = challenge,
+            game = StartChallengeUseCase(StartGameUseCase(), play)(challenge),
+            failReason = failReason,
+            progress = ChallengeProgress(setOf(today - 1, today - 2), today),
+            bannerAdUnitId = "",
+        )
+    }
+
+    @Test
+    fun dailyChallenge() = check {
+        DailyChallengeScreen(challengeState(ChallengePhase.PLAYING), showBanner = false, onBack = {}, onCellClick = {}, onRetry = {})
+    }
+
+    @Test
+    fun dailyChallengeFailed() = check {
+        DailyChallengeScreen(challengeState(ChallengePhase.FAILED, FailReason.NO_FORK), showBanner = false, onBack = {}, onCellClick = {}, onRetry = {})
+    }
+
+    @Test
+    fun achievementCardsAreReadAsOneItem() {
+        rule.setContent {
+            XoTheme { AchievementsScreen(listOf(AchievementStatus(Achievement.GAMES_100, progress = 37, unlockedAtMillis = null)), onBack = {}) }
+        }
+        val title = string(R.string.achievement_games_100)
+        val description = string(R.string.achievement_games_100_desc)
+        rule.onNodeWithContentDescription("$title. $description. ${string(R.string.achievements_progress, 37, 100)}").assertExists()
     }
 
     // --- Specific fixes ------------------------------------------------------------------

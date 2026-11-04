@@ -1,19 +1,26 @@
 package com.m7mdabaza.xogame.presentation.testing
 
+import com.m7mdabaza.xogame.domain.model.Achievement
 import com.m7mdabaza.xogame.domain.model.AdPolicyState
 import com.m7mdabaza.xogame.domain.model.GameMode
 import com.m7mdabaza.xogame.domain.model.Level
 import com.m7mdabaza.xogame.domain.model.LevelStats
+import com.m7mdabaza.xogame.domain.model.Player
 import com.m7mdabaza.xogame.domain.model.PurchaseResult
 import com.m7mdabaza.xogame.domain.model.RemoveAdsOffer
 import com.m7mdabaza.xogame.domain.model.RestoreResult
 import com.m7mdabaza.xogame.domain.model.Settings
 import com.m7mdabaza.xogame.domain.model.Stats
+import com.m7mdabaza.xogame.domain.repository.AchievementsRepository
 import com.m7mdabaza.xogame.domain.repository.AdPolicyRepository
+import com.m7mdabaza.xogame.domain.repository.ChallengeRepository
 import com.m7mdabaza.xogame.domain.repository.PurchaseRepository
 import com.m7mdabaza.xogame.domain.repository.SettingsRepository
 import com.m7mdabaza.xogame.domain.repository.StatsRepository
 import com.m7mdabaza.xogame.domain.repository.TimeProvider
+import com.m7mdabaza.xogame.presentation.ads.AdUnitIds
+import com.m7mdabaza.xogame.presentation.game.GameFeedback
+import com.m7mdabaza.xogame.presentation.game.RoundSound
 import com.m7mdabaza.xogame.presentation.settings.AppLanguage
 import com.m7mdabaza.xogame.presentation.settings.AppLanguageController
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -86,4 +93,44 @@ class FakePurchaseRepository(adsRemoved: Boolean = false) : PurchaseRepository {
 
 class FakeTime(var now: Long = 10_000_000L) : TimeProvider {
     override fun nowMillis() = now
+}
+
+class FakeChallengeRepository : ChallengeRepository {
+    override val solvedDays = MutableStateFlow<Set<Long>>(emptySet())
+
+    override suspend fun markSolved(epochDay: Long) {
+        solvedDays.update { it + epochDay }
+    }
+}
+
+class FakeAchievementsRepository : AchievementsRepository {
+    override val unlocked = MutableStateFlow<Map<Achievement, Long>>(emptyMap())
+
+    override suspend fun unlock(achievements: Collection<Achievement>, atMillis: Long) {
+        unlocked.update { current -> current + achievements.filter { it !in current }.associateWith { atMillis } }
+    }
+}
+
+/** Records sounds and vibrations as readable strings. */
+class FakeGameFeedback : GameFeedback {
+    val events = mutableListOf<String>()
+
+    override fun move(player: Player, byComputer: Boolean) {
+        events += "move $player${if (byComputer) " computer" else ""}"
+    }
+
+    override fun roundEnded(sound: RoundSound) {
+        events += "end $sound"
+    }
+
+    override fun newRound() {
+        events += "new round"
+    }
+}
+
+object FakeAdUnitIds : AdUnitIds {
+    override val homeBanner = "home"
+    override fun gameBanner(mode: GameMode, level: Level) = "banner-$mode-$level"
+    override fun interstitial(mode: GameMode, level: Level) = "interstitial"
+    override val rewarded = "rewarded"
 }

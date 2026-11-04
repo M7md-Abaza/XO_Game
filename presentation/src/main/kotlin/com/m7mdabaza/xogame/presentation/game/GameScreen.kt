@@ -49,6 +49,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -75,6 +76,7 @@ import com.m7mdabaza.xogame.domain.model.GameResult
 import com.m7mdabaza.xogame.domain.model.MatchLength
 import com.m7mdabaza.xogame.domain.model.Player
 import com.m7mdabaza.xogame.presentation.R
+import com.m7mdabaza.xogame.presentation.achievements.titleRes
 import com.m7mdabaza.xogame.presentation.ads.BannerAd
 import com.m7mdabaza.xogame.presentation.ads.ConsentManager
 import com.m7mdabaza.xogame.presentation.ads.InterstitialAdManager
@@ -93,6 +95,7 @@ fun GameRoute(
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
+    val resources = LocalResources.current
     val activity = LocalActivity.current
     val canRequestAds = remember { ConsentManager.canRequestAds(context) }
     val snackbar = remember { SnackbarHostState() }
@@ -118,6 +121,9 @@ fun GameRoute(
                     if (!shown) viewModel.onRewardedUnavailable()
                 }
                 GameEvent.AdNotReady -> snackbar.showSnackbar(adNotReady)
+                is GameEvent.AchievementsUnlocked -> event.achievements.forEach {
+                    snackbar.showSnackbar(resources.getString(R.string.achievements_unlocked_toast, resources.getString(it.titleRes())))
+                }
             }
         }
     }
@@ -228,10 +234,11 @@ fun GameScreen(
                         }
                     }
                 }
+                // Inside the content area, so a message never covers the banner below it.
+                SnackbarHost(snackbar, Modifier.align(Alignment.BottomCenter))
             }
             if (showBanner && !state.adsRemoved) BannerAd(adUnitId = state.bannerAdUnitId)
         }
-        SnackbarHost(snackbar, Modifier.align(Alignment.BottomCenter).padding(bottom = 96.dp))
     }
 
     if (state.showSetup) {

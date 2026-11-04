@@ -150,4 +150,53 @@
     <string name="restore_restored">Remove ads restored.</string>
     <string name="restore_nothing">No purchases found for this Google account.</string>
     <string name="restore_error">Couldn\'t reach Google Play. Please try again.</string>
+
+
+    <!-- Daily challenge -->
+    <string name="challenge_title">Daily challenge</string>
+    <string name="challenge_home_button">Daily challenge</string>
+    <string name="challenge_home_new">New puzzle today</string>
+    <string name="challenge_home_solved">Solved today</string>
+    <!-- %1$s = "New puzzle today" or "Solved today", %2$d = streak in days -->
+    <string name="challenge_home_streak">%1$s · Streak %2$d</string>
+    <!-- %1$s = date, %2$d / %3$d = current / best streak in days -->
+    <string name="challenge_header">%1$s · Streak: %2$d · Best: %3$d</string>
+    <string name="challenge_find_move">You are X. Make two threats at once to win in 2 moves.</string>
+    <string name="challenge_finish">Now finish it</string>
+    <string name="challenge_defending">The phone is defending…</string>
+    <string name="challenge_solved">Solved! Come back tomorrow for a new one.</string>
+    <string name="challenge_solved_before">You already solved today\'s puzzle. Play it again for fun.</string>
+    <string name="challenge_failed_no_fork">Not quite: the phone can block that. Look for two threats at once.</string>
+    <string name="challenge_failed_missed">So close! You missed the winning square.</string>
+    <string name="challenge_try_again">Try again</string>
+    <string name="challenge_play_again">Play again</string>
+    <string name="challenge_loading">Preparing today\'s puzzle…</string>
+
+    <!-- Achievements -->
+    <string name="achievements_title">Achievements</string>
+    <!-- %1$d = unlocked, %2$d = total. "unlocked" is the same for any number, so no plurals needed. -->
+    <string name="achievements_summary" tools:ignore="PluralsCandidate">%1$d of %2$d unlocked</string>
+    <!-- %1$s = date -->
+    <string name="achievements_unlocked_on">Unlocked on %1$s</string>
+    <!-- %1$d = progress, %2$d = target -->
+    <string name="achievements_progress">%1$d / %2$d</string>
+    <string name="achievements_locked">Locked</string>
+    <!-- Snackbar. %1$s = achievement name -->
+    <string name="achievements_unlocked_toast">Achievement unlocked: %1$s</string>
+    <string name="achievement_first_win">First win</string>
+    <string name="achievement_first_win_desc">Win a game against the phone.</string>
+    <string name="achievement_beat_medium">Getting serious</string>
+    <string name="achievement_beat_medium_desc">Beat the phone on Medium.</string>
+    <string name="achievement_beat_hard">Master</string>
+    <string name="achievement_beat_hard_desc">Beat the phone on Hard.</string>
+    <string name="achievement_streak_5">On fire</string>
+    <string name="achievement_streak_5_desc">Win 5 games in a row against the phone on one level.</string>
+    <string name="achievement_games_100">Dedicated</string>
+    <string name="achievement_games_100_desc">Finish 100 games.</string>
+    <string name="achievement_two_player">Friendly match</string>
+    <string name="achievement_two_player_desc">Finish a two-player game.</string>
+    <string name="achievement_first_challenge">Puzzle solver</string>
+    <string name="achievement_first_challenge_desc">Solve a daily challenge.</string>
+    <string name="achievement_challenge_streak_7">Daily habit</string>
+    <string name="achievement_challenge_streak_7_desc">Solve the daily challenge 7 days in a row.</string>
 </resources>

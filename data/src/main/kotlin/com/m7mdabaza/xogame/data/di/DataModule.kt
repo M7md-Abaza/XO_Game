@@ -10,9 +10,13 @@ import com.m7mdabaza.xogame.data.ads.SystemTimeProvider
 import com.m7mdabaza.xogame.data.billing.BillingGateway
 import com.m7mdabaza.xogame.data.billing.PlayBillingGateway
 import com.m7mdabaza.xogame.data.billing.PurchaseRepositoryImpl
+import com.m7mdabaza.xogame.data.progress.AchievementsRepositoryImpl
+import com.m7mdabaza.xogame.data.progress.ChallengeRepositoryImpl
 import com.m7mdabaza.xogame.data.settings.SettingsRepositoryImpl
 import com.m7mdabaza.xogame.data.stats.StatsRepositoryImpl
+import com.m7mdabaza.xogame.domain.repository.AchievementsRepository
 import com.m7mdabaza.xogame.domain.repository.AdPolicyRepository
+import com.m7mdabaza.xogame.domain.repository.ChallengeRepository
 import com.m7mdabaza.xogame.domain.repository.PurchaseRepository
 import com.m7mdabaza.xogame.domain.repository.SettingsRepository
 import com.m7mdabaza.xogame.domain.repository.StatsRepository
@@ -42,6 +46,14 @@ annotation class AdPolicyStore
 @Retention(AnnotationRetention.BINARY)
 annotation class PurchaseStore
 
+@Qualifier
+@Retention(AnnotationRetention.BINARY)
+annotation class ChallengeStore
+
+@Qualifier
+@Retention(AnnotationRetention.BINARY)
+annotation class AchievementsStore
+
 /** Binds the :domain repository interfaces to their :data implementations. */
 @Module
 @InstallIn(SingletonComponent::class)
@@ -65,6 +77,12 @@ internal abstract class DataModule {
     @Binds
     abstract fun bindTimeProvider(impl: SystemTimeProvider): TimeProvider
 
+    @Binds
+    abstract fun bindChallengeRepository(impl: ChallengeRepositoryImpl): ChallengeRepository
+
+    @Binds
+    abstract fun bindAchievementsRepository(impl: AchievementsRepositoryImpl): AchievementsRepository
+
     companion object {
         // DataStore allows only one instance per file in a process, hence @Singleton.
         @Provides
@@ -86,6 +104,16 @@ internal abstract class DataModule {
         @Singleton
         @PurchaseStore
         fun providePurchaseStore(@ApplicationContext context: Context): DataStore<Preferences> = store(context, "purchases")
+
+        @Provides
+        @Singleton
+        @ChallengeStore
+        fun provideChallengeStore(@ApplicationContext context: Context): DataStore<Preferences> = store(context, "challenge")
+
+        @Provides
+        @Singleton
+        @AchievementsStore
+        fun provideAchievementsStore(@ApplicationContext context: Context): DataStore<Preferences> = store(context, "achievements")
 
         private fun store(context: Context, name: String): DataStore<Preferences> =
             PreferenceDataStoreFactory.create { context.preferencesDataStoreFile(name) }

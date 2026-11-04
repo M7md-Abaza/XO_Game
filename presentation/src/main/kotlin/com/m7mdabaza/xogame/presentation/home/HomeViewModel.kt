@@ -3,7 +3,9 @@ package com.m7mdabaza.xogame.presentation.home
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.m7mdabaza.xogame.domain.usecase.EvaluateAchievementsUseCase
 import com.m7mdabaza.xogame.domain.usecase.ObserveAdsRemovedUseCase
+import com.m7mdabaza.xogame.domain.usecase.ObserveChallengeProgressUseCase
 import com.m7mdabaza.xogame.presentation.ads.AdUnitIds
 import com.m7mdabaza.xogame.presentation.ads.ConsentManager
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -20,6 +22,9 @@ data class HomeUiState(
     val canRequestAds: Boolean,
     /** Remove ads was bought: no banner. */
     val adsRemoved: Boolean = false,
+    val challengeSolvedToday: Boolean = false,
+    /** Current daily-challenge streak in days. */
+    val challengeStreak: Int = 0,
 )
 
 @HiltViewModel
@@ -27,6 +32,8 @@ class HomeViewModel @Inject constructor(
     private val application: Application,
     adUnitIds: AdUnitIds,
     observeAdsRemoved: ObserveAdsRemovedUseCase,
+    observeChallengeProgress: ObserveChallengeProgressUseCase,
+    evaluateAchievements: EvaluateAchievementsUseCase,
 ) : AndroidViewModel(application) {
 
     private val _uiState = MutableStateFlow(
@@ -38,8 +45,16 @@ class HomeViewModel @Inject constructor(
     val uiState: StateFlow<HomeUiState> = _uiState.asStateFlow()
 
     init {
+        // Quietly unlocks anything already earned (e.g. an achievement added in an
+        // update); only unlocks that happen during play are announced.
+        viewModelScope.launch { evaluateAchievements() }
         viewModelScope.launch {
             observeAdsRemoved().collect { removed -> _uiState.update { it.copy(adsRemoved = removed) } }
+        }
+        viewModelScope.launch {
+            observeChallengeProgress().collect { p ->
+                _uiState.update { it.copy(challengeSolvedToday = p.solvedToday, challengeStreak = p.currentStreak) }
+            }
         }
     }
 

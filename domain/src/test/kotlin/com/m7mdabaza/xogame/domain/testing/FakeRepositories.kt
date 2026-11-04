@@ -1,5 +1,6 @@
 package com.m7mdabaza.xogame.domain.testing
 
+import com.m7mdabaza.xogame.domain.model.Achievement
 import com.m7mdabaza.xogame.domain.model.AdPolicyState
 import com.m7mdabaza.xogame.domain.model.GameMode
 import com.m7mdabaza.xogame.domain.model.Level
@@ -9,7 +10,9 @@ import com.m7mdabaza.xogame.domain.model.RemoveAdsOffer
 import com.m7mdabaza.xogame.domain.model.RestoreResult
 import com.m7mdabaza.xogame.domain.model.Settings
 import com.m7mdabaza.xogame.domain.model.Stats
+import com.m7mdabaza.xogame.domain.repository.AchievementsRepository
 import com.m7mdabaza.xogame.domain.repository.AdPolicyRepository
+import com.m7mdabaza.xogame.domain.repository.ChallengeRepository
 import com.m7mdabaza.xogame.domain.repository.PurchaseRepository
 import com.m7mdabaza.xogame.domain.repository.SettingsRepository
 import com.m7mdabaza.xogame.domain.repository.StatsRepository
@@ -74,4 +77,20 @@ class FakePurchaseRepository(adsRemoved: Boolean = false) : PurchaseRepository {
 /** A clock the test moves by hand. */
 class FakeTime(var now: Long = 1_000_000L) : TimeProvider {
     override fun nowMillis() = now
+}
+
+class FakeChallengeRepository(initial: Set<Long> = emptySet()) : ChallengeRepository {
+    override val solvedDays = MutableStateFlow(initial)
+
+    override suspend fun markSolved(epochDay: Long) {
+        solvedDays.update { it + epochDay }
+    }
+}
+
+class FakeAchievementsRepository : AchievementsRepository {
+    override val unlocked = MutableStateFlow<Map<Achievement, Long>>(emptyMap())
+
+    override suspend fun unlock(achievements: Collection<Achievement>, atMillis: Long) {
+        unlocked.update { current -> current + achievements.filter { it !in current }.associateWith { atMillis } }
+    }
 }
