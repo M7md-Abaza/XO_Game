@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="cd_logo">XO Game</string>
 
     <!-- Home -->
@@ -16,7 +16,7 @@
     <string name="level_medium">Medium</string>
     <string name="level_hard">Hard</string>
     <!-- %1$d = board size (e.g. 3 for a 3×3 board), %2$d = marks in a row needed to win -->
-    <string name="level_rules">%1$d×%1$d board · %2$d in a row</string>
+    <string name="level_rules" tools:ignore="PluralsCandidate">%1$d×%1$d board · %2$d in a row</string>
 
 
     <!-- Game screen -->
@@ -50,6 +50,8 @@
     <string name="game_round_of">Round %1$d of %2$d</string>
     <!-- %1$d = number of drawn rounds -->
     <string name="game_draws">Draws: %1$d</string>
+    <!-- Screen readers, one scoreboard chip. %1$s = player name, %2$s = X or O, %3$d = score -->
+    <string name="game_score_description">%1$s (%2$s): %3$d</string>
     <string name="game_undo">Undo</string>
     <string name="game_hint">Hint</string>
     <string name="game_restart">Restart</string>
@@ -109,6 +111,8 @@
     <string name="stats_losses">Losses</string>
     <string name="stats_draws">Draws</string>
     <string name="stats_win_rate">Win rate</string>
+    <!-- %1$d = percentage 0-100 -->
+    <string name="stats_percent">%1$d%%</string>
     <string name="stats_streak">Streak</string>
     <string name="stats_best_streak">Best streak</string>
     <string name="stats_x_wins">X wins</string>

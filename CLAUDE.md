@@ -20,7 +20,7 @@ The toolchain is AGP 9.5.0 (built-in Kotlin, so there is no `kotlin-android` plu
 ./gradlew :data:test                    # DataStore repository tests (JVM, temp files)
 ./gradlew :domain:test --tests "com.m7mdabaza.xogame.domain.model.LevelTest"   # single test class
 ./gradlew connectedAndroidTest          # instrumented tests (needs device)
-./gradlew :presentation:connectedDebugAndroidTest   # Compose UI tests of the game screen (needs device)
+./gradlew :presentation:connectedDebugAndroidTest   # Compose UI tests + accessibility checks (needs device)
 ./gradlew lint
 ```
 
@@ -60,3 +60,10 @@ Installing on a device that has the Play Store build fails with `INSTALL_FAILED_
   - Remove ads: Settings shows the price (from Play), Restore purchases, and in debug builds a "Simulate Remove ads" switch (`PurchaseRepository.setAdsRemovedForDebug`, ignored in release). On devices without a signed-in Play account billing is unavailable and the button is disabled; a real purchase needs the `remove_ads` product in Play Console and an install from a testing track.
 - EU consent uses Google UMP (`presentation/ads/ConsentManager.kt`). `splash` calls `gatherConsent()` and waits for it before opening `MainActivity`. Every ad request is gated on `canRequestAds()`: banners go through `AdView.loadAdIfAllowed()` (the Compose `BannerAd` uses it too), and the AdManagers check it in `load()`. Don't call `MobileAds.initialize` or `adView.loadAd` directly. The Settings screen shows a "Privacy settings" entry only when UMP says privacy options are required. Debug builds force EEA geography, so the form shows on emulators. The real message text is configured in AdMob → Privacy & messaging.
 - Compose UI tests need Espresso 3.7 pinned in `:presentation` (Compose testing pulls in 3.5, which crashes on API 34+).
+- **Accessibility and RTL rules** (milestone 7; `AccessibilityTest` runs Google's Accessibility Test Framework over every screen, so new UI should pass it):
+  - Controls drawn without text (X/O marks) need a `contentDescription`; groups read as one item use `clearAndSetSemantics` (scoreboard chips, stat cells); titles get `heading()`.
+  - Text choices use `TextChoices` (one line that auto-shrinks down to 9 sp, so nothing is cut off at 2× font); action rows use equal-weight tiles; avoid fixed heights around text.
+  - Board squares are full-size touch targets; the 8×8 board uses almost the full width (squares about 50 dp on a 411 dp phone, about 44 dp on 360 dp phones; the user accepted that, no zoom).
+  - Player names go into sentences through `isolated()` (`BidiFormatter`), so Arabic and Latin names don't reorder the text. Don't put raw bidi control characters in code (lint BidiSpoofing).
+  - Numbers stay Western digits in both languages; percentages use the `stats_percent` resource (Arabic uses ٪).
+  - The splash tagline is translated in `app/src/main/res/values-ar`; `app_name` is the brand and not translated. The launcher icon has English text baked in.

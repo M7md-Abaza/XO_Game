@@ -51,7 +51,7 @@ import com.m7mdabaza.xogame.domain.model.ThemeMode
 import com.m7mdabaza.xogame.presentation.R
 import com.m7mdabaza.xogame.presentation.ads.ConsentManager
 import com.m7mdabaza.xogame.presentation.components.ScreenTopBar
-import com.m7mdabaza.xogame.presentation.components.SegmentedChoices
+import com.m7mdabaza.xogame.presentation.components.TextChoices
 import com.m7mdabaza.xogame.presentation.theme.XoTheme
 
 /** Stateful entry point used by the navigation graph. */
@@ -159,44 +159,35 @@ fun SettingsScreen(
 
                 SectionTitle(stringResource(R.string.settings_section_appearance))
                 Label(stringResource(R.string.settings_theme))
-                SegmentedChoices(ThemeMode.entries, settings.theme, actions.onThemeChange) { theme ->
-                    Text(
-                        stringResource(
-                            when (theme) {
-                                ThemeMode.SYSTEM -> R.string.settings_system
-                                ThemeMode.LIGHT -> R.string.settings_theme_light
-                                ThemeMode.DARK -> R.string.settings_theme_dark
-                            },
-                        ),
-                        maxLines = 1,
+                TextChoices(ThemeMode.entries, settings.theme, actions.onThemeChange) { theme ->
+                    stringResource(
+                        when (theme) {
+                            ThemeMode.SYSTEM -> R.string.settings_system
+                            ThemeMode.LIGHT -> R.string.settings_theme_light
+                            ThemeMode.DARK -> R.string.settings_theme_dark
+                        },
                     )
                 }
                 Spacer(Modifier.height(16.dp))
                 Label(stringResource(R.string.settings_language))
-                SegmentedChoices(AppLanguage.entries, state.language, actions.onLanguageChange) { language ->
-                    Text(
-                        stringResource(
-                            when (language) {
-                                AppLanguage.SYSTEM -> R.string.settings_system
-                                AppLanguage.ENGLISH -> R.string.language_english
-                                AppLanguage.ARABIC -> R.string.language_arabic
-                            },
-                        ),
-                        maxLines = 1,
+                TextChoices(AppLanguage.entries, state.language, actions.onLanguageChange) { language ->
+                    stringResource(
+                        when (language) {
+                            AppLanguage.SYSTEM -> R.string.settings_system
+                            AppLanguage.ENGLISH -> R.string.language_english
+                            AppLanguage.ARABIC -> R.string.language_arabic
+                        },
                     )
                 }
 
                 SectionTitle(stringResource(R.string.settings_section_game))
                 Label(stringResource(R.string.settings_default_match))
-                SegmentedChoices(MatchLength.entries, settings.matchLength, actions.onMatchLengthChange) { length ->
-                    Text(
-                        if (length == MatchLength.SINGLE) {
-                            stringResource(R.string.setup_match_single)
-                        } else {
-                            stringResource(R.string.setup_match_best_of, length.rounds)
-                        },
-                        maxLines = 1,
-                    )
+                TextChoices(MatchLength.entries, settings.matchLength, actions.onMatchLengthChange) { length ->
+                    if (length == MatchLength.SINGLE) {
+                        stringResource(R.string.setup_match_single)
+                    } else {
+                        stringResource(R.string.setup_match_best_of, length.rounds)
+                    }
                 }
                 Text(
                     stringResource(R.string.settings_default_match_hint),

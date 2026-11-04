@@ -27,6 +27,8 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.tooling.preview.Preview
@@ -40,6 +42,7 @@ import com.m7mdabaza.xogame.domain.model.Starter
 import com.m7mdabaza.xogame.presentation.R
 import com.m7mdabaza.xogame.presentation.components.OMark
 import com.m7mdabaza.xogame.presentation.components.SegmentedChoices
+import com.m7mdabaza.xogame.presentation.components.TextChoices
 import com.m7mdabaza.xogame.presentation.components.XMark
 import com.m7mdabaza.xogame.presentation.theme.XoTheme
 
@@ -84,7 +87,9 @@ fun MatchSetupDialog(
                             selected = humanSymbol,
                             onSelect = { humanSymbol = it },
                         ) { player ->
-                            if (player == Player.X) XMark(Modifier.size(20.dp)) else OMark(Modifier.size(20.dp))
+                            // The marks are drawings, so give screen readers the letter.
+                            val mark = Modifier.size(20.dp).semantics { contentDescription = player.name }
+                            if (player == Player.X) XMark(mark) else OMark(mark)
                         }
                     }
                     GameMode.TWO_PLAYERS -> {
@@ -96,37 +101,32 @@ fun MatchSetupDialog(
                 }
 
                 SectionLabel(stringResource(R.string.setup_who_starts))
-                SegmentedChoices(
+                TextChoices(
                     options = Starter.entries,
                     selected = starter,
                     onSelect = { starter = it },
                 ) { option ->
-                    Text(
-                        when (option) {
-                            Starter.PLAYER_ONE ->
-                                if (mode == GameMode.VS_COMPUTER) stringResource(R.string.game_you) else "X"
-                            Starter.PLAYER_TWO ->
-                                if (mode == GameMode.VS_COMPUTER) stringResource(R.string.game_phone) else "O"
-                            Starter.RANDOM -> stringResource(R.string.setup_starter_random)
-                        },
-                        maxLines = 1,
-                    )
+                    when (option) {
+                        // X and O are game symbols, the same in every language.
+                        Starter.PLAYER_ONE ->
+                            if (mode == GameMode.VS_COMPUTER) stringResource(R.string.game_you) else Player.X.name
+                        Starter.PLAYER_TWO ->
+                            if (mode == GameMode.VS_COMPUTER) stringResource(R.string.game_phone) else Player.O.name
+                        Starter.RANDOM -> stringResource(R.string.setup_starter_random)
+                    }
                 }
 
                 SectionLabel(stringResource(R.string.setup_match))
-                SegmentedChoices(
+                TextChoices(
                     options = MatchLength.entries,
                     selected = length,
                     onSelect = { length = it },
                 ) { option ->
-                    Text(
-                        if (option == MatchLength.SINGLE) {
-                            stringResource(R.string.setup_match_single)
-                        } else {
-                            stringResource(R.string.setup_match_best_of, option.rounds)
-                        },
-                        maxLines = 1,
-                    )
+                    if (option == MatchLength.SINGLE) {
+                        stringResource(R.string.setup_match_single)
+                    } else {
+                        stringResource(R.string.setup_match_best_of, option.rounds)
+                    }
                 }
                 if (length != MatchLength.SINGLE) {
                     Text(

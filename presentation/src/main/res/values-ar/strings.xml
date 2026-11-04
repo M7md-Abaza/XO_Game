@@ -42,6 +42,7 @@
     <string name="game_match_score">النتيجة النهائية %1$d – %2$d</string>
     <string name="game_round_of">الجولة %1$d من %2$d</string>
     <string name="game_draws">التعادلات: %1$d</string>
+    <string name="game_score_description">%1$s (%2$s): %3$d</string>
     <string name="game_undo">تراجع</string>
     <string name="game_hint">تلميح</string>
     <string name="game_restart">إعادة</string>
@@ -95,6 +96,7 @@
     <string name="stats_losses">خسارة</string>
     <string name="stats_draws">تعادل</string>
     <string name="stats_win_rate">نسبة الفوز</string>
+    <string name="stats_percent">%1$d٪</string>
     <string name="stats_streak">السلسلة</string>
     <string name="stats_best_streak">أفضل سلسلة</string>
     <string name="stats_x_wins">فوز X</string>

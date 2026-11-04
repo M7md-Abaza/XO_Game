@@ -9,7 +9,10 @@ import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
+import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.indication
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -130,13 +133,23 @@ private fun BoardCell(
     val description = stringResource(R.string.game_cell_description, row + 1, col + 1, content)
     val shape = RoundedCornerShape(percent = 22)
 
+    // The whole square is the touch target (8×8 squares are small on phones);
+    // the rounded highlight and the ripple are drawn inset inside it.
+    val interaction = remember { MutableInteractionSource() }
     Box(
         modifier = modifier
+            .clickable(
+                enabled = enabled && player == null,
+                role = Role.Button,
+                interactionSource = interaction,
+                indication = null,
+                onClick = onClick,
+            )
+            .semantics { contentDescription = description }
             .padding(4.dp)
             .clip(shape)
-            .then(if (isWinning) Modifier.background(MaterialTheme.colorScheme.primaryContainer) else Modifier)
-            .clickable(enabled = enabled && player == null, role = Role.Button, onClick = onClick)
-            .semantics { contentDescription = description },
+            .indication(interaction, LocalIndication.current)
+            .then(if (isWinning) Modifier.background(MaterialTheme.colorScheme.primaryContainer) else Modifier),
         contentAlignment = Alignment.Center,
     ) {
         if (player != null) Mark(player, animate)

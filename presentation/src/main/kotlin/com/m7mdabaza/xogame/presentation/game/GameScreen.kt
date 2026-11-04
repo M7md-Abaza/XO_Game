@@ -10,8 +10,10 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -47,16 +49,22 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
+import androidx.core.text.BidiFormatter
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.m7mdabaza.xogame.domain.model.AssistAccess
@@ -200,15 +208,22 @@ fun GameScreen(
                     Column(Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
                         TopBar(state, actions)
                         Column(
-                            Modifier.weight(1f).padding(horizontal = 16.dp),
+                            Modifier.weight(1f),
                             horizontalAlignment = Alignment.CenterHorizontally,
                         ) {
-                            Scoreboard(state)
-                            StatusLine(state, Modifier.padding(top = 12.dp))
-                            Box(Modifier.weight(1f).fillMaxWidth(), contentAlignment = Alignment.Center) {
+                            val sides = Modifier.padding(horizontal = 16.dp)
+                            Scoreboard(state, sides)
+                            StatusLine(state, sides.padding(top = 12.dp))
+                            // The 8×8 board gets almost the full width, so its squares
+                            // stay close to the 48 dp touch-target guideline on phones.
+                            val boardSides = if (state.level.boardSize > 4) 4.dp else 16.dp
+                            Box(
+                                Modifier.weight(1f).fillMaxWidth().padding(horizontal = boardSides),
+                                contentAlignment = Alignment.Center,
+                            ) {
                                 Board(state, actions, Modifier.padding(vertical = 8.dp))
                             }
-                            BottomPanel(state, actions)
+                            Box(sides) { BottomPanel(state, actions) }
                             Spacer(Modifier.height(8.dp))
                         }
                     }
@@ -267,7 +282,11 @@ private fun TopBar(state: GameUiState, actions: GameActions) {
             Icon(painterResource(R.drawable.ic_arrow_back), contentDescription = stringResource(R.string.game_back))
         }
         Column(Modifier.weight(1f).padding(horizontal = 4.dp)) {
-            Text(stringResource(state.level.titleRes()), style = MaterialTheme.typography.titleLarge)
+            Text(
+                stringResource(state.level.titleRes()),
+                style = MaterialTheme.typography.titleLarge,
+                modifier = Modifier.semantics { heading() },
+            )
             Text(
                 stringResource(
                     if (state.mode == GameMode.VS_COMPUTER) R.string.game_mode_vs_computer else R.string.game_mode_two_players,
@@ -293,10 +312,22 @@ private fun nameOf(state: GameUiState, player: Player): String = when (state.mod
     }
 }
 
+/**
+ * Prepares a player name to go into a sentence: an Arabic name in English
+ * text (or a Latin one in Arabic) keeps its own direction and doesn't reorder
+ * the words around it. Names that already match the layout direction are
+ * returned unchanged.
+ */
 @Composable
-private fun Scoreboard(state: GameUiState) {
+private fun isolated(name: String): String {
+    val rtl = LocalLayoutDirection.current == LayoutDirection.Rtl
+    return BidiFormatter.getInstance(rtl).unicodeWrap(name)
+}
+
+@Composable
+private fun Scoreboard(state: GameUiState, modifier: Modifier = Modifier) {
     val active = if (state.phase == GamePhase.PLAYING) state.game.turn else null
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+    Column(modifier, horizontalAlignment = Alignment.CenterHorizontally) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             PlayerChip(Player.X, nameOf(state, Player.X), state.match.xWins, active == Player.X, Modifier.weight(1f))
             Text(
@@ -326,11 +357,13 @@ private fun Scoreboard(state: GameUiState) {
 
 @Composable
 private fun PlayerChip(player: Player, name: String, score: Int, active: Boolean, modifier: Modifier = Modifier) {
+    // One screen-reader item per chip: "You (X): 2" instead of loose fragments.
+    val description = stringResource(R.string.game_score_description, name, player.name, score)
     Surface(
         shape = RoundedCornerShape(20.dp),
         color = if (active) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceVariant,
         border = if (active) BorderStroke(2.dp, MaterialTheme.colorScheme.primary) else null,
-        modifier = modifier,
+        modifier = modifier.clearAndSetSemantics { contentDescription = description },
     ) {
         Row(
             Modifier.padding(horizontal = 12.dp, vertical = 10.dp),
@@ -359,7 +392,7 @@ private fun StatusLine(state: GameUiState, modifier: Modifier = Modifier) {
             state.hintLoading -> stringResource(R.string.game_hint_loading)
             state.hint != null -> stringResource(R.string.game_hint_shown)
             state.mode == GameMode.VS_COMPUTER -> stringResource(R.string.game_turn_you)
-            else -> stringResource(R.string.game_turn_player, nameOf(state, state.game.turn))
+            else -> stringResource(R.string.game_turn_player, isolated(nameOf(state, state.game.turn)))
         }
         GamePhase.ROUND_OVER, GamePhase.MATCH_OVER -> roundResultText(state)
     }
@@ -376,7 +409,7 @@ private fun StatusLine(state: GameUiState, modifier: Modifier = Modifier) {
 @Composable
 private fun roundResultText(state: GameUiState): String = when (val result = state.game.result) {
     is GameResult.Win -> when {
-        state.mode == GameMode.TWO_PLAYERS -> stringResource(R.string.game_result_player_wins, nameOf(state, result.player))
+        state.mode == GameMode.TWO_PLAYERS -> stringResource(R.string.game_result_player_wins, isolated(nameOf(state, result.player)))
         result.player == state.settings.humanSymbol -> stringResource(R.string.game_result_you_win)
         else -> stringResource(R.string.game_result_phone_wins)
     }
@@ -388,7 +421,7 @@ private fun matchResultText(state: GameUiState): String {
     val winner = state.match.winner
     return when {
         winner == null -> stringResource(R.string.game_match_draw)
-        state.mode == GameMode.TWO_PLAYERS -> stringResource(R.string.game_match_player_wins, nameOf(state, winner))
+        state.mode == GameMode.TWO_PLAYERS -> stringResource(R.string.game_match_player_wins, isolated(nameOf(state, winner)))
         winner == state.settings.humanSymbol -> stringResource(R.string.game_match_you_win)
         else -> stringResource(R.string.game_match_phone_wins)
     }
@@ -399,13 +432,18 @@ private fun matchResultText(state: GameUiState): String {
 private fun BottomPanel(state: GameUiState, actions: GameActions) {
     AnimatedContent(
         targetState = state.phase == GamePhase.PLAYING || state.phase == GamePhase.SETUP,
-        // Same height for both states, so the board doesn't jump when a round ends.
-        modifier = Modifier.height(64.dp),
+        // Same height for both states, so the board doesn't jump when a round ends
+        // (only very large font sizes can make the buttons taller than this).
+        modifier = Modifier.fillMaxWidth().heightIn(min = 72.dp),
         contentAlignment = Alignment.Center,
         label = "bottomPanel",
     ) { playing ->
         if (playing) {
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
+            Row(
+                Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
                 ActionButton(
                     R.drawable.ic_undo,
                     stringResource(R.string.game_undo),
@@ -445,8 +483,12 @@ private fun BottomPanel(state: GameUiState, actions: GameActions) {
     }
 }
 
+/**
+ * An equal-width tile with the icon above the label, so the three actions fit
+ * side by side at any font size and in any language.
+ */
 @Composable
-private fun ActionButton(
+private fun RowScope.ActionButton(
     @DrawableRes icon: Int,
     label: String,
     enabled: Boolean,
@@ -455,21 +497,31 @@ private fun ActionButton(
     /** Shows a small ad marker: using it costs a rewarded ad. */
     needsAd: Boolean = false,
 ) {
-    FilledTonalButton(onClick = onClick, enabled = enabled, modifier = Modifier.heightIn(min = 48.dp)) {
-        if (loading) {
-            CircularProgressIndicator(Modifier.size(18.dp), strokeWidth = 2.dp)
-        } else {
-            Icon(painterResource(icon), contentDescription = null, modifier = Modifier.size(18.dp))
-        }
-        Spacer(Modifier.width(6.dp))
-        Text(label, maxLines = 1)
-        if (needsAd) {
-            Spacer(Modifier.width(4.dp))
-            Icon(
-                painterResource(R.drawable.ic_ad_video),
-                contentDescription = stringResource(R.string.ads_needs_ad),
-                modifier = Modifier.size(16.dp),
-            )
+    FilledTonalButton(
+        onClick = onClick,
+        enabled = enabled,
+        shape = RoundedCornerShape(20.dp),
+        contentPadding = PaddingValues(horizontal = 8.dp, vertical = 8.dp),
+        modifier = Modifier.weight(1f).heightIn(min = 64.dp),
+    ) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                if (loading) {
+                    CircularProgressIndicator(Modifier.size(20.dp), strokeWidth = 2.dp)
+                } else {
+                    Icon(painterResource(icon), contentDescription = null, modifier = Modifier.size(20.dp))
+                }
+                if (needsAd) {
+                    Spacer(Modifier.width(4.dp))
+                    Icon(
+                        painterResource(R.drawable.ic_ad_video),
+                        contentDescription = stringResource(R.string.ads_needs_ad),
+                        modifier = Modifier.size(16.dp),
+                    )
+                }
+            }
+            Spacer(Modifier.height(4.dp))
+            Text(label, maxLines = 1, overflow = TextOverflow.Ellipsis)
         }
     }
 }

@@ -166,7 +166,7 @@ private fun ModeButton(
         elevation = ButtonDefaults.buttonElevation(defaultElevation = 4.dp, pressedElevation = 1.dp),
         modifier = Modifier
             .widthIn(min = 260.dp)
-            .height(64.dp),
+            .heightIn(min = 64.dp),
     ) {
         Icon(painterResource(icon), contentDescription = null, modifier = Modifier.size(28.dp))
         Spacer(Modifier.width(12.dp))

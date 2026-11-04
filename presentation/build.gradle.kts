@@ -78,6 +78,7 @@ dependencies {
     // Compose UI tests (run on a device: ./gradlew :presentation:connectedDebugAndroidTest)
     androidTestImplementation(platform(libs.compose.bom))
     androidTestImplementation(libs.compose.ui.test.junit4)
+    androidTestImplementation(libs.compose.ui.test.junit4.accessibility) // Accessibility Test Framework checks
     androidTestImplementation(libs.androidx.test.runner)
     androidTestImplementation(libs.androidx.test.junit)
     // Compose testing pulls in Espresso 3.5, which crashes on API 34+ (InputManager.getInstance).

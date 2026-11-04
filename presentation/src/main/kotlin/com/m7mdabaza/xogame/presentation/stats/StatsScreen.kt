@@ -30,6 +30,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -46,7 +48,7 @@ import com.m7mdabaza.xogame.domain.usecase.ObserveStatsUseCase
 import com.m7mdabaza.xogame.domain.usecase.ResetStatsUseCase
 import com.m7mdabaza.xogame.presentation.R
 import com.m7mdabaza.xogame.presentation.components.ScreenTopBar
-import com.m7mdabaza.xogame.presentation.components.SegmentedChoices
+import com.m7mdabaza.xogame.presentation.components.TextChoices
 import com.m7mdabaza.xogame.presentation.home.titleRes
 import com.m7mdabaza.xogame.presentation.theme.XoTheme
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -103,12 +105,9 @@ fun StatsScreen(
                 .padding(horizontal = 24.dp)
                 .padding(bottom = 24.dp),
         ) {
-            SegmentedChoices(GameMode.entries, mode, { mode = it }) { option ->
-                Text(
-                    stringResource(
-                        if (option == GameMode.VS_COMPUTER) R.string.stats_tab_vs_computer else R.string.stats_tab_two_players,
-                    ),
-                    maxLines = 1,
+            TextChoices(GameMode.entries, mode, { mode = it }) { option ->
+                stringResource(
+                    if (option == GameMode.VS_COMPUTER) R.string.stats_tab_vs_computer else R.string.stats_tab_two_players,
                 )
             }
             Level.entries.forEach { level ->
@@ -158,15 +157,17 @@ private fun LevelCard(mode: GameMode, level: Level, stats: LevelStats) {
         modifier = Modifier.fillMaxWidth(),
     ) {
         Column(Modifier.padding(16.dp)) {
-            Row(verticalAlignment = Alignment.Bottom) {
-                Text(stringResource(level.titleRes()), style = MaterialTheme.typography.titleLarge)
-                Spacer(Modifier.padding(start = 8.dp))
-                Text(
-                    stringResource(R.string.level_rules, level.boardSize, level.winLength),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-            }
+            // Level name over its rules, so long texts and large fonts wrap cleanly.
+            Text(
+                stringResource(level.titleRes()),
+                style = MaterialTheme.typography.titleLarge,
+                modifier = Modifier.semantics { heading() },
+            )
+            Text(
+                stringResource(R.string.level_rules, level.boardSize, level.winLength),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
             Spacer(Modifier.height(12.dp))
             if (stats.played == 0) {
                 Text(
@@ -183,7 +184,7 @@ private fun LevelCard(mode: GameMode, level: Level, stats: LevelStats) {
                 )
                 Spacer(Modifier.height(12.dp))
                 StatRow(
-                    R.string.stats_win_rate to "${((stats.winRate ?: 0f) * 100).roundToInt()}%",
+                    R.string.stats_win_rate to stringResource(R.string.stats_percent, ((stats.winRate ?: 0f) * 100).roundToInt()),
                     R.string.stats_streak to stats.currentStreak.toString(),
                     R.string.stats_best_streak to stats.bestStreak.toString(),
                 )

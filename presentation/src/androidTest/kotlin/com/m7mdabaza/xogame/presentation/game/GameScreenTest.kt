@@ -42,6 +42,9 @@ class GameScreenTest {
 
     private val play = PlayMoveUseCase(WinChecker())
 
+    /** Names go into sentences through BidiFormatter (see GameScreen); the tests run left to right. */
+    private fun isolated(name: String) = androidx.core.text.BidiFormatter.getInstance(false).unicodeWrap(name)
+
     private fun game(mode: GameMode, vararg moves: Cell): GameState =
         moves.fold(StartGameUseCase()(GameConfig(mode, Level.EASY))) { state, cell ->
             (play(state, cell) as MoveResult.Played).state
@@ -91,7 +94,7 @@ class GameScreenTest {
         val clicked = mutableListOf<Cell>()
         show(state(game(GameMode.TWO_PLAYERS, Cell(0, 0))), GameActions(onCellClick = { clicked += it }))
 
-        rule.onNodeWithText(string(R.string.game_turn_player, string(R.string.game_player_default, "O")))
+        rule.onNodeWithText(string(R.string.game_turn_player, isolated(string(R.string.game_player_default, "O"))))
             .assertIsDisplayed()
         cell(0, 0, "X").assertIsNotEnabled()
         cell(1, 2, string(R.string.game_cell_empty)).assertIsEnabled().performClick()
@@ -105,7 +108,7 @@ class GameScreenTest {
             state(game(GameMode.TWO_PLAYERS, *xWinsTopRow), MatchState(MatchLength.BEST_OF_3, xWins = 1)),
             GameActions(onNextRound = { next = true }),
         )
-        rule.onNodeWithText(string(R.string.game_result_player_wins, string(R.string.game_player_default, "X")))
+        rule.onNodeWithText(string(R.string.game_result_player_wins, isolated(string(R.string.game_player_default, "X"))))
             .assertIsDisplayed()
         cell(2, 2, string(R.string.game_cell_empty)).assertIsNotEnabled()
         rule.onNodeWithText(string(R.string.game_next_round)).performClick()

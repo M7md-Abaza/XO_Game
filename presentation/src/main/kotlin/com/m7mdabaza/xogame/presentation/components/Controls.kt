@@ -5,8 +5,10 @@ import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
@@ -19,7 +21,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.m7mdabaza.xogame.presentation.R
 
 /** A simple top bar: back arrow, title and optional actions at the end. */
@@ -49,6 +53,33 @@ fun ScreenTopBar(
                 .semantics { heading() },
         )
         actions()
+    }
+}
+
+/**
+ * [SegmentedChoices] with text labels that shrink a little when needed, so they
+ * stay readable at large font sizes instead of being cut off.
+ */
+@Composable
+fun <T> TextChoices(
+    options: List<T>,
+    selected: T,
+    onSelect: (T) -> Unit,
+    modifier: Modifier = Modifier,
+    text: @Composable (T) -> String,
+) {
+    SegmentedChoices(options, selected, onSelect, modifier) { option ->
+        // One line that shrinks only as far as needed, so labels
+        // aren't cut off or broken mid-word and the segments keep one height. Font
+        // scaling is nonlinear, so at large scales even 9 sp stays bigger than the
+        // normal label size.
+        val style = LocalTextStyle.current
+        Text(
+            text(option),
+            maxLines = 1,
+            textAlign = TextAlign.Center,
+            autoSize = TextAutoSize.StepBased(minFontSize = 9.sp, maxFontSize = style.fontSize),
+        )
     }
 }
 
