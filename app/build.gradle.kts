@@ -19,6 +19,12 @@ private val interstitialPlacements = listOf(
     "easy_level", "medium_level", "hard_level",
 )
 
+androidComponents {
+    beforeVariants { variantBuilder ->
+        (variantBuilder as? com.android.build.api.variant.HasUnitTestBuilder)?.enableUnitTest = true
+    }
+}
+
 android {
     namespace = "com.m7mdabaza.xogame"
     compileSdk = libs.versions.compileSdk.get().toInt()
@@ -31,6 +37,12 @@ android {
         versionCode = 6
         versionName = "1.2"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    testOptions {
+        unitTests {
+            isIncludeAndroidResources = true
+        }
     }
 
     buildTypes {

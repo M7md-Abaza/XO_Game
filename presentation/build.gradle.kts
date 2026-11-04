@@ -7,12 +7,24 @@ plugins {
     alias(libs.plugins.hilt)
 }
 
+androidComponents {
+    beforeVariants { variantBuilder ->
+        (variantBuilder as? com.android.build.api.variant.HasUnitTestBuilder)?.enableUnitTest = true
+    }
+}
+
 android {
     namespace = "com.m7mdabaza.xogame.presentation"
     compileSdk = libs.versions.compileSdk.get().toInt()
 
     defaultConfig {
         minSdk = libs.versions.minSdk.get().toInt()
+    }
+
+    testOptions {
+        unitTests {
+            isIncludeAndroidResources = true
+        }
     }
 
     buildFeatures {
@@ -23,6 +35,13 @@ android {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
+}
+
+tasks.withType<Test>().configureEach {
+    filter {
+        isFailOnNoMatchingTests = false
+    }
+    failOnNoDiscoveredTests = false
 }
 
 dependencies {

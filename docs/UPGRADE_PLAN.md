@@ -186,6 +186,6 @@ Each milestone ends with a working build, tests passing and an emulator check. Y
 
 ## 6. Resolved questions
 
-1. Remove-ads buyers: no unlimited free assists, but 1 free hint + 1 free undo per game; extras need a rewarded ad.
+1. Remove-ads buyers: no unlimited free assists, but 1 free hint **and** 1 free undo per game (two separate free uses, confirmed by the user on 2026-11-04); extras need a rewarded ad.
 2. You set the Remove-ads price in Play Console.
 3. Keep the brand colors (yellow `#d6bd17` / black); the UI can be refreshed freely to fit the new features (Material 3 components, Compose-drawn X/O and board).
