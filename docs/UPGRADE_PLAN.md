@@ -7,9 +7,10 @@ Branch: `feature/v2-upgrade`
 | Milestone | Status |
 |---|---|
 | 1. Project setup | **Done and committed.** Modules, version catalog, Kotlin DSL, Hilt, Compose Home + level picker, ads/consent moved to `:presentation`, English + Arabic. Verified on emulator API 37 (en + ar) and phone API 29. |
-| 2. Domain core | **Done, awaiting review (not committed).** `model/` (`Player`, `Cell`, `Move`, immutable `Board`, `GameConfig`, `GameState`, `GameResult`), `engine/WinChecker` (generic N×N / k-in-row; returns the whole winning run; draw = full board), `usecase/` `StartGameUseCase`, `PlayMoveUseCase` (returns `MoveResult`: Played / GameOver / OutOfBounds / CellOccupied), `UndoMoveUseCase` (vs computer: back to and including the human's last move; null when there is nothing to undo). 51 JVM tests in `domain/src/test`. `MatchState`, `PlayerStats` and `Settings` arrive with the milestones that use them (4 and 5). |
-| 3. AI | **Next**, once milestone 2 is approved. |
-| 4–9 | Not started (see section 5). |
+| 2. Domain core | **Done and committed** (971aff4). `model/` (`Player`, `Cell`, `Move`, immutable `Board`, `GameConfig`, `GameState`, `GameResult`), `engine/WinChecker` (generic N×N / k-in-row; returns the whole winning run; draw = full board), `usecase/` `StartGameUseCase`, `PlayMoveUseCase` (returns `MoveResult`: Played / GameOver / OutOfBounds / CellOccupied), `UndoMoveUseCase` (vs computer: back to and including the human's last move; null when there is nothing to undo). 51 JVM tests in `domain/src/test`. `MatchState`, `PlayerStats` and `Settings` arrive with the milestones that use them (4 and 5). |
+| 3. AI | **Done and committed.** One alpha-beta engine for all sizes, `ai/SearchAi` over a fast window-counting `ai/SearchBoard`: always wins/blocks in one, detects double threats, perfect on 3×3, top-N pattern-ranked candidates near marks on 8×8, random among equal moves. `ai/DifficultyPolicy` (computer + hint per level, calibrated head to head). `ComputerMoveUseCase`, `GetHintUseCase`. Hard computer looks 5 moves ahead (user decision). 77 domain tests. On the emulator Hilt builds the use cases and the slowest move is about 50 ms. |
+| 4. Game screen | **Next**, once milestone 3 is approved. |
+| 5–9 | Not started (see section 5). |
 
 How to resume: build with `export JAVA_HOME=~/.jdks/jbr-21.0.11 && ./gradlew assembleDebug test`. Work milestone by milestone; the user reviews each one, and nothing is committed or pushed until the user says so.
 
@@ -69,10 +70,15 @@ Dependency rule: `presentation → domain ← data`. `:app` depends on all three
 - `WinChecker`: generic N×N, k-in-row. Returns the winning line. It replaces all six hard-coded `checkForWin()` copies.
 - **Draw** means the board is full. This fixes every `roundCount` bug at once.
 
-**AI** (`interface AiPlayer { fun chooseMove(state: GameState, me: Player): Cell }`)
-- `MinimaxAi`: alpha-beta search. Perfect on 3×3; on 4×4 it uses depth-limited search with a move-ordering heuristic.
-- `ThreatSpaceAi` for 8×8: scores patterns (win, block, open 4, double-3, …) and adds a 2–3 ply search over the best candidate cells.
-- `DifficultyPolicy`: sets search depth plus a "mistake probability" per level, so Easy/Medium/Hard really feel different, and adds randomness among equal moves.
+**AI** (as built in milestone 3: one engine instead of the planned `MinimaxAi` + `ThreatSpaceAi` pair)
+- `SearchAi.chooseMove(state, difficulty)` plays for `state.turn`. It is an alpha-beta (negamax) search that always takes a win in one, always blocks a loss in one and treats an opponent double threat as lost.
+  - 3×3 is searched to the end (perfect). 4×4 is depth-limited, with moves ordered by a pattern score.
+  - On 8×8 it searches only the top-N cells within 2 of existing marks, ranked by the open lines they extend or block (the planned "threat" scoring).
+  - Positions it cannot search to the end are scored by counting marks in every 5-cell (k-cell) window still open to one player.
+- `DifficultyPolicy`: search depth, candidate limit and mistake chance per level, for the computer and for hints. The AI picks randomly among equally good moves.
+  - Computer: Easy depth 9 with a 35% mistake chance, Medium depth 4 with 15%, Hard depth 5 / 10 candidates with 5%.
+  - Hints: Easy perfect, Medium depth 6, Hard depth 5 / 12 candidates.
+  - Mistakes never skip a win or a block.
 
 **Repository interfaces**
 - `StatsRepository`: observe and record results.
