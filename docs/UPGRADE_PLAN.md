@@ -7,8 +7,9 @@ Branch: `feature/v2-upgrade`
 | Milestone | Status |
 |---|---|
 | 1. Project setup | **Done and committed.** Modules, version catalog, Kotlin DSL, Hilt, Compose Home + level picker, ads/consent moved to `:presentation`, English + Arabic. Verified on emulator API 37 (en + ar) and phone API 29. |
-| 2. Domain core | **Next.** Start here: models (`Player`, `Cell`, `Board`, `GameConfig`, `GameState`, `GameResult`), generic `WinChecker`, `PlayMoveUseCase` / `UndoMoveUseCase` / `StartGameUseCase`, full unit tests in `domain/src/test`. |
-| 3–9 | Not started (see section 5). |
+| 2. Domain core | **Done, awaiting review (not committed).** `model/` (`Player`, `Cell`, `Move`, immutable `Board`, `GameConfig`, `GameState`, `GameResult`), `engine/WinChecker` (generic N×N / k-in-row; returns the whole winning run; draw = full board), `usecase/` `StartGameUseCase`, `PlayMoveUseCase` (returns `MoveResult`: Played / GameOver / OutOfBounds / CellOccupied), `UndoMoveUseCase` (vs computer: back to and including the human's last move; null when there is nothing to undo). 51 JVM tests in `domain/src/test`. `MatchState`, `PlayerStats` and `Settings` arrive with the milestones that use them (4 and 5). |
+| 3. AI | **Next**, once milestone 2 is approved. |
+| 4–9 | Not started (see section 5). |
 
 How to resume: build with `export JAVA_HOME=~/.jdks/jbr-21.0.11 && ./gradlew assembleDebug test`. Work milestone by milestone; the user reviews each one, and nothing is committed or pushed until the user says so.
 
