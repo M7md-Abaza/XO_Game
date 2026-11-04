@@ -7,14 +7,22 @@ import com.m7mdabaza.xogame.domain.model.Cell
 import com.m7mdabaza.xogame.domain.model.GameMode
 import com.m7mdabaza.xogame.domain.model.GameResult
 import com.m7mdabaza.xogame.domain.model.Level
+import com.m7mdabaza.xogame.domain.model.LevelStats
 import com.m7mdabaza.xogame.domain.model.MatchLength
 import com.m7mdabaza.xogame.domain.model.Player
+import com.m7mdabaza.xogame.domain.model.Settings
+import com.m7mdabaza.xogame.domain.model.Starter
 import com.m7mdabaza.xogame.domain.usecase.ComputerMoveUseCase
 import com.m7mdabaza.xogame.domain.usecase.GetHintUseCase
+import com.m7mdabaza.xogame.domain.usecase.ObserveSettingsUseCase
+import com.m7mdabaza.xogame.domain.usecase.RecordGameResultUseCase
+import com.m7mdabaza.xogame.domain.usecase.UpdateSettingsUseCase
 import com.m7mdabaza.xogame.domain.usecase.PlayMoveUseCase
 import com.m7mdabaza.xogame.domain.usecase.StartGameUseCase
 import com.m7mdabaza.xogame.domain.usecase.UndoMoveUseCase
 import com.m7mdabaza.xogame.presentation.ads.AdUnitIds
+import com.m7mdabaza.xogame.presentation.testing.FakeSettingsRepository
+import com.m7mdabaza.xogame.presentation.testing.FakeStatsRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -37,6 +45,8 @@ class GameViewModelTest {
 
     private val dispatcher = StandardTestDispatcher()
     private val feedback = FakeFeedback()
+    private val settingsRepository = FakeSettingsRepository()
+    private val statsRepository = FakeStatsRepository()
 
     @Before
     fun setUp() = Dispatchers.setMain(dispatcher)
@@ -74,6 +84,9 @@ class GameViewModelTest {
         undoMove = UndoMoveUseCase(),
         computerMove = ComputerMoveUseCase(SearchAi()),
         getHint = GetHintUseCase(SearchAi()),
+        observeSettings = ObserveSettingsUseCase(settingsRepository),
+        updateSettings = UpdateSettingsUseCase(settingsRepository),
+        recordGameResult = RecordGameResultUseCase(statsRepository),
         feedback = feedback,
         adUnitIds = FakeAdUnitIds,
         computeDispatcher = dispatcher,
@@ -393,5 +406,85 @@ class GameViewModelTest {
         val handle = handle(GameMode.TWO_PLAYERS)
         handle[GameViewModel.KEY_SESSION] = "not json"
         assertEquals(GamePhase.SETUP, viewModel(handle).state.phase)
+    }
+
+    // --- Settings and stats ----------------------------------------------------------
+
+    @Test
+    fun `the setup opens with the choices of the last match`() = runTest(dispatcher) {
+        settingsRepository.settings.value = Settings(
+            matchLength = MatchLength.BEST_OF_5,
+            humanSymbol = Player.O,
+            starter = Starter.RANDOM,
+            xName = "Sara",
+            oName = "Omar",
+        )
+        val vm = viewModel(GameMode.TWO_PLAYERS)
+        advanceUntilIdle()
+        assertEquals(
+            MatchSettings(humanSymbol = Player.O, starter = Starter.RANDOM, length = MatchLength.BEST_OF_5, xName = "Sara", oName = "Omar"),
+            vm.state.settings,
+        )
+    }
+
+    @Test
+    fun `starting a match remembers its choices and keeps the other settings`() = runTest(dispatcher) {
+        settingsRepository.settings.value = Settings(soundEnabled = false)
+        val vm = viewModel(GameMode.VS_COMPUTER)
+        vm.onStartMatch(MatchSettings(humanSymbol = Player.O, starter = Starter.PLAYER_TWO, length = MatchLength.BEST_OF_3))
+        advanceUntilIdle()
+        assertEquals(
+            Settings(soundEnabled = false, matchLength = MatchLength.BEST_OF_3, humanSymbol = Player.O, starter = Starter.PLAYER_TWO),
+            settingsRepository.settings.value,
+        )
+    }
+
+    @Test
+    fun `finished rounds are recorded in the stats of their mode and level`() = runTest(dispatcher) {
+        val vm = viewModel(GameMode.TWO_PLAYERS, Level.EASY)
+        vm.onStartMatch(MatchSettings())
+        vm.tap(*xWinsTopRow)
+        advanceUntilIdle()
+        vm.onNextRound()
+        vm.tap(*xWinsTopRow) // X again (single rounds keep the starter)
+        advanceUntilIdle()
+        assertEquals(LevelStats(wins = 2, currentStreak = 2, bestStreak = 2), statsRepository.stats.value[GameMode.TWO_PLAYERS, Level.EASY])
+    }
+
+    @Test
+    fun `losing to the computer counts as a loss for the human`() = runTest(dispatcher) {
+        val vm = viewModel(GameMode.VS_COMPUTER)
+        vm.onStartMatch(MatchSettings())
+        while (vm.state.phase == GamePhase.PLAYING) {
+            vm.onCellClick(vm.state.game.board.emptyCells.last())
+            advanceUntilIdle()
+        }
+        val stats = statsRepository.stats.value[GameMode.VS_COMPUTER, Level.EASY]
+        assertEquals(1, stats.played)
+        val result = vm.state.game.result
+        if (result is GameResult.Win && result.player == Player.O) assertEquals(1, stats.losses)
+    }
+
+    @Test
+    fun `restarted rounds are not recorded`() = runTest(dispatcher) {
+        val vm = viewModel(GameMode.TWO_PLAYERS)
+        vm.onStartMatch(MatchSettings())
+        vm.tap(Cell(0, 0), Cell(1, 1))
+        vm.onRestartRound()
+        advanceUntilIdle()
+        assertEquals(0, statsRepository.stats.value.played(GameMode.TWO_PLAYERS))
+    }
+
+    @Test
+    fun `a round restored after process death is not recorded again`() = runTest(dispatcher) {
+        val handle = handle(GameMode.TWO_PLAYERS)
+        val vm = viewModel(handle)
+        vm.onStartMatch(MatchSettings())
+        vm.tap(*xWinsTopRow)
+        advanceUntilIdle()
+
+        viewModel(handle)
+        advanceUntilIdle()
+        assertEquals(1, statsRepository.stats.value.played(GameMode.TWO_PLAYERS))
     }
 }

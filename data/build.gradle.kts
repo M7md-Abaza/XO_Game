@@ -6,6 +6,12 @@ plugins {
     alias(libs.plugins.hilt)
 }
 
+androidComponents {
+    beforeVariants { variantBuilder ->
+        (variantBuilder as? com.android.build.api.variant.HasUnitTestBuilder)?.enableUnitTest = true
+    }
+}
+
 android {
     namespace = "com.m7mdabaza.xogame.data"
     compileSdk = libs.versions.compileSdk.get().toInt()
@@ -24,9 +30,11 @@ dependencies {
     implementation(project(":domain"))
 
     implementation(libs.kotlinx.coroutines.core)
+    implementation(libs.androidx.datastore.preferences)
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
 
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.turbine)
 }

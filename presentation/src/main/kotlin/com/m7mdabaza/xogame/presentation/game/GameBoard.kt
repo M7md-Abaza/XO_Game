@@ -44,8 +44,6 @@ import com.m7mdabaza.xogame.domain.model.Player
 import com.m7mdabaza.xogame.presentation.R
 import com.m7mdabaza.xogame.presentation.components.drawO
 import com.m7mdabaza.xogame.presentation.components.drawX
-import com.m7mdabaza.xogame.presentation.theme.BrandBlack
-import com.m7mdabaza.xogame.presentation.theme.BrandYellow
 import com.m7mdabaza.xogame.presentation.theme.XoTheme
 
 /**
@@ -149,18 +147,20 @@ private fun BoardCell(
 /** A mark that draws itself in when it is the newest move. */
 @Composable
 private fun Mark(player: Player, animate: Boolean) {
+    val colors = XoTheme.colors
     val progress = remember(player) { Animatable(if (animate) 0f else 1f) }
     LaunchedEffect(player) {
         progress.animateTo(1f, tween(durationMillis = 260, easing = FastOutSlowInEasing))
     }
     Canvas(Modifier.fillMaxSize(0.62f)) {
-        if (player == Player.X) drawX(BrandYellow, progress.value) else drawO(BrandBlack, progress.value)
+        if (player == Player.X) drawX(colors.x, progress.value) else drawO(colors.o, progress.value)
     }
 }
 
 /** The suggested move: a pulsing tint behind a faded preview of [player]'s mark. */
 @Composable
 private fun HintPreview(player: Player) {
+    val colors = XoTheme.colors
     val transition = rememberInfiniteTransition(label = "hint")
     val pulse by transition.animateFloat(
         initialValue = 0.3f,
@@ -176,7 +176,7 @@ private fun HintPreview(player: Player) {
     ) {
         Canvas(Modifier.fillMaxSize(0.62f)) {
             val alpha = 0.25f + 0.35f * pulse
-            if (player == Player.X) drawX(BrandYellow.copy(alpha = alpha)) else drawO(BrandBlack.copy(alpha = alpha))
+            if (player == Player.X) drawX(colors.x.copy(alpha = alpha)) else drawO(colors.o.copy(alpha = alpha))
         }
     }
 }
@@ -184,12 +184,13 @@ private fun HintPreview(player: Player) {
 /** Draws a line through the winning run, growing from its first to its last cell. */
 @Composable
 private fun WinLine(line: List<Cell>, winner: Player, boardSize: Int) {
+    val colors = XoTheme.colors
     val progress = remember(line) { Animatable(0f) }
     LaunchedEffect(line) {
         progress.animateTo(1f, tween(durationMillis = 450, delayMillis = 150, easing = FastOutSlowInEasing))
     }
-    // Contrast with the winner's marks: dark over yellow X, yellow over black O.
-    val color = if (winner == Player.X) BrandBlack.copy(alpha = 0.8f) else BrandYellow
+    // Contrast with the winner's marks: the O colour over yellow X, yellow over O.
+    val color = if (winner == Player.X) colors.o.copy(alpha = 0.8f) else colors.x
     Canvas(Modifier.fillMaxSize()) {
         val step = size.width / boardSize
         fun center(cell: Cell) = Offset((cell.col + 0.5f) * step, (cell.row + 0.5f) * step)

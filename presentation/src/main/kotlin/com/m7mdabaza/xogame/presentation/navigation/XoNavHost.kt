@@ -8,9 +8,11 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.m7mdabaza.xogame.presentation.game.GameRoute
 import com.m7mdabaza.xogame.presentation.home.HomeRoute
+import com.m7mdabaza.xogame.presentation.settings.SettingsRoute
+import com.m7mdabaza.xogame.presentation.stats.StatsRoute
 import kotlinx.serialization.Serializable
 
-/** Type-safe navigation destinations. Stats, Settings, ... are added in later milestones. */
+/** Type-safe navigation destinations. Daily challenge and achievements come in milestone 8. */
 sealed interface Destination {
     @Serializable
     data object Home : Destination
@@ -22,6 +24,12 @@ sealed interface Destination {
      */
     @Serializable
     data class Game(val mode: String, val level: String) : Destination
+
+    @Serializable
+    data object Stats : Destination
+
+    @Serializable
+    data object Settings : Destination
 }
 
 @Composable
@@ -39,10 +47,18 @@ fun XoNavHost(
                 onStartGame = { mode, level ->
                     navController.navigate(Destination.Game(mode.name, level.name)) { launchSingleTop = true }
                 },
+                onOpenStats = { navController.navigate(Destination.Stats) { launchSingleTop = true } },
+                onOpenSettings = { navController.navigate(Destination.Settings) { launchSingleTop = true } },
             )
         }
         composable<Destination.Game> {
             GameRoute(onBack = { navController.popBackStack(Destination.Home, inclusive = false) })
+        }
+        composable<Destination.Stats> {
+            StatsRoute(onBack = { navController.popBackStack(Destination.Home, inclusive = false) })
+        }
+        composable<Destination.Settings> {
+            SettingsRoute(onBack = { navController.popBackStack(Destination.Home, inclusive = false) })
         }
     }
 }

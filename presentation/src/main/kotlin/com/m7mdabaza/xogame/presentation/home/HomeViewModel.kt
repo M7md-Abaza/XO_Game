@@ -15,8 +15,6 @@ data class HomeUiState(
     val bannerAdUnitId: String,
     /** UMP allows ad requests (consent given, or not required in this region). */
     val canRequestAds: Boolean,
-    /** UMP requires an entry point to change consent (EU users). */
-    val privacyOptionsRequired: Boolean,
 )
 
 @HiltViewModel
@@ -29,18 +27,12 @@ class HomeViewModel @Inject constructor(
         HomeUiState(
             bannerAdUnitId = adUnitIds.homeBanner,
             canRequestAds = ConsentManager.canRequestAds(application),
-            privacyOptionsRequired = ConsentManager.isPrivacyOptionsRequired(application),
         )
     )
     val uiState: StateFlow<HomeUiState> = _uiState.asStateFlow()
 
-    /** Call after the consent form closes, or when the screen resumes. */
+    /** Call when the screen resumes: consent may have changed (e.g. in Settings). */
     fun refreshConsentState() {
-        _uiState.update {
-            it.copy(
-                canRequestAds = ConsentManager.canRequestAds(application),
-                privacyOptionsRequired = ConsentManager.isPrivacyOptionsRequired(application),
-            )
-        }
+        _uiState.update { it.copy(canRequestAds = ConsentManager.canRequestAds(application)) }
     }
 }

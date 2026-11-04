@@ -8,21 +8,29 @@ import android.os.VibrationEffect
 import android.os.Vibrator
 import android.os.VibratorManager
 import com.m7mdabaza.xogame.domain.model.Player
+import com.m7mdabaza.xogame.domain.usecase.ObserveSettingsUseCase
 import com.m7mdabaza.xogame.presentation.R
+import com.m7mdabaza.xogame.presentation.di.ApplicationScope
 import com.m7mdabaza.xogame.presentation.game.GameFeedback
 import com.m7mdabaza.xogame.presentation.game.RoundSound
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import javax.inject.Inject
 import javax.inject.Singleton
 
 /**
  * Plays the game sounds with one shared [SoundPool] (all sounds are loaded
  * once, up front) and gives short vibrations for the human's moves and for
- * round results. Lives as long as the app, so the pool is never released.
+ * round results, each only while its setting is on. Lives as long as the
+ * app, so the pool is never released.
  */
 @Singleton
 class AndroidGameFeedback @Inject constructor(
     @ApplicationContext context: Context,
+    observeSettings: ObserveSettingsUseCase,
+    @ApplicationScope scope: CoroutineScope,
 ) : GameFeedback {
 
     private val soundPool: SoundPool = SoundPool.Builder()
@@ -50,6 +58,19 @@ class AndroidGameFeedback @Inject constructor(
             context.getSystemService(Context.VIBRATOR_SERVICE) as? Vibrator
         }
 
+    // Latest values of the settings; read on the main thread, written by the collector.
+    @Volatile private var soundEnabled = true
+    @Volatile private var vibrationEnabled = true
+
+    init {
+        observeSettings()
+            .onEach {
+                soundEnabled = it.soundEnabled
+                vibrationEnabled = it.vibrationEnabled
+            }
+            .launchIn(scope)
+    }
+
     override fun move(player: Player, byComputer: Boolean) {
         play(if (player == Player.X) clickX else clickO)
         if (!byComputer) vibrate(strong = false)
@@ -68,12 +89,13 @@ class AndroidGameFeedback @Inject constructor(
 
     override fun newRound() = play(reset)
 
-    /** Does nothing if the sound hasn't finished loading yet. */
+    /** Does nothing if sound is off or the sound hasn't finished loading yet. */
     private fun play(soundId: Int) {
-        soundPool.play(soundId, 1f, 1f, 1, 0, 1f)
+        if (soundEnabled) soundPool.play(soundId, 1f, 1f, 1, 0, 1f)
     }
 
     private fun vibrate(strong: Boolean) {
+        if (!vibrationEnabled) return
         val vibrator = vibrator?.takeIf { it.hasVibrator() } ?: return
         when {
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q -> vibrator.vibrate(

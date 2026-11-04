@@ -8,8 +8,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.inset
 import androidx.compose.ui.graphics.drawscope.rotate
-import com.m7mdabaza.xogame.presentation.theme.BrandGrayFaded
-import com.m7mdabaza.xogame.presentation.theme.BrandYellowFaded
+import com.m7mdabaza.xogame.presentation.theme.XoTheme
 
 /**
  * The faded X and O in the lower part of the screen, redrawn from the original
@@ -17,19 +16,20 @@ import com.m7mdabaza.xogame.presentation.theme.BrandYellowFaded
  */
 @Composable
 fun BrandBackground(modifier: Modifier = Modifier) {
+    val colors = XoTheme.colors
     Canvas(modifier.fillMaxSize()) {
         val unit = size.minDimension
 
         // Faded O, lower end side.
         drawInBox(center = Offset(size.width * 0.70f, size.height * 0.72f), side = unit * 0.36f) {
-            drawO(BrandGrayFaded, strokeFraction = 0.12f)
+            drawO(colors.fadedO, strokeFraction = 0.12f)
         }
 
         // Faded, tilted X, lower start side.
         val xCenter = Offset(size.width * 0.30f, size.height * 0.80f)
         rotate(degrees = -30f, pivot = xCenter) {
             drawInBox(center = xCenter, side = unit * 0.36f) {
-                drawX(BrandYellowFaded)
+                drawX(colors.fadedX)
             }
         }
     }

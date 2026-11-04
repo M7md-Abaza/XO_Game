@@ -1,6 +1,5 @@
 package com.m7mdabaza.xogame.presentation.home
 
-import androidx.activity.compose.LocalActivity
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -21,9 +20,9 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -43,7 +42,6 @@ import com.m7mdabaza.xogame.domain.model.GameMode
 import com.m7mdabaza.xogame.domain.model.Level
 import com.m7mdabaza.xogame.presentation.R
 import com.m7mdabaza.xogame.presentation.ads.BannerAd
-import com.m7mdabaza.xogame.presentation.ads.ConsentManager
 import com.m7mdabaza.xogame.presentation.components.BrandBackground
 import com.m7mdabaza.xogame.presentation.components.XoLogo
 import com.m7mdabaza.xogame.presentation.theme.XoTheme
@@ -52,10 +50,11 @@ import com.m7mdabaza.xogame.presentation.theme.XoTheme
 @Composable
 fun HomeRoute(
     onStartGame: (GameMode, Level) -> Unit,
+    onOpenStats: () -> Unit,
+    onOpenSettings: () -> Unit,
     viewModel: HomeViewModel = hiltViewModel(),
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
-    val activity = LocalActivity.current
 
     // Consent can change while the app is in the background (or on first launch).
     LifecycleResumeEffect(Unit) {
@@ -66,9 +65,8 @@ fun HomeRoute(
     HomeScreen(
         state = state,
         onStartGame = onStartGame,
-        onPrivacySettings = {
-            activity?.let { ConsentManager.showPrivacyOptionsForm(it) { viewModel.refreshConsentState() } }
-        },
+        onOpenStats = onOpenStats,
+        onOpenSettings = onOpenSettings,
     )
 }
 
@@ -76,7 +74,8 @@ fun HomeRoute(
 fun HomeScreen(
     state: HomeUiState,
     onStartGame: (GameMode, Level) -> Unit,
-    onPrivacySettings: () -> Unit,
+    onOpenStats: () -> Unit,
+    onOpenSettings: () -> Unit,
 ) {
     var pickerMode by rememberSaveable { mutableStateOf<GameMode?>(null) }
 
@@ -99,13 +98,11 @@ fun HomeScreen(
                     .padding(horizontal = 8.dp),
                 horizontalArrangement = Arrangement.End,
             ) {
-                if (state.privacyOptionsRequired) {
-                    TextButton(onClick = onPrivacySettings) {
-                        Text(
-                            text = stringResource(R.string.home_privacy_settings),
-                            color = MaterialTheme.colorScheme.onSurface,
-                        )
-                    }
+                IconButton(onClick = onOpenStats) {
+                    Icon(painterResource(R.drawable.ic_bar_chart), contentDescription = stringResource(R.string.stats_title))
+                }
+                IconButton(onClick = onOpenSettings) {
+                    Icon(painterResource(R.drawable.ic_settings), contentDescription = stringResource(R.string.settings_title))
                 }
             }
 
@@ -182,9 +179,10 @@ private fun ModeButton(
 private fun HomeScreenPreview() {
     XoTheme {
         HomeScreen(
-            state = HomeUiState(bannerAdUnitId = "", canRequestAds = true, privacyOptionsRequired = true),
+            state = HomeUiState(bannerAdUnitId = "", canRequestAds = true),
             onStartGame = { _, _ -> },
-            onPrivacySettings = {},
+            onOpenStats = {},
+            onOpenSettings = {},
         )
     }
 }

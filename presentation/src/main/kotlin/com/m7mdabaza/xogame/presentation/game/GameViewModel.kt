@@ -12,21 +12,27 @@ import com.m7mdabaza.xogame.domain.model.Level
 import com.m7mdabaza.xogame.domain.model.MatchLength
 import com.m7mdabaza.xogame.domain.model.MatchState
 import com.m7mdabaza.xogame.domain.model.Player
+import com.m7mdabaza.xogame.domain.model.Starter
 import com.m7mdabaza.xogame.domain.usecase.ComputerMoveUseCase
 import com.m7mdabaza.xogame.domain.usecase.GetHintUseCase
 import com.m7mdabaza.xogame.domain.usecase.MoveResult
+import com.m7mdabaza.xogame.domain.usecase.ObserveSettingsUseCase
 import com.m7mdabaza.xogame.domain.usecase.PlayMoveUseCase
+import com.m7mdabaza.xogame.domain.usecase.RecordGameResultUseCase
 import com.m7mdabaza.xogame.domain.usecase.StartGameUseCase
 import com.m7mdabaza.xogame.domain.usecase.UndoMoveUseCase
+import com.m7mdabaza.xogame.domain.usecase.UpdateSettingsUseCase
 import com.m7mdabaza.xogame.presentation.ads.AdUnitIds
 import com.m7mdabaza.xogame.presentation.di.DefaultDispatcher
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -35,8 +41,10 @@ import kotlin.random.Random
 /**
  * One game screen for every mode and level (replaces the six legacy
  * activities). Owns the match: setup, rounds, the computer's moves, undo,
- * hints and the score. The whole session is saved in [SavedStateHandle] after
- * every change, so it survives rotation and process death.
+ * hints and the score. Finished rounds go into the stats, and the setup
+ * choices are remembered in the settings as next time's defaults. The whole
+ * session is saved in [SavedStateHandle] after every change, so it survives
+ * rotation and process death.
  *
  * The navigation route supplies the `mode` and `level` arguments (enum names).
  */
@@ -48,6 +56,9 @@ class GameViewModel @Inject constructor(
     private val undoMove: UndoMoveUseCase,
     private val computerMove: ComputerMoveUseCase,
     private val getHint: GetHintUseCase,
+    private val observeSettings: ObserveSettingsUseCase,
+    private val updateSettings: UpdateSettingsUseCase,
+    private val recordGameResult: RecordGameResultUseCase,
     private val feedback: GameFeedback,
     adUnitIds: AdUnitIds,
     @param:DefaultDispatcher private val computeDispatcher: CoroutineDispatcher,
@@ -82,6 +93,13 @@ class GameViewModel @Inject constructor(
         _uiState = MutableStateFlow(withDerived(initial))
         uiState = _uiState.asStateFlow()
         save()
+        if (restored == null) {
+            // Fill the setup with the choices remembered from the last match.
+            viewModelScope.launch {
+                val defaults = observeSettings().first().toMatchSettings()
+                update { if (it.hasStarted) it else it.copy(settings = defaults) }
+            }
+        }
         if (_uiState.value.phase == GamePhase.PLAYING && _uiState.value.game.isComputerTurn) startComputerTurn()
     }
 
@@ -144,13 +162,14 @@ class GameViewModel @Inject constructor(
     }
 
     fun onStartMatch(settings: MatchSettings) {
-        startMatch(
-            settings.copy(
-                xName = settings.xName.trim().take(MAX_NAME_LENGTH),
-                oName = settings.oName.trim().take(MAX_NAME_LENGTH),
-            ),
+        val cleaned = settings.copy(
+            xName = settings.xName.trim().take(MAX_NAME_LENGTH),
+            oName = settings.oName.trim().take(MAX_NAME_LENGTH),
         )
+        startMatch(cleaned)
         feedback.newRound()
+        // Next time the setup opens with these choices.
+        viewModelScope.launch { updateSettings { it.withSetupDefaults(cleaned) } }
     }
 
     // --- Game flow ------------------------------------------------------------
@@ -206,6 +225,8 @@ class GameViewModel @Inject constructor(
             game.isOver -> {
                 update { it.copy(match = it.match.record(game.result), computerThinking = false) }
                 feedback.roundEnded(soundFor(game.result, state))
+                // Finish the write even if the user leaves the screen right away.
+                viewModelScope.launch { withContext(NonCancellable) { recordGameResult(game) } }
             }
             game.isComputerTurn -> startComputerTurn()
         }

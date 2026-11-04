@@ -17,9 +17,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.SegmentedButton
-import androidx.compose.material3.SegmentedButtonDefaults
-import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -39,8 +36,10 @@ import androidx.compose.ui.window.DialogProperties
 import com.m7mdabaza.xogame.domain.model.GameMode
 import com.m7mdabaza.xogame.domain.model.MatchLength
 import com.m7mdabaza.xogame.domain.model.Player
+import com.m7mdabaza.xogame.domain.model.Starter
 import com.m7mdabaza.xogame.presentation.R
 import com.m7mdabaza.xogame.presentation.components.OMark
+import com.m7mdabaza.xogame.presentation.components.SegmentedChoices
 import com.m7mdabaza.xogame.presentation.components.XMark
 import com.m7mdabaza.xogame.presentation.theme.XoTheme
 
@@ -55,11 +54,12 @@ fun MatchSetupDialog(
     onStart: (MatchSettings) -> Unit,
     onDismiss: () -> Unit,
 ) {
-    var humanSymbol by rememberSaveable { mutableStateOf(initial.humanSymbol) }
-    var starter by rememberSaveable { mutableStateOf(initial.starter) }
-    var length by rememberSaveable { mutableStateOf(initial.length) }
-    var xName by rememberSaveable { mutableStateOf(initial.xName) }
-    var oName by rememberSaveable { mutableStateOf(initial.oName) }
+    // Keyed on [initial]: the remembered defaults may arrive just after the dialog opens.
+    var humanSymbol by rememberSaveable(initial) { mutableStateOf(initial.humanSymbol) }
+    var starter by rememberSaveable(initial) { mutableStateOf(initial.starter) }
+    var length by rememberSaveable(initial) { mutableStateOf(initial.length) }
+    var xName by rememberSaveable(initial) { mutableStateOf(initial.xName) }
+    var oName by rememberSaveable(initial) { mutableStateOf(initial.oName) }
 
     Dialog(onDismissRequest = onDismiss, properties = DialogProperties(usePlatformDefaultWidth = false)) {
         Surface(
@@ -79,7 +79,7 @@ fun MatchSetupDialog(
                 when (mode) {
                     GameMode.VS_COMPUTER -> {
                         SectionLabel(stringResource(R.string.setup_play_as))
-                        Choices(
+                        SegmentedChoices(
                             options = listOf(Player.X, Player.O),
                             selected = humanSymbol,
                             onSelect = { humanSymbol = it },
@@ -96,7 +96,7 @@ fun MatchSetupDialog(
                 }
 
                 SectionLabel(stringResource(R.string.setup_who_starts))
-                Choices(
+                SegmentedChoices(
                     options = Starter.entries,
                     selected = starter,
                     onSelect = { starter = it },
@@ -114,7 +114,7 @@ fun MatchSetupDialog(
                 }
 
                 SectionLabel(stringResource(R.string.setup_match))
-                Choices(
+                SegmentedChoices(
                     options = MatchLength.entries,
                     selected = length,
                     onSelect = { length = it },
@@ -170,25 +170,6 @@ private fun SectionLabel(text: String) {
         style = MaterialTheme.typography.titleMedium,
         modifier = Modifier.padding(top = 20.dp, bottom = 8.dp),
     )
-}
-
-@Composable
-private fun <T> Choices(
-    options: List<T>,
-    selected: T,
-    onSelect: (T) -> Unit,
-    label: @Composable (T) -> Unit,
-) {
-    SingleChoiceSegmentedButtonRow(Modifier.fillMaxWidth()) {
-        options.forEachIndexed { index, option ->
-            SegmentedButton(
-                selected = option == selected,
-                onClick = { onSelect(option) },
-                shape = SegmentedButtonDefaults.itemShape(index, options.size),
-                label = { label(option) },
-            )
-        }
-    }
 }
 
 @Composable

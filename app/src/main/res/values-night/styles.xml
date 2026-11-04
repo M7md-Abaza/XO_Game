@@ -1,0 +1,6 @@
+<resources>
+    <!-- Window background behind the Compose UI when the system is in dark mode (avoids a white flash). -->
+    <style name="Theme.XoGame" parent="Theme.AppCompat.NoActionBar">
+        <item name="android:windowBackground">#FF121210</item>
+    </style>
+</resources>

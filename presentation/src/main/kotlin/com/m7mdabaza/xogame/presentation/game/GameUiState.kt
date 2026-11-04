@@ -7,13 +7,9 @@ import com.m7mdabaza.xogame.domain.model.Level
 import com.m7mdabaza.xogame.domain.model.MatchLength
 import com.m7mdabaza.xogame.domain.model.MatchState
 import com.m7mdabaza.xogame.domain.model.Player
+import com.m7mdabaza.xogame.domain.model.Settings
+import com.m7mdabaza.xogame.domain.model.Starter
 import kotlin.random.Random
-
-/**
- * Who moves first. Player one is the human against the computer, or X in
- * two-player mode.
- */
-enum class Starter { PLAYER_ONE, PLAYER_TWO, RANDOM }
 
 /** Everything chosen in the setup dialog before a match. */
 data class MatchSettings(
@@ -34,6 +30,24 @@ data class MatchSettings(
         Starter.RANDOM -> if (random.nextBoolean()) Player.X else Player.O
     }
 }
+
+/** The setup choices remembered from the last match (see [Settings]). */
+fun Settings.toMatchSettings() = MatchSettings(
+    humanSymbol = humanSymbol,
+    starter = starter,
+    length = matchLength,
+    xName = xName,
+    oName = oName,
+)
+
+/** These settings with the setup defaults replaced by [match]'s choices. */
+fun Settings.withSetupDefaults(match: MatchSettings) = copy(
+    humanSymbol = match.humanSymbol,
+    starter = match.starter,
+    matchLength = match.length,
+    xName = match.xName,
+    oName = match.oName,
+)
 
 enum class GamePhase {
     /** The setup dialog is open. */

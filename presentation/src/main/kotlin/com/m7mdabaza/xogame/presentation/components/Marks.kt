@@ -24,8 +24,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.m7mdabaza.xogame.presentation.R
-import com.m7mdabaza.xogame.presentation.theme.BrandBlack
-import com.m7mdabaza.xogame.presentation.theme.BrandYellow
+import com.m7mdabaza.xogame.presentation.theme.XoTheme
 
 /**
  * Draws an X filling [size] (0..1 of [progress] draws it partially, used for
@@ -65,12 +64,12 @@ fun DrawScope.drawO(color: Color, progress: Float = 1f, strokeFraction: Float = 
 private fun lerp(a: Offset, b: Offset, t: Float) = Offset(a.x + (b.x - a.x) * t, a.y + (b.y - a.y) * t)
 
 @Composable
-fun XMark(modifier: Modifier = Modifier, color: Color = BrandYellow) {
+fun XMark(modifier: Modifier = Modifier, color: Color = XoTheme.colors.x) {
     Canvas(modifier) { drawX(color) }
 }
 
 @Composable
-fun OMark(modifier: Modifier = Modifier, color: Color = BrandBlack) {
+fun OMark(modifier: Modifier = Modifier, color: Color = XoTheme.colors.o) {
     Canvas(modifier) { drawO(color) }
 }
 

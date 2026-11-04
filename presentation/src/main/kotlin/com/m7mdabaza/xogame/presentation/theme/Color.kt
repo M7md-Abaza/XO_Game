@@ -16,3 +16,17 @@ val SurfaceWhite = Color(0xFFFFFFFF)
 val SurfaceVariantLight = Color(0xFFF6F3E6)
 val OnSurfaceDark = Color(0xFF1C1B17)
 val OnSurfaceVariantLight = Color(0xFF5E5A48)
+
+// Dark theme
+val BackgroundDark = Color(0xFF121210)
+val SurfaceContainerLowDark = Color(0xFF1C1B17)
+val SurfaceContainerHighDark = Color(0xFF26251F)
+val SurfaceVariantDark = Color(0xFF2E2C24)
+val OnSurfaceLight = Color(0xFFECE9DF)
+val OnSurfaceVariantDark = Color(0xFFCBC5AE)
+val YellowContainerDark = Color(0xFF4A4210)
+
+/** O on a dark background: near-white instead of black. */
+val OMarkDark = Color(0xFFEDEDED)
+val FadedYellowDark = Color(0xFF332E10)
+val FadedGrayDark = Color(0xFF2A2A2A)

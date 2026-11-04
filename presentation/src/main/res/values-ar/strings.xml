@@ -66,4 +66,41 @@
     <string name="setup_take_turns">يتناوب اللاعبان على البدء في كل جولة.</string>
     <string name="setup_start">ابدأ</string>
     <string name="setup_cancel">إلغاء</string>
+
+
+    <!-- Settings -->
+    <string name="settings_title">الإعدادات</string>
+    <string name="settings_section_feedback">الصوت والاهتزاز</string>
+    <string name="settings_sound">المؤثرات الصوتية</string>
+    <string name="settings_vibration">الاهتزاز</string>
+    <string name="settings_section_appearance">المظهر</string>
+    <string name="settings_theme">السمة</string>
+    <string name="settings_system">النظام</string>
+    <string name="settings_theme_light">فاتح</string>
+    <string name="settings_theme_dark">داكن</string>
+    <string name="settings_language">اللغة</string>
+    <string name="settings_section_game">اللعبة</string>
+    <string name="settings_default_match">المباراة الافتراضية</string>
+    <string name="settings_default_match_hint">يبدأ إعداد اللعبة بهذا الخيار، ويتذكر أيضًا اختياراتك في آخر مباراة.</string>
+    <string name="settings_section_privacy">الخصوصية</string>
+    <string name="settings_privacy_summary">غيّر اختياراتك للموافقة على الإعلانات</string>
+
+    <!-- Statistics -->
+    <string name="stats_title">الإحصائيات</string>
+    <string name="stats_tab_vs_computer">ضد الهاتف</string>
+    <string name="stats_tab_two_players">لاعبان</string>
+    <string name="stats_no_games">لا توجد مباريات بعد</string>
+    <string name="stats_played">لُعبت</string>
+    <string name="stats_wins">فوز</string>
+    <string name="stats_losses">خسارة</string>
+    <string name="stats_draws">تعادل</string>
+    <string name="stats_win_rate">نسبة الفوز</string>
+    <string name="stats_streak">السلسلة</string>
+    <string name="stats_best_streak">أفضل سلسلة</string>
+    <string name="stats_x_wins">فوز X</string>
+    <string name="stats_o_wins">فوز O</string>
+    <string name="stats_reset">إعادة ضبط الإحصائيات</string>
+    <string name="stats_reset_title">إعادة ضبط الإحصائيات؟</string>
+    <string name="stats_reset_message">سيؤدي هذا إلى حذف نتائج الوضعين، ولا يمكن التراجع عنه.</string>
+    <string name="stats_reset_confirm">إعادة الضبط</string>
 </resources>

@@ -77,4 +77,44 @@
     <string name="setup_take_turns">Players take turns to start each round.</string>
     <string name="setup_start">Start</string>
     <string name="setup_cancel">Cancel</string>
+
+
+    <!-- Settings -->
+    <string name="settings_title">Settings</string>
+    <string name="settings_section_feedback">Sound and vibration</string>
+    <string name="settings_sound">Sound effects</string>
+    <string name="settings_vibration">Vibration</string>
+    <string name="settings_section_appearance">Appearance</string>
+    <string name="settings_theme">Theme</string>
+    <string name="settings_system">System</string>
+    <string name="settings_theme_light">Light</string>
+    <string name="settings_theme_dark">Dark</string>
+    <string name="settings_language">Language</string>
+    <!-- Language names are shown in their own language, so they are not translated. -->
+    <string name="language_english" translatable="false">English</string>
+    <string name="language_arabic" translatable="false">العربية</string>
+    <string name="settings_section_game">Game</string>
+    <string name="settings_default_match">Default match</string>
+    <string name="settings_default_match_hint">The game setup starts with this. It also remembers the choices of your last match.</string>
+    <string name="settings_section_privacy">Privacy</string>
+    <string name="settings_privacy_summary">Change your ad consent choices</string>
+
+    <!-- Statistics -->
+    <string name="stats_title">Statistics</string>
+    <string name="stats_tab_vs_computer">Vs phone</string>
+    <string name="stats_tab_two_players">Two players</string>
+    <string name="stats_no_games">No games yet</string>
+    <string name="stats_played">Played</string>
+    <string name="stats_wins">Wins</string>
+    <string name="stats_losses">Losses</string>
+    <string name="stats_draws">Draws</string>
+    <string name="stats_win_rate">Win rate</string>
+    <string name="stats_streak">Streak</string>
+    <string name="stats_best_streak">Best streak</string>
+    <string name="stats_x_wins">X wins</string>
+    <string name="stats_o_wins">O wins</string>
+    <string name="stats_reset">Reset statistics</string>
+    <string name="stats_reset_title">Reset statistics?</string>
+    <string name="stats_reset_message">This deletes the results of both modes and can\'t be undone.</string>
+    <string name="stats_reset_confirm">Reset</string>
 </resources>
