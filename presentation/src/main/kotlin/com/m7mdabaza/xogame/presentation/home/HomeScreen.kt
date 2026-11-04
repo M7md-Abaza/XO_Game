@@ -133,7 +133,7 @@ fun HomeScreen(
             )
 
             Spacer(Modifier.weight(1.3f))
-            if (state.canRequestAds) {
+            if (state.canRequestAds && !state.adsRemoved) {
                 BannerAd(adUnitId = state.bannerAdUnitId)
             }
         }

@@ -1,5 +1,7 @@
 package com.m7mdabaza.xogame.presentation.game
 
+import com.m7mdabaza.xogame.domain.model.AssistAccess
+import com.m7mdabaza.xogame.domain.model.AssistKind
 import com.m7mdabaza.xogame.domain.model.Cell
 import com.m7mdabaza.xogame.domain.model.GameMode
 import com.m7mdabaza.xogame.domain.model.GameState
@@ -61,6 +63,18 @@ enum class GamePhase {
     MATCH_OVER,
 }
 
+/** One-off things the game screen has to do for the ViewModel. */
+sealed interface GameEvent {
+    /** Show the interstitial, then call `onInterstitialFinished`. */
+    data object ShowInterstitial : GameEvent
+
+    /** Show a rewarded ad for [kind], then call `onRewardedFinished` (or `onRewardedUnavailable`). */
+    data class ShowRewarded(val kind: AssistKind) : GameEvent
+
+    /** No rewarded ad is ready yet. */
+    data object AdNotReady : GameEvent
+}
+
 data class GameUiState(
     val mode: GameMode,
     val level: Level,
@@ -77,6 +91,16 @@ data class GameUiState(
     val hint: Cell? = null,
     val canUndo: Boolean = false,
     val bannerAdUnitId: String,
+    val interstitialAdUnitId: String = "",
+    val rewardedAdUnitId: String = "",
+    val adsRemoved: Boolean = false,
+    /** Remove-ads buyers' free hint / undo of this round is used up. */
+    val freeHintUsed: Boolean = false,
+    val freeUndoUsed: Boolean = false,
+    val hintAccess: AssistAccess = AssistAccess.REWARDED_AD,
+    val undoAccess: AssistAccess = AssistAccess.REWARDED_AD,
+    /** Asking "watch an ad for a hint/undo?". */
+    val assistOffer: AssistKind? = null,
 ) {
     val phase: GamePhase
         get() = when {

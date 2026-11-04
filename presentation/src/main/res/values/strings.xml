@@ -117,4 +117,33 @@
     <string name="stats_reset_title">Reset statistics?</string>
     <string name="stats_reset_message">This deletes the results of both modes and can\'t be undone.</string>
     <string name="stats_reset_confirm">Reset</string>
+
+
+    <!-- Rewarded ads for hint / undo -->
+    <string name="ads_needs_ad">costs a short ad</string>
+    <string name="ads_not_ready">The ad isn\'t ready yet. Try again in a moment.</string>
+    <string name="ads_offer_hint_title">Get a hint?</string>
+    <string name="ads_offer_undo_title">Undo your move?</string>
+    <string name="ads_offer_message">Watch a short ad to get it.</string>
+    <string name="ads_offer_message_free_used">You\'ve used this game\'s free one. Watch a short ad for another.</string>
+    <string name="ads_offer_watch">Watch ad</string>
+    <string name="ads_offer_remove_ads">Remove ads: a free hint and undo every game</string>
+
+    <!-- Remove ads purchase -->
+    <string name="remove_ads_title">Remove ads</string>
+    <string name="remove_ads_description">No more banners or ads between rounds. You also get a free hint and a free undo every game.</string>
+    <!-- %1$s = price with currency, e.g. $1.99 -->
+    <string name="remove_ads_buy">Remove ads · %1$s</string>
+    <string name="remove_ads_not_available">Not available right now. Check that Google Play is signed in and online.</string>
+    <string name="remove_ads_thanks">Ads are removed. Thank you for supporting the game!</string>
+    <string name="remove_ads_simulate">Simulate Remove ads (debug build only)</string>
+    <string name="remove_ads_purchased">Thank you! Ads are removed.</string>
+    <string name="remove_ads_pending">Payment pending. Ads go away as soon as it completes.</string>
+    <string name="remove_ads_already_owned">You already own Remove ads. It\'s been restored.</string>
+    <string name="remove_ads_unavailable">Google Play billing isn\'t available right now.</string>
+    <string name="remove_ads_error">Something went wrong. You weren\'t charged. Please try again.</string>
+    <string name="restore_purchases">Restore purchases</string>
+    <string name="restore_restored">Remove ads restored.</string>
+    <string name="restore_nothing">No purchases found for this Google account.</string>
+    <string name="restore_error">Couldn\'t reach Google Play. Please try again.</string>
 </resources>

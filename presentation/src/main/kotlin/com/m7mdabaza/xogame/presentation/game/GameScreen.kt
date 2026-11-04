@@ -1,6 +1,7 @@
 package com.m7mdabaza.xogame.presentation.game
 
 import androidx.activity.compose.BackHandler
+import androidx.activity.compose.LocalActivity
 import androidx.annotation.DrawableRes
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.BorderStroke
@@ -31,10 +32,13 @@ import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -55,6 +59,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.m7mdabaza.xogame.domain.model.AssistAccess
+import com.m7mdabaza.xogame.domain.model.AssistKind
 import com.m7mdabaza.xogame.domain.model.Cell
 import com.m7mdabaza.xogame.domain.model.GameMode
 import com.m7mdabaza.xogame.domain.model.GameResult
@@ -63,6 +69,8 @@ import com.m7mdabaza.xogame.domain.model.Player
 import com.m7mdabaza.xogame.presentation.R
 import com.m7mdabaza.xogame.presentation.ads.BannerAd
 import com.m7mdabaza.xogame.presentation.ads.ConsentManager
+import com.m7mdabaza.xogame.presentation.ads.InterstitialAdManager
+import com.m7mdabaza.xogame.presentation.ads.RewardedAdManager
 import com.m7mdabaza.xogame.presentation.components.OMark
 import com.m7mdabaza.xogame.presentation.components.XMark
 import com.m7mdabaza.xogame.presentation.home.titleRes
@@ -72,15 +80,44 @@ import com.m7mdabaza.xogame.presentation.theme.XoTheme
 @Composable
 fun GameRoute(
     onBack: () -> Unit,
+    onOpenSettings: () -> Unit,
     viewModel: GameViewModel = hiltViewModel(),
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
+    val activity = LocalActivity.current
     val canRequestAds = remember { ConsentManager.canRequestAds(context) }
+    val snackbar = remember { SnackbarHostState() }
+    val adNotReady = stringResource(R.string.ads_not_ready)
+
+    // Full-screen ads, loaded ahead of time. Interstitials only while ads aren't removed.
+    val interstitial = remember(activity, state.interstitialAdUnitId) {
+        activity?.let { InterstitialAdManager(it, state.interstitialAdUnitId) }
+    }
+    val rewarded = remember(activity, state.rewardedAdUnitId) {
+        activity?.let { RewardedAdManager(it, state.rewardedAdUnitId) }
+    }
+    LaunchedEffect(interstitial, state.adsRemoved) { if (!state.adsRemoved) interstitial?.load() }
+    LaunchedEffect(rewarded) { rewarded?.load() }
+
+    LaunchedEffect(viewModel) {
+        viewModel.events.collect { event ->
+            when (event) {
+                GameEvent.ShowInterstitial ->
+                    interstitial?.show(viewModel::onInterstitialFinished) ?: viewModel.onInterstitialFinished(false)
+                is GameEvent.ShowRewarded -> {
+                    val shown = rewarded?.show { earned -> viewModel.onRewardedFinished(event.kind, earned) } ?: false
+                    if (!shown) viewModel.onRewardedUnavailable()
+                }
+                GameEvent.AdNotReady -> snackbar.showSnackbar(adNotReady)
+            }
+        }
+    }
 
     GameScreen(
         state = state,
         showBanner = canRequestAds,
+        snackbar = snackbar,
         actions = GameActions(
             onBack = onBack,
             onCellClick = viewModel::onCellClick,
@@ -92,6 +129,12 @@ fun GameRoute(
             onStartMatch = viewModel::onStartMatch,
             // Before the first match there is nothing to go back to.
             onDismissSetup = { if (state.hasStarted) viewModel.onDismissSetup() else onBack() },
+            onAssistOfferAccepted = viewModel::onAssistOfferAccepted,
+            onAssistOfferDismissed = viewModel::onAssistOfferDismissed,
+            onRemoveAds = {
+                viewModel.onAssistOfferDismissed()
+                onOpenSettings()
+            },
         ),
     )
 }
@@ -107,6 +150,10 @@ data class GameActions(
     val onOpenSetup: () -> Unit = {},
     val onStartMatch: (MatchSettings) -> Unit = {},
     val onDismissSetup: () -> Unit = {},
+    val onAssistOfferAccepted: () -> Unit = {},
+    val onAssistOfferDismissed: () -> Unit = {},
+    /** Go to the Remove-ads offer (in Settings). */
+    val onRemoveAds: () -> Unit = {},
 )
 
 @Composable
@@ -114,58 +161,62 @@ fun GameScreen(
     state: GameUiState,
     showBanner: Boolean,
     actions: GameActions,
+    snackbar: SnackbarHostState = remember { SnackbarHostState() },
 ) {
     BackHandler(onBack = actions.onBack)
 
-    Column(
-        Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-            .safeDrawingPadding(),
-    ) {
-        BoxWithConstraints(
+    Box(Modifier.fillMaxSize()) {
+        Column(
             Modifier
-                .weight(1f)
-                .fillMaxWidth(),
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background)
+                .safeDrawingPadding(),
         ) {
-            if (maxWidth > maxHeight * 1.2f) {
-                // Wide window (the app is locked to portrait, but split screen, desktop
-                // windowing and large screens on Android 16+ can still be wide): the board
-                // gets the full height on the start side; the top bar and everything else
-                // go beside it.
-                Row(Modifier.fillMaxSize().padding(start = 16.dp), verticalAlignment = Alignment.CenterVertically) {
-                    Board(state, actions, Modifier.fillMaxHeight().padding(vertical = 8.dp))
-                    Spacer(Modifier.width(16.dp))
-                    Column(Modifier.weight(1f).fillMaxHeight(), horizontalAlignment = Alignment.CenterHorizontally) {
+            BoxWithConstraints(
+                Modifier
+                    .weight(1f)
+                    .fillMaxWidth(),
+            ) {
+                if (maxWidth > maxHeight * 1.2f) {
+                    // Wide window (the app is locked to portrait, but split screen, desktop
+                    // windowing and large screens on Android 16+ can still be wide): the board
+                    // gets the full height on the start side; the top bar and everything else
+                    // go beside it.
+                    Row(Modifier.fillMaxSize().padding(start = 16.dp), verticalAlignment = Alignment.CenterVertically) {
+                        Board(state, actions, Modifier.fillMaxHeight().padding(vertical = 8.dp))
+                        Spacer(Modifier.width(16.dp))
+                        Column(Modifier.weight(1f).fillMaxHeight(), horizontalAlignment = Alignment.CenterHorizontally) {
+                            TopBar(state, actions)
+                            Column(
+                                Modifier.weight(1f).padding(horizontal = 16.dp),
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.Center,
+                            ) {
+                                Controls(state, actions)
+                            }
+                        }
+                    }
+                } else {
+                    Column(Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
                         TopBar(state, actions)
                         Column(
                             Modifier.weight(1f).padding(horizontal = 16.dp),
                             horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.Center,
                         ) {
-                            Controls(state, actions)
+                            Scoreboard(state)
+                            StatusLine(state, Modifier.padding(top = 12.dp))
+                            Box(Modifier.weight(1f).fillMaxWidth(), contentAlignment = Alignment.Center) {
+                                Board(state, actions, Modifier.padding(vertical = 8.dp))
+                            }
+                            BottomPanel(state, actions)
+                            Spacer(Modifier.height(8.dp))
                         }
-                    }
-                }
-            } else {
-                Column(Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
-                    TopBar(state, actions)
-                    Column(
-                        Modifier.weight(1f).padding(horizontal = 16.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                    ) {
-                        Scoreboard(state)
-                        StatusLine(state, Modifier.padding(top = 12.dp))
-                        Box(Modifier.weight(1f).fillMaxWidth(), contentAlignment = Alignment.Center) {
-                            Board(state, actions, Modifier.padding(vertical = 8.dp))
-                        }
-                        BottomPanel(state, actions)
-                        Spacer(Modifier.height(8.dp))
                     }
                 }
             }
+            if (showBanner && !state.adsRemoved) BannerAd(adUnitId = state.bannerAdUnitId)
         }
-        if (showBanner) BannerAd(adUnitId = state.bannerAdUnitId)
+        SnackbarHost(snackbar, Modifier.align(Alignment.BottomCenter).padding(bottom = 96.dp))
     }
 
     if (state.showSetup) {
@@ -177,6 +228,7 @@ fun GameScreen(
         )
     }
     MatchOverDialog(state, actions)
+    AssistOfferDialog(state, actions)
 }
 
 @Composable
@@ -354,13 +406,20 @@ private fun BottomPanel(state: GameUiState, actions: GameActions) {
     ) { playing ->
         if (playing) {
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
-                ActionButton(R.drawable.ic_undo, stringResource(R.string.game_undo), state.canUndo, actions.onUndo)
+                ActionButton(
+                    R.drawable.ic_undo,
+                    stringResource(R.string.game_undo),
+                    state.canUndo,
+                    actions.onUndo,
+                    needsAd = state.undoAccess == AssistAccess.REWARDED_AD,
+                )
                 ActionButton(
                     R.drawable.ic_lightbulb,
                     stringResource(R.string.game_hint),
                     state.canHint,
                     actions.onHint,
                     loading = state.hintLoading,
+                    needsAd = state.hintAccess == AssistAccess.REWARDED_AD,
                 )
                 ActionButton(
                     R.drawable.ic_refresh,
@@ -393,6 +452,8 @@ private fun ActionButton(
     enabled: Boolean,
     onClick: () -> Unit,
     loading: Boolean = false,
+    /** Shows a small ad marker: using it costs a rewarded ad. */
+    needsAd: Boolean = false,
 ) {
     FilledTonalButton(onClick = onClick, enabled = enabled, modifier = Modifier.heightIn(min = 48.dp)) {
         if (loading) {
@@ -402,6 +463,14 @@ private fun ActionButton(
         }
         Spacer(Modifier.width(6.dp))
         Text(label, maxLines = 1)
+        if (needsAd) {
+            Spacer(Modifier.width(4.dp))
+            Icon(
+                painterResource(R.drawable.ic_ad_video),
+                contentDescription = stringResource(R.string.ads_needs_ad),
+                modifier = Modifier.size(16.dp),
+            )
+        }
     }
 }
 
@@ -442,6 +511,51 @@ private fun MatchOverDialog(state: GameUiState, actions: GameActions) {
             ) {
                 Text(stringResource(R.string.game_settings))
             }
+        },
+    )
+}
+
+/** "Watch a short ad for a hint/undo?" — rewarded ads are always the player's choice. */
+@Composable
+private fun AssistOfferDialog(state: GameUiState, actions: GameActions) {
+    val kind = state.assistOffer ?: return
+    AlertDialog(
+        onDismissRequest = actions.onAssistOfferDismissed,
+        icon = {
+            Icon(
+                painterResource(if (kind == AssistKind.HINT) R.drawable.ic_lightbulb else R.drawable.ic_undo),
+                contentDescription = null,
+            )
+        },
+        title = {
+            Text(stringResource(if (kind == AssistKind.HINT) R.string.ads_offer_hint_title else R.string.ads_offer_undo_title))
+        },
+        text = {
+            Column {
+                Text(stringResource(if (state.adsRemoved) R.string.ads_offer_message_free_used else R.string.ads_offer_message))
+                if (!state.adsRemoved) {
+                    TextButton(
+                        onClick = actions.onRemoveAds,
+                        colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.secondary),
+                        modifier = Modifier.padding(top = 8.dp),
+                    ) {
+                        Text(stringResource(R.string.ads_offer_remove_ads))
+                    }
+                }
+            }
+        },
+        confirmButton = {
+            Button(onClick = actions.onAssistOfferAccepted) {
+                Icon(painterResource(R.drawable.ic_ad_video), contentDescription = null, modifier = Modifier.size(18.dp))
+                Spacer(Modifier.width(8.dp))
+                Text(stringResource(R.string.ads_offer_watch))
+            }
+        },
+        dismissButton = {
+            TextButton(
+                onClick = actions.onAssistOfferDismissed,
+                colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.secondary),
+            ) { Text(stringResource(R.string.setup_cancel)) }
         },
     )
 }

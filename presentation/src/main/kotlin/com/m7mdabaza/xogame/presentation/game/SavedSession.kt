@@ -25,6 +25,9 @@ internal data class SavedSession(
     val xWins: Int,
     val oWins: Int,
     val draws: Int,
+    // Added in milestone 6; defaults let older saved sessions still load.
+    val freeHintUsed: Boolean = false,
+    val freeUndoUsed: Boolean = false,
 ) {
     fun encode(): String = json.encodeToString(serializer(), this)
 

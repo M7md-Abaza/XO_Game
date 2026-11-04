@@ -3,6 +3,8 @@ package com.m7mdabaza.xogame.presentation.game
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.m7mdabaza.xogame.domain.model.AssistAccess
+import com.m7mdabaza.xogame.domain.model.AssistKind
 import com.m7mdabaza.xogame.domain.model.Cell
 import com.m7mdabaza.xogame.domain.model.GameConfig
 import com.m7mdabaza.xogame.domain.model.GameMode
@@ -14,11 +16,16 @@ import com.m7mdabaza.xogame.domain.model.MatchState
 import com.m7mdabaza.xogame.domain.model.Player
 import com.m7mdabaza.xogame.domain.model.Starter
 import com.m7mdabaza.xogame.domain.usecase.ComputerMoveUseCase
+import com.m7mdabaza.xogame.domain.usecase.GetAssistAccessUseCase
 import com.m7mdabaza.xogame.domain.usecase.GetHintUseCase
 import com.m7mdabaza.xogame.domain.usecase.MoveResult
+import com.m7mdabaza.xogame.domain.usecase.ObserveAdsRemovedUseCase
 import com.m7mdabaza.xogame.domain.usecase.ObserveSettingsUseCase
 import com.m7mdabaza.xogame.domain.usecase.PlayMoveUseCase
 import com.m7mdabaza.xogame.domain.usecase.RecordGameResultUseCase
+import com.m7mdabaza.xogame.domain.usecase.RecordInterstitialShownUseCase
+import com.m7mdabaza.xogame.domain.usecase.RecordRoundForAdsUseCase
+import com.m7mdabaza.xogame.domain.usecase.ShouldShowInterstitialUseCase
 import com.m7mdabaza.xogame.domain.usecase.StartGameUseCase
 import com.m7mdabaza.xogame.domain.usecase.UndoMoveUseCase
 import com.m7mdabaza.xogame.domain.usecase.UpdateSettingsUseCase
@@ -28,11 +35,14 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -45,6 +55,11 @@ import kotlin.random.Random
  * choices are remembered in the settings as next time's defaults. The whole
  * session is saved in [SavedStateHandle] after every change, so it survives
  * rotation and process death.
+ *
+ * Ads: an interstitial may show between rounds (see
+ * [ShouldShowInterstitialUseCase]); hints and undos are free or cost a
+ * rewarded ad (see [GetAssistAccessUseCase]). The screen shows the ads when
+ * asked through [events] and reports back.
  *
  * The navigation route supplies the `mode` and `level` arguments (enum names).
  */
@@ -59,6 +74,11 @@ class GameViewModel @Inject constructor(
     private val observeSettings: ObserveSettingsUseCase,
     private val updateSettings: UpdateSettingsUseCase,
     private val recordGameResult: RecordGameResultUseCase,
+    private val observeAdsRemoved: ObserveAdsRemovedUseCase,
+    private val getAssistAccess: GetAssistAccessUseCase,
+    private val shouldShowInterstitial: ShouldShowInterstitialUseCase,
+    private val recordInterstitialShown: RecordInterstitialShownUseCase,
+    private val recordRoundForAds: RecordRoundForAdsUseCase,
     private val feedback: GameFeedback,
     adUnitIds: AdUnitIds,
     @param:DefaultDispatcher private val computeDispatcher: CoroutineDispatcher,
@@ -74,22 +94,30 @@ class GameViewModel @Inject constructor(
     private var computerJob: Job? = null
     private var hintJob: Job? = null
 
+    /** Worked out when a round ends, so "next round" can decide right away. */
+    private var interstitialDue = false
+
+    private val _events = Channel<GameEvent>(Channel.BUFFERED)
+    val events: Flow<GameEvent> = _events.receiveAsFlow()
+
     private val _uiState: MutableStateFlow<GameUiState>
     val uiState: StateFlow<GameUiState>
 
     init {
         val banner = adUnitIds.gameBanner(mode, level)
         val restored = SavedSession.decode(savedStateHandle[KEY_SESSION])?.let { restore(it, banner) }
-        val initial = restored ?: GameUiState(
-            mode = mode,
-            level = level,
-            settings = MatchSettings(),
-            game = startGame(configFor(MatchSettings(), Player.X)),
-            match = MatchState(MatchLength.SINGLE),
-            showSetup = true,
-            hasStarted = false,
-            bannerAdUnitId = banner,
-        )
+        val initial = (
+            restored ?: GameUiState(
+                mode = mode,
+                level = level,
+                settings = MatchSettings(),
+                game = startGame(configFor(MatchSettings(), Player.X)),
+                match = MatchState(MatchLength.SINGLE),
+                showSetup = true,
+                hasStarted = false,
+                bannerAdUnitId = banner,
+            )
+            ).copy(interstitialAdUnitId = adUnitIds.interstitial(mode, level), rewardedAdUnitId = adUnitIds.rewarded)
         _uiState = MutableStateFlow(withDerived(initial))
         uiState = _uiState.asStateFlow()
         save()
@@ -99,6 +127,9 @@ class GameViewModel @Inject constructor(
                 val defaults = observeSettings().first().toMatchSettings()
                 update { if (it.hasStarted) it else it.copy(settings = defaults) }
             }
+        }
+        viewModelScope.launch {
+            observeAdsRemoved().collect { removed -> update { it.copy(adsRemoved = removed) } }
         }
         if (_uiState.value.phase == GamePhase.PLAYING && _uiState.value.game.isComputerTurn) startComputerTurn()
     }
@@ -110,42 +141,84 @@ class GameViewModel @Inject constructor(
         place(cell, byComputer = false)
     }
 
-    /** Only while a round is being played: a finished round (won, lost or drawn) can't be undone. */
+    /**
+     * Only while a round is being played: a finished round (won, lost or
+     * drawn) can't be undone. Free or after a rewarded ad (see [GameUiState.undoAccess]).
+     */
     fun onUndo() {
         val state = _uiState.value
         if (!state.canUndo) return
-        val undone = undoMove(state.game) ?: return
-        cancelJobs()
-        update { it.copy(game = undone, computerThinking = false, hintLoading = false, hint = null) }
-    }
-
-    fun onHint() {
-        val state = _uiState.value
-        if (!state.canHint) return
-        update { it.copy(hintLoading = true) }
-        hintJob = viewModelScope.launch {
-            val cell = withContext(computeDispatcher) { getHint(state.game) }
-            update { it.copy(hintLoading = false, hint = cell) }
+        when (state.undoAccess) {
+            AssistAccess.FREE -> {
+                // In two-player mode undo is always free; only a buyer's free undo is "used".
+                val usesFreeTurn = mode != GameMode.TWO_PLAYERS
+                undo(markFreeUse = usesFreeTurn)
+            }
+            AssistAccess.REWARDED_AD -> update { it.copy(assistOffer = AssistKind.UNDO) }
         }
     }
 
-    /** Starts the current round again from an empty board, without scoring it. */
+    /** Free once per round for Remove-ads buyers, otherwise after a rewarded ad (see [GameUiState.hintAccess]). */
+    fun onHint() {
+        val state = _uiState.value
+        if (!state.canHint) return
+        when (state.hintAccess) {
+            AssistAccess.FREE -> showHint(markFreeUse = true)
+            AssistAccess.REWARDED_AD -> update { it.copy(assistOffer = AssistKind.HINT) }
+        }
+    }
+
+    /** The player agreed to watch an ad for the offered hint/undo. */
+    fun onAssistOfferAccepted() {
+        val kind = _uiState.value.assistOffer ?: return
+        update { it.copy(assistOffer = null) }
+        _events.trySend(GameEvent.ShowRewarded(kind))
+    }
+
+    fun onAssistOfferDismissed() {
+        update { it.copy(assistOffer = null) }
+    }
+
+    /** The rewarded ad closed; the assist is given only if the reward was earned. */
+    fun onRewardedFinished(kind: AssistKind, rewarded: Boolean) {
+        if (!rewarded) return
+        when (kind) {
+            AssistKind.HINT -> if (_uiState.value.canHint) showHint(markFreeUse = false)
+            AssistKind.UNDO -> if (_uiState.value.canUndo) undo(markFreeUse = false)
+        }
+    }
+
+    fun onRewardedUnavailable() {
+        _events.trySend(GameEvent.AdNotReady)
+    }
+
+    /** Starts the current round again from an empty board, without scoring it (free uses stay used). */
     fun onRestartRound() {
         val state = _uiState.value
         if (state.phase != GamePhase.PLAYING) return
         feedback.newRound()
-        startRound(state.settings, state.match, state.game.config.firstPlayer)
+        startRound(state.settings, state.match, state.game.config.firstPlayer, resetFreeUses = false)
     }
 
-    /** After a round: the next round, or a new match with the same settings when the match is over. */
+    /**
+     * After a round: the next round, or a new match with the same settings
+     * when the match is over. An interstitial may come first.
+     */
     fun onNextRound() {
-        val state = _uiState.value
-        when (state.phase) {
-            GamePhase.ROUND_OVER -> startRound(state.settings, state.match, firstPlayerOfNextRound(state))
-            GamePhase.MATCH_OVER -> startMatch(state.settings)
-            else -> return
+        val phase = _uiState.value.phase
+        if (phase != GamePhase.ROUND_OVER && phase != GamePhase.MATCH_OVER) return
+        if (interstitialDue && !_uiState.value.adsRemoved) {
+            interstitialDue = false
+            _events.trySend(GameEvent.ShowInterstitial)
+        } else {
+            goToNextRound()
         }
-        feedback.newRound()
+    }
+
+    /** The interstitial closed (or none was ready); continue to the next round. */
+    fun onInterstitialFinished(shown: Boolean) {
+        if (shown) viewModelScope.launch { withContext(NonCancellable) { recordInterstitialShown() } }
+        goToNextRound()
     }
 
     fun onOpenSetup() {
@@ -174,12 +247,22 @@ class GameViewModel @Inject constructor(
 
     // --- Game flow ------------------------------------------------------------
 
+    private fun goToNextRound() {
+        val state = _uiState.value
+        when (state.phase) {
+            GamePhase.ROUND_OVER -> startRound(state.settings, state.match, firstPlayerOfNextRound(state))
+            GamePhase.MATCH_OVER -> startMatch(state.settings)
+            else -> return
+        }
+        feedback.newRound()
+    }
+
     private fun startMatch(settings: MatchSettings) {
         matchFirstPlayer = settings.resolveStarter(mode, random)
         startRound(settings, MatchState(settings.length), matchFirstPlayer)
     }
 
-    private fun startRound(settings: MatchSettings, match: MatchState, firstPlayer: Player) {
+    private fun startRound(settings: MatchSettings, match: MatchState, firstPlayer: Player, resetFreeUses: Boolean = true) {
         cancelJobs()
         update {
             it.copy(
@@ -191,6 +274,9 @@ class GameViewModel @Inject constructor(
                 computerThinking = false,
                 hintLoading = false,
                 hint = null,
+                assistOffer = null,
+                freeHintUsed = if (resetFreeUses) false else it.freeHintUsed,
+                freeUndoUsed = if (resetFreeUses) false else it.freeUndoUsed,
             )
         }
         if (_uiState.value.game.isComputerTurn) startComputerTurn()
@@ -209,6 +295,29 @@ class GameViewModel @Inject constructor(
             matchFirstPlayer.opponent
         }
 
+    private fun undo(markFreeUse: Boolean) {
+        val undone = undoMove(_uiState.value.game) ?: return
+        cancelJobs()
+        update {
+            it.copy(
+                game = undone,
+                computerThinking = false,
+                hintLoading = false,
+                hint = null,
+                freeUndoUsed = it.freeUndoUsed || (markFreeUse && it.adsRemoved),
+            )
+        }
+    }
+
+    private fun showHint(markFreeUse: Boolean) {
+        val game = _uiState.value.game
+        update { it.copy(hintLoading = true, freeHintUsed = it.freeHintUsed || (markFreeUse && it.adsRemoved)) }
+        hintJob = viewModelScope.launch {
+            val cell = withContext(computeDispatcher) { getHint(game) }
+            update { it.copy(hintLoading = false, hint = cell) }
+        }
+    }
+
     private fun place(cell: Cell, byComputer: Boolean) {
         val state = _uiState.value
         val played = playMove(state.game, cell) as? MoveResult.Played ?: return
@@ -223,10 +332,16 @@ class GameViewModel @Inject constructor(
         val game = state.game
         when {
             game.isOver -> {
-                update { it.copy(match = it.match.record(game.result), computerThinking = false) }
+                update { it.copy(match = it.match.record(game.result), computerThinking = false, assistOffer = null) }
                 feedback.roundEnded(soundFor(game.result, state))
-                // Finish the write even if the user leaves the screen right away.
-                viewModelScope.launch { withContext(NonCancellable) { recordGameResult(game) } }
+                viewModelScope.launch {
+                    // Finish the writes even if the user leaves the screen right away.
+                    withContext(NonCancellable) {
+                        recordGameResult(game)
+                        recordRoundForAds()
+                    }
+                    interstitialDue = shouldShowInterstitial()
+                }
             }
             game.isComputerTurn -> startComputerTurn()
         }
@@ -265,8 +380,11 @@ class GameViewModel @Inject constructor(
         save()
     }
 
-    private fun withDerived(state: GameUiState): GameUiState =
-        state.copy(canUndo = state.phase == GamePhase.PLAYING && undoMove(state.game) != null)
+    private fun withDerived(state: GameUiState): GameUiState = state.copy(
+        canUndo = state.phase == GamePhase.PLAYING && undoMove(state.game) != null,
+        hintAccess = getAssistAccess(AssistKind.HINT, mode, state.adsRemoved, state.freeHintUsed),
+        undoAccess = getAssistAccess(AssistKind.UNDO, mode, state.adsRemoved, state.freeUndoUsed),
+    )
 
     private fun save() {
         val state = _uiState.value
@@ -285,6 +403,8 @@ class GameViewModel @Inject constructor(
             xWins = state.match.xWins,
             oWins = state.match.oWins,
             draws = state.match.draws,
+            freeHintUsed = state.freeHintUsed,
+            freeUndoUsed = state.freeUndoUsed,
         ).encode()
     }
 
@@ -312,6 +432,8 @@ class GameViewModel @Inject constructor(
             showSetup = saved.showSetup,
             hasStarted = saved.hasStarted,
             bannerAdUnitId = banner,
+            freeHintUsed = saved.freeHintUsed,
+            freeUndoUsed = saved.freeUndoUsed,
         )
     }.getOrNull()
 

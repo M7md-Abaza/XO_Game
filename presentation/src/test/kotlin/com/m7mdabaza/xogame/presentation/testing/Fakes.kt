@@ -1,12 +1,19 @@
 package com.m7mdabaza.xogame.presentation.testing
 
+import com.m7mdabaza.xogame.domain.model.AdPolicyState
 import com.m7mdabaza.xogame.domain.model.GameMode
 import com.m7mdabaza.xogame.domain.model.Level
 import com.m7mdabaza.xogame.domain.model.LevelStats
+import com.m7mdabaza.xogame.domain.model.PurchaseResult
+import com.m7mdabaza.xogame.domain.model.RemoveAdsOffer
+import com.m7mdabaza.xogame.domain.model.RestoreResult
 import com.m7mdabaza.xogame.domain.model.Settings
 import com.m7mdabaza.xogame.domain.model.Stats
+import com.m7mdabaza.xogame.domain.repository.AdPolicyRepository
+import com.m7mdabaza.xogame.domain.repository.PurchaseRepository
 import com.m7mdabaza.xogame.domain.repository.SettingsRepository
 import com.m7mdabaza.xogame.domain.repository.StatsRepository
+import com.m7mdabaza.xogame.domain.repository.TimeProvider
 import com.m7mdabaza.xogame.presentation.settings.AppLanguage
 import com.m7mdabaza.xogame.presentation.settings.AppLanguageController
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -39,4 +46,44 @@ class FakeLanguageController(override var current: AppLanguage = AppLanguage.SYS
         applied += language
         current = language
     }
+}
+
+class FakeAdPolicyRepository : AdPolicyRepository {
+    override val state = MutableStateFlow(AdPolicyState())
+    var interstitialsShown = 0
+
+    override suspend fun recordRoundFinished() {
+        state.update { it.copy(roundsSinceInterstitial = it.roundsSinceInterstitial + 1, roundsThisSession = it.roundsThisSession + 1) }
+    }
+
+    override suspend fun recordInterstitialShown(atMillis: Long) {
+        interstitialsShown++
+        state.update { it.copy(lastInterstitialAtMillis = atMillis, roundsSinceInterstitial = 0) }
+    }
+}
+
+class FakePurchaseRepository(adsRemoved: Boolean = false) : PurchaseRepository {
+    override val adsRemoved = MutableStateFlow(adsRemoved)
+    override val removeAdsOffer = MutableStateFlow<RemoveAdsOffer?>(RemoveAdsOffer("$1.99"))
+    var purchaseResult = PurchaseResult.PURCHASED
+    var restoreResult = RestoreResult.NOTHING_TO_RESTORE
+    override val canSimulatePurchase = true
+
+    override suspend fun purchaseRemoveAds(): PurchaseResult {
+        if (purchaseResult == PurchaseResult.PURCHASED) adsRemoved.value = true
+        return purchaseResult
+    }
+
+    override suspend fun restorePurchases(): RestoreResult {
+        if (restoreResult == RestoreResult.RESTORED) adsRemoved.value = true
+        return restoreResult
+    }
+
+    override suspend fun setAdsRemovedForDebug(removed: Boolean) {
+        adsRemoved.value = removed
+    }
+}
+
+class FakeTime(var now: Long = 10_000_000L) : TimeProvider {
+    override fun nowMillis() = now
 }

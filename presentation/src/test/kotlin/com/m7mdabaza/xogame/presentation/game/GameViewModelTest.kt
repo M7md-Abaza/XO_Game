@@ -3,6 +3,8 @@ package com.m7mdabaza.xogame.presentation.game
 import androidx.lifecycle.SavedStateHandle
 import com.m7mdabaza.xogame.domain.ai.SearchAi
 import com.m7mdabaza.xogame.domain.engine.WinChecker
+import com.m7mdabaza.xogame.domain.model.AssistAccess
+import com.m7mdabaza.xogame.domain.model.AssistKind
 import com.m7mdabaza.xogame.domain.model.Cell
 import com.m7mdabaza.xogame.domain.model.GameMode
 import com.m7mdabaza.xogame.domain.model.GameResult
@@ -13,7 +15,12 @@ import com.m7mdabaza.xogame.domain.model.Player
 import com.m7mdabaza.xogame.domain.model.Settings
 import com.m7mdabaza.xogame.domain.model.Starter
 import com.m7mdabaza.xogame.domain.usecase.ComputerMoveUseCase
+import com.m7mdabaza.xogame.domain.usecase.GetAssistAccessUseCase
 import com.m7mdabaza.xogame.domain.usecase.GetHintUseCase
+import com.m7mdabaza.xogame.domain.usecase.ObserveAdsRemovedUseCase
+import com.m7mdabaza.xogame.domain.usecase.RecordInterstitialShownUseCase
+import com.m7mdabaza.xogame.domain.usecase.RecordRoundForAdsUseCase
+import com.m7mdabaza.xogame.domain.usecase.ShouldShowInterstitialUseCase
 import com.m7mdabaza.xogame.domain.usecase.ObserveSettingsUseCase
 import com.m7mdabaza.xogame.domain.usecase.RecordGameResultUseCase
 import com.m7mdabaza.xogame.domain.usecase.UpdateSettingsUseCase
@@ -21,10 +28,14 @@ import com.m7mdabaza.xogame.domain.usecase.PlayMoveUseCase
 import com.m7mdabaza.xogame.domain.usecase.StartGameUseCase
 import com.m7mdabaza.xogame.domain.usecase.UndoMoveUseCase
 import com.m7mdabaza.xogame.presentation.ads.AdUnitIds
+import com.m7mdabaza.xogame.presentation.testing.FakeAdPolicyRepository
+import com.m7mdabaza.xogame.presentation.testing.FakePurchaseRepository
 import com.m7mdabaza.xogame.presentation.testing.FakeSettingsRepository
+import com.m7mdabaza.xogame.presentation.testing.FakeTime
 import com.m7mdabaza.xogame.presentation.testing.FakeStatsRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -47,6 +58,9 @@ class GameViewModelTest {
     private val feedback = FakeFeedback()
     private val settingsRepository = FakeSettingsRepository()
     private val statsRepository = FakeStatsRepository()
+    private val adPolicy = FakeAdPolicyRepository()
+    private val purchases = FakePurchaseRepository()
+    private val time = FakeTime()
 
     @Before
     fun setUp() = Dispatchers.setMain(dispatcher)
@@ -87,6 +101,11 @@ class GameViewModelTest {
         observeSettings = ObserveSettingsUseCase(settingsRepository),
         updateSettings = UpdateSettingsUseCase(settingsRepository),
         recordGameResult = RecordGameResultUseCase(statsRepository),
+        observeAdsRemoved = ObserveAdsRemovedUseCase(purchases),
+        getAssistAccess = GetAssistAccessUseCase(),
+        shouldShowInterstitial = ShouldShowInterstitialUseCase(adPolicy, purchases, time),
+        recordInterstitialShown = RecordInterstitialShownUseCase(adPolicy, time),
+        recordRoundForAds = RecordRoundForAdsUseCase(adPolicy),
         feedback = feedback,
         adUnitIds = FakeAdUnitIds,
         computeDispatcher = dispatcher,
@@ -98,6 +117,14 @@ class GameViewModelTest {
     private val GameViewModel.state get() = uiState.value
 
     private fun GameViewModel.tap(vararg cells: Cell) = cells.forEach { onCellClick(it) }
+
+    /** Asks for [kind], accepts the ad offer and pretends the rewarded ad was watched to the end. */
+    private fun GameViewModel.withAd(kind: AssistKind) {
+        if (kind == AssistKind.HINT) onHint() else onUndo()
+        assertEquals(kind, state.assistOffer)
+        onAssistOfferAccepted()
+        onRewardedFinished(kind, rewarded = true)
+    }
 
     /** X: top row; O: middle row. X wins on the fifth move. */
     private val xWinsTopRow = arrayOf(Cell(0, 0), Cell(1, 0), Cell(0, 1), Cell(1, 1), Cell(0, 2))
@@ -211,7 +238,7 @@ class GameViewModelTest {
         vm.onStartMatch(MatchSettings())
         vm.tap(Cell(0, 0), Cell(1, 0), Cell(0, 1), Cell(1, 1)) // X to move, wins at (0,2)
         assertTrue(vm.state.canHint)
-        vm.onHint()
+        vm.withAd(AssistKind.HINT)
         assertTrue(vm.state.hintLoading)
         advanceUntilIdle()
         assertEquals(Cell(0, 2), vm.state.hint)
@@ -321,7 +348,7 @@ class GameViewModelTest {
         vm.onStartMatch(MatchSettings())
         vm.onCellClick(Cell(1, 1))
         advanceUntilIdle()
-        vm.onUndo()
+        vm.withAd(AssistKind.UNDO)
         assertTrue(vm.state.game.history.isEmpty())
         assertTrue(vm.state.boardEnabled)
     }
@@ -332,7 +359,7 @@ class GameViewModelTest {
         vm.onStartMatch(MatchSettings())
         vm.onCellClick(Cell(1, 1))
         assertTrue(vm.state.canUndo)
-        vm.onUndo()
+        vm.withAd(AssistKind.UNDO)
         advanceUntilIdle()
         assertTrue(vm.state.game.history.isEmpty())
         assertFalse(vm.state.computerThinking)
@@ -486,5 +513,177 @@ class GameViewModelTest {
         viewModel(handle)
         advanceUntilIdle()
         assertEquals(1, statsRepository.stats.value.played(GameMode.TWO_PLAYERS))
+    }
+
+    // --- Rewarded hint / undo ----------------------------------------------------------
+
+    @Test
+    fun `without Remove ads a hint asks for an ad first`() = runTest(dispatcher) {
+        val vm = viewModel(GameMode.TWO_PLAYERS)
+        vm.onStartMatch(MatchSettings())
+        vm.tap(Cell(0, 0), Cell(1, 0), Cell(0, 1), Cell(1, 1)) // X to move, wins at (0,2)
+        assertEquals(AssistAccess.REWARDED_AD, vm.state.hintAccess)
+
+        vm.onHint()
+        assertEquals(AssistKind.HINT, vm.state.assistOffer)
+        vm.onAssistOfferDismissed()
+        assertNull(vm.state.assistOffer)
+        assertNull(vm.state.hint)
+
+        vm.onHint()
+        vm.onAssistOfferAccepted()
+        assertEquals(GameEvent.ShowRewarded(AssistKind.HINT), vm.events.first())
+
+        vm.onRewardedFinished(AssistKind.HINT, rewarded = false) // closed early
+        advanceUntilIdle()
+        assertNull(vm.state.hint)
+
+        vm.onHint()
+        vm.onAssistOfferAccepted()
+        vm.onRewardedFinished(AssistKind.HINT, rewarded = true)
+        advanceUntilIdle()
+        assertEquals(Cell(0, 2), vm.state.hint)
+    }
+
+    @Test
+    fun `no rewarded ad ready tells the player`() = runTest(dispatcher) {
+        val vm = viewModel(GameMode.TWO_PLAYERS)
+        vm.onRewardedUnavailable()
+        assertEquals(GameEvent.AdNotReady, vm.events.first())
+    }
+
+    @Test
+    fun `undo against the computer costs an ad, but is always free for two players`() = runTest(dispatcher) {
+        val vsComputer = viewModel(GameMode.VS_COMPUTER)
+        vsComputer.onStartMatch(MatchSettings())
+        vsComputer.onCellClick(Cell(1, 1))
+        advanceUntilIdle()
+        assertEquals(AssistAccess.REWARDED_AD, vsComputer.state.undoAccess)
+        vsComputer.onUndo()
+        assertEquals(AssistKind.UNDO, vsComputer.state.assistOffer)
+        assertEquals(2, vsComputer.state.game.history.size)
+
+        val twoPlayers = viewModel(GameMode.TWO_PLAYERS)
+        twoPlayers.onStartMatch(MatchSettings())
+        assertEquals(AssistAccess.FREE, twoPlayers.state.undoAccess)
+    }
+
+    @Test
+    fun `buyers get one free hint and one free undo per round`() = runTest(dispatcher) {
+        purchases.adsRemoved.value = true
+        val vm = viewModel(GameMode.VS_COMPUTER)
+        advanceUntilIdle()
+        assertTrue(vm.state.adsRemoved)
+        vm.onStartMatch(MatchSettings())
+
+        assertEquals(AssistAccess.FREE, vm.state.hintAccess)
+        vm.onHint()
+        assertNull("no ad offer for the free hint", vm.state.assistOffer)
+        advanceUntilIdle()
+        assertTrue(vm.state.freeHintUsed)
+        assertEquals(AssistAccess.REWARDED_AD, vm.state.hintAccess)
+
+        vm.onCellClick(Cell(1, 1))
+        advanceUntilIdle()
+        assertEquals(AssistAccess.FREE, vm.state.undoAccess)
+        vm.onUndo()
+        assertTrue(vm.state.game.history.isEmpty())
+        assertEquals(AssistAccess.REWARDED_AD, vm.state.undoAccess)
+
+        // Restarting doesn't hand out new free uses ...
+        vm.onCellClick(Cell(0, 0))
+        advanceUntilIdle()
+        vm.onRestartRound()
+        assertEquals(AssistAccess.REWARDED_AD, vm.state.hintAccess)
+
+        // ... a new round does.
+        while (vm.state.phase == GamePhase.PLAYING) {
+            vm.onCellClick(vm.state.game.board.emptyCells.last())
+            advanceUntilIdle()
+        }
+        vm.onNextRound()
+        advanceUntilIdle()
+        assertEquals(AssistAccess.FREE, vm.state.hintAccess)
+        assertEquals(AssistAccess.FREE, vm.state.undoAccess)
+    }
+
+    @Test
+    fun `used free assists survive process death`() = runTest(dispatcher) {
+        purchases.adsRemoved.value = true
+        val handle = handle(GameMode.TWO_PLAYERS)
+        val vm = viewModel(handle)
+        advanceUntilIdle()
+        vm.onStartMatch(MatchSettings())
+        vm.onHint()
+        advanceUntilIdle()
+
+        val restored = viewModel(handle)
+        advanceUntilIdle()
+        assertTrue(restored.state.freeHintUsed)
+        assertEquals(AssistAccess.REWARDED_AD, restored.state.hintAccess)
+    }
+
+    // --- Interstitials -----------------------------------------------------------------
+
+    /** Plays two-player rounds that X wins, moving to the next round in between. */
+    private fun kotlinx.coroutines.test.TestScope.finishRound(vm: GameViewModel) {
+        vm.tap(*xWinsTopRow)
+        advanceUntilIdle()
+    }
+
+    @Test
+    fun `an interstitial shows between rounds only from the second round of a session`() = runTest(dispatcher) {
+        val vm = viewModel(GameMode.TWO_PLAYERS)
+        vm.onStartMatch(MatchSettings())
+        finishRound(vm)
+        vm.onNextRound()
+        assertEquals("no ad after the first round", GamePhase.PLAYING, vm.state.phase)
+
+        finishRound(vm)
+        vm.onNextRound()
+        assertEquals(GameEvent.ShowInterstitial, vm.events.first())
+        assertEquals("waits for the ad to close", GamePhase.ROUND_OVER, vm.state.phase)
+
+        vm.onInterstitialFinished(shown = true)
+        advanceUntilIdle()
+        assertEquals(GamePhase.PLAYING, vm.state.phase)
+        assertEquals(1, adPolicy.interstitialsShown)
+
+        // Two more rounds, but within 3 minutes: no ad.
+        finishRound(vm)
+        vm.onNextRound()
+        finishRound(vm)
+        vm.onNextRound()
+        assertEquals(GamePhase.PLAYING, vm.state.phase)
+    }
+
+    @Test
+    fun `no ad was ready, so the round just goes on and nothing is recorded`() = runTest(dispatcher) {
+        val vm = viewModel(GameMode.TWO_PLAYERS)
+        vm.onStartMatch(MatchSettings())
+        repeat(2) {
+            finishRound(vm)
+            if (it == 0) vm.onNextRound()
+        }
+        vm.onNextRound()
+        vm.onInterstitialFinished(shown = false)
+        advanceUntilIdle()
+        assertEquals(GamePhase.PLAYING, vm.state.phase)
+        assertEquals(0, adPolicy.interstitialsShown)
+    }
+
+    @Test
+    fun `no interstitials and no banner after Remove ads`() = runTest(dispatcher) {
+        purchases.adsRemoved.value = true
+        val vm = viewModel(GameMode.TWO_PLAYERS)
+        advanceUntilIdle()
+        assertTrue(vm.state.adsRemoved)
+        vm.onStartMatch(MatchSettings())
+        repeat(3) {
+            finishRound(vm)
+            vm.onNextRound()
+            assertEquals(GamePhase.PLAYING, vm.state.phase)
+        }
+        assertEquals(0, adPolicy.interstitialsShown)
     }
 }
