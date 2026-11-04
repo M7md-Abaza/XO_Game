@@ -1,0 +1,107 @@
+plugins {
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.hilt)
+}
+
+// Google's public test AdMob IDs: debug builds never request real ads.
+private val testBanner = "ca-app-pub-3940256099942544/6300978111"
+private val testInterstitial = "ca-app-pub-3940256099942544/1033173712"
+private val testRewarded = "ca-app-pub-3940256099942544/5224354917"
+
+private val bannerPlacements = listOf(
+    "main", "easy_vs_computer", "medium_vs_computer", "hard_vs_computer",
+    "easy_level", "medium_level", "hard_level", "x_or_o_dialog",
+)
+private val interstitialPlacements = listOf(
+    "easy_vs_computer", "medium_vs_computer", "hard_vs_computer",
+    "easy_level", "medium_level", "hard_level",
+)
+
+android {
+    namespace = "com.m7mdabaza.xogame"
+    compileSdk = libs.versions.compileSdk.get().toInt()
+
+    defaultConfig {
+        // Published package name. Never change it: Play Store updates depend on it.
+        applicationId = "com.m7mdabaza.x_ogame"
+        minSdk = libs.versions.minSdk.get().toInt()
+        targetSdk = libs.versions.targetSdk.get().toInt()
+        versionCode = 6
+        versionName = "1.2"
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        debug {
+            manifestPlaceholders["admobAppId"] = "ca-app-pub-3940256099942544~3347511713"
+            bannerPlacements.forEach { resValue("string", "banner_$it", testBanner) }
+            interstitialPlacements.forEach { resValue("string", "interstitial_$it", testInterstitial) }
+            resValue("string", "rewarded_vs_computer", testRewarded)
+        }
+        release {
+            // Real per-screen AdMob IDs (restored from Release_1.1, commit e69ce27)
+            manifestPlaceholders["admobAppId"] = "ca-app-pub-4454440016331822~9464823022"
+            resValue("string", "banner_main", "ca-app-pub-4454440016331822/8758794756")
+            resValue("string", "banner_easy_vs_computer", "ca-app-pub-4454440016331822/1754402706")
+            resValue("string", "banner_medium_vs_computer", "ca-app-pub-4454440016331822/1558961582")
+            resValue("string", "banner_hard_vs_computer", "ca-app-pub-4454440016331822/1368931886")
+            resValue("string", "banner_easy_level", "ca-app-pub-4454440016331822/4895022629")
+            resValue("string", "banner_medium_level", "ca-app-pub-4454440016331822/9832682202")
+            resValue("string", "banner_hard_level", "ca-app-pub-4454440016331822/9625153867")
+            resValue("string", "banner_x_or_o_dialog", "ca-app-pub-4454440016331822/5478764952")
+            resValue("string", "interstitial_easy_vs_computer", "ca-app-pub-4454440016331822/8898874481")
+            resValue("string", "interstitial_medium_vs_computer", "ca-app-pub-4454440016331822/6500297073")
+            resValue("string", "interstitial_hard_vs_computer", "ca-app-pub-4454440016331822/8097991769")
+            resValue("string", "interstitial_easy_level", "ca-app-pub-4454440016331822/3000035763")
+            resValue("string", "interstitial_medium_level", "ca-app-pub-4454440016331822/2369480375")
+            resValue("string", "interstitial_hard_level", "ca-app-pub-4454440016331822/5845690957")
+            resValue("string", "rewarded_vs_computer", "ca-app-pub-4454440016331822/7531570468")
+            isMinifyEnabled = false
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+        }
+    }
+
+    buildFeatures {
+        compose = true
+        resValues = true // the AdMob IDs above are resValues (off by default in AGP 9)
+    }
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
+
+    // Legacy screens load the font from assets (src/assets/sukar.ttf).
+    sourceSets.getByName("main") {
+        assets.directories.add("src/assets")
+    }
+}
+
+dependencies {
+    implementation(project(":domain"))
+    implementation(project(":data"))
+    implementation(project(":presentation"))
+
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.appcompat)
+    implementation(libs.androidx.activity.compose)
+    implementation(platform(libs.compose.bom))
+    implementation(libs.compose.material3)
+
+    implementation(libs.hilt.android)
+    ksp(libs.hilt.compiler)
+
+    implementation(libs.play.services.ads)
+    implementation(libs.ump)
+
+    // Legacy XML game screens (replaced by Compose in milestone 4)
+    implementation(libs.material)
+    implementation(libs.androidx.constraintlayout)
+    implementation(libs.androidx.cardview)
+
+    testImplementation(libs.junit)
+    androidTestImplementation(libs.androidx.test.junit)
+    androidTestImplementation(libs.androidx.test.espresso)
+}

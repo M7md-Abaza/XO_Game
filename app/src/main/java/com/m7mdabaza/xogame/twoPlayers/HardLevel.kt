@@ -1,8 +1,8 @@
 package com.m7mdabaza.xogame.twoPlayers
 
-import com.m7mdabaza.xogame.ads.loadAdIfAllowed
+import com.m7mdabaza.xogame.presentation.ads.loadAdIfAllowed
 import com.m7mdabaza.xogame.ui.setupEdgeToEdge
-import com.m7mdabaza.xogame.ads.InterstitialAdManager
+import com.m7mdabaza.xogame.presentation.ads.InterstitialAdManager
 import android.annotation.SuppressLint
 import android.app.Dialog
 import android.graphics.Color

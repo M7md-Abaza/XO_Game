@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cd_logo">XO Game</string>
+
+    <!-- Home -->
+    <string name="home_tagline">Have Fun And Enjoy</string>
+    <string name="home_one_player">One Player</string>
+    <string name="home_two_players">Two Players</string>
+    <string name="home_privacy_settings">Privacy settings</string>
+
+    <!-- Level picker -->
+    <string name="level_picker_title">Choose The Level</string>
+    <string name="level_picker_vs_computer">Play against the phone</string>
+    <string name="level_picker_two_players">Play with a friend on this device</string>
+    <string name="level_easy">Easy</string>
+    <string name="level_medium">Medium</string>
+    <string name="level_hard">Hard</string>
+    <!-- %1$d = board size (e.g. 3 for a 3×3 board), %2$d = marks in a row needed to win -->
+    <string name="level_rules">%1$d×%1$d board · %2$d in a row</string>
+</resources>

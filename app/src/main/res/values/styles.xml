@@ -1,26 +1,20 @@
 <resources>
 
-    <!-- Base application theme. -->
+    <!-- Theme of the legacy XML screens (splash + game screens until milestone 4). -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
-        <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:textColorSecondary">@color/linesAccent</item>
-        <!-- For Main Bottom Sheet Dialog Theme -->
-        <item name="bottomSheetDialogTheme">@style/AppBottomSheetDialogTheme</item>
     </style>
 
-    <!-- For Main Bottom Sheet Dialog Theme -->
-    <style name="AppBottomSheetDialogTheme"
-        parent="Theme.Design.Light.BottomSheetDialog">
-        <item name="bottomSheetStyle">@style/AppModalStyle</item>
+    <!--
+      Window theme of the Compose MainActivity. AppCompat-based so per-app
+      language switching (Arabic/English) also works below Android 13.
+      All visible styling comes from the Compose XoTheme.
+    -->
+    <style name="Theme.XoGame" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:windowBackground">@android:color/white</item>
     </style>
-
-    <style name="AppModalStyle"
-        parent="Widget.Design.BottomSheet.Modal">
-        <item name="android:background">@drawable/shape</item>
-    </style>
-    <!-- End Of Main Bottom Sheet Dialog Theme -->
 
 </resources>

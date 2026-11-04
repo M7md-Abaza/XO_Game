@@ -1,4 +1,4 @@
-package com.m7mdabaza.xogame.ads
+package com.m7mdabaza.xogame.presentation.ads
 
 import android.app.Activity
 import android.util.Log

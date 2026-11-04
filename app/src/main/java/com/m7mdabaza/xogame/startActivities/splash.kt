@@ -1,13 +1,14 @@
 package com.m7mdabaza.xogame.startActivities
 
 import com.m7mdabaza.xogame.ui.setupEdgeToEdge
+import com.m7mdabaza.xogame.MainActivity
 import android.content.Intent
 import android.graphics.Typeface
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import com.m7mdabaza.xogame.ads.ConsentManager
+import com.m7mdabaza.xogame.presentation.ads.ConsentManager
 import com.m7mdabaza.xogame.R
 class splash : AppCompatActivity() {
 

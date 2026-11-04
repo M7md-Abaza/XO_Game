@@ -6,8 +6,8 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.VIBRATE" />
 
-    <!--  -->
     <application
+        android:name=".XoApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -45,9 +45,9 @@
             android:exported="false"
             tools:ignore="InnerclassSeparator" />
         <activity
-            android:name="com.m7mdabaza.xogame.startActivities.MainActivity"
+            android:name="com.m7mdabaza.xogame.MainActivity"
             android:exported="false"
-            tools:ignore="InnerclassSeparator" />
+            android:theme="@style/Theme.XoGame" />
         <activity
             android:name="com.m7mdabaza.xogame.startActivities.splash"
             android:exported="true"

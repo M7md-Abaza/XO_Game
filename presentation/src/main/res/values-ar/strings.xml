@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cd_logo">لعبة إكس أو</string>
+
+    <!-- Home -->
+    <string name="home_tagline">استمتع باللعب</string>
+    <string name="home_one_player">لاعب واحد</string>
+    <string name="home_two_players">لاعبان</string>
+    <string name="home_privacy_settings">إعدادات الخصوصية</string>
+
+    <!-- Level picker -->
+    <string name="level_picker_title">اختر المستوى</string>
+    <string name="level_picker_vs_computer">العب ضد الهاتف</string>
+    <string name="level_picker_two_players">العب مع صديق على نفس الجهاز</string>
+    <string name="level_easy">سهل</string>
+    <string name="level_medium">متوسط</string>
+    <string name="level_hard">صعب</string>
+    <string name="level_rules">لوحة %1$d×%1$d · %2$d على التوالي</string>
+</resources>
