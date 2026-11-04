@@ -25,7 +25,9 @@ import com.m7mdabaza.xogame.domain.usecase.ObserveSettingsUseCase
 import com.m7mdabaza.xogame.domain.usecase.PlayMoveUseCase
 import com.m7mdabaza.xogame.domain.usecase.RecordGameResultUseCase
 import com.m7mdabaza.xogame.domain.usecase.RecordInterstitialShownUseCase
+import com.m7mdabaza.xogame.domain.usecase.RecordReviewRequestedUseCase
 import com.m7mdabaza.xogame.domain.usecase.RecordRoundForAdsUseCase
+import com.m7mdabaza.xogame.domain.usecase.ShouldRequestReviewUseCase
 import com.m7mdabaza.xogame.domain.usecase.ShouldShowInterstitialUseCase
 import com.m7mdabaza.xogame.domain.usecase.StartGameUseCase
 import com.m7mdabaza.xogame.domain.usecase.UndoMoveUseCase
@@ -81,6 +83,8 @@ class GameViewModel @Inject constructor(
     private val recordInterstitialShown: RecordInterstitialShownUseCase,
     private val recordRoundForAds: RecordRoundForAdsUseCase,
     private val evaluateAchievements: EvaluateAchievementsUseCase,
+    private val shouldRequestReview: ShouldRequestReviewUseCase,
+    private val recordReviewRequested: RecordReviewRequestedUseCase,
     private val feedback: GameFeedback,
     adUnitIds: AdUnitIds,
     @param:DefaultDispatcher private val computeDispatcher: CoroutineDispatcher,
@@ -344,6 +348,11 @@ class GameViewModel @Inject constructor(
                         evaluateAchievements()
                     }
                     if (unlocked.isNotEmpty()) _events.trySend(GameEvent.AchievementsUnlocked(unlocked))
+                    // A happy moment: the player just beat the phone.
+                    if (game.humanBeatComputer && shouldRequestReview()) {
+                        recordReviewRequested()
+                        _events.trySend(GameEvent.RequestReview)
+                    }
                     interstitialDue = shouldShowInterstitial()
                 }
             }

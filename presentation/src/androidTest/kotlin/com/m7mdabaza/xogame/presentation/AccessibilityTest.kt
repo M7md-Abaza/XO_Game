@@ -1,6 +1,7 @@
 package com.m7mdabaza.xogame.presentation
 
 import androidx.annotation.StringRes
+import androidx.compose.material3.Surface
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.test.click
 import androidx.compose.ui.test.isRoot
@@ -44,6 +45,7 @@ import com.m7mdabaza.xogame.presentation.home.HomeUiState
 import com.m7mdabaza.xogame.presentation.settings.SettingsActions
 import com.m7mdabaza.xogame.presentation.settings.SettingsScreen
 import com.m7mdabaza.xogame.presentation.settings.SettingsUiState
+import com.m7mdabaza.xogame.presentation.splash.SplashContent
 import com.m7mdabaza.xogame.presentation.stats.StatsScreen
 import com.m7mdabaza.xogame.presentation.theme.XoTheme
 import org.junit.Assert.assertEquals
@@ -85,8 +87,8 @@ class AccessibilityTest {
         )
 
     /** Shows [content] and runs every accessibility check on it. */
-    private fun check(content: @androidx.compose.runtime.Composable () -> Unit) {
-        rule.setContent { XoTheme { content() } }
+    private fun check(dark: Boolean = false, content: @androidx.compose.runtime.Composable () -> Unit) {
+        rule.setContent { XoTheme(darkTheme = dark) { Surface { content() } } }
         rule.enableAccessibilityChecks()
         rule.onAllNodes(isRoot()).tryPerformAccessibilityChecks()
     }
@@ -175,6 +177,12 @@ class AccessibilityTest {
         val description = string(R.string.achievement_games_100_desc)
         rule.onNodeWithContentDescription("$title. $description. ${string(R.string.achievements_progress, 37, 100)}").assertExists()
     }
+
+    @Test
+    fun splash() = check { SplashContent() }
+
+    @Test
+    fun splashDark() = check(dark = true) { SplashContent() }
 
     // --- Specific fixes ------------------------------------------------------------------
 

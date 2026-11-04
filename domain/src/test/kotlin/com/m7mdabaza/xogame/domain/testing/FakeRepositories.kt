@@ -13,6 +13,7 @@ import com.m7mdabaza.xogame.domain.model.Stats
 import com.m7mdabaza.xogame.domain.repository.AchievementsRepository
 import com.m7mdabaza.xogame.domain.repository.AdPolicyRepository
 import com.m7mdabaza.xogame.domain.repository.ChallengeRepository
+import com.m7mdabaza.xogame.domain.repository.PromptsRepository
 import com.m7mdabaza.xogame.domain.repository.PurchaseRepository
 import com.m7mdabaza.xogame.domain.repository.SettingsRepository
 import com.m7mdabaza.xogame.domain.repository.StatsRepository
@@ -92,5 +93,18 @@ class FakeAchievementsRepository : AchievementsRepository {
 
     override suspend fun unlock(achievements: Collection<Achievement>, atMillis: Long) {
         unlocked.update { current -> current + achievements.filter { it !in current }.associateWith { atMillis } }
+    }
+}
+
+class FakePromptsRepository : PromptsRepository {
+    override val reviewRequestedAt = MutableStateFlow<Long?>(null)
+    override val updatePromptedAt = MutableStateFlow<Long?>(null)
+
+    override suspend fun setReviewRequestedAt(millis: Long) {
+        reviewRequestedAt.value = millis
+    }
+
+    override suspend fun setUpdatePromptedAt(millis: Long) {
+        updatePromptedAt.value = millis
     }
 }

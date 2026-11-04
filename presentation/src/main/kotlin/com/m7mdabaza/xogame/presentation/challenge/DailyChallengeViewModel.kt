@@ -16,6 +16,8 @@ import com.m7mdabaza.xogame.domain.usecase.ObserveAdsRemovedUseCase
 import com.m7mdabaza.xogame.domain.usecase.ObserveChallengeProgressUseCase
 import com.m7mdabaza.xogame.domain.usecase.PlayMoveUseCase
 import com.m7mdabaza.xogame.domain.usecase.RecordChallengeSolvedUseCase
+import com.m7mdabaza.xogame.domain.usecase.RecordReviewRequestedUseCase
+import com.m7mdabaza.xogame.domain.usecase.ShouldRequestReviewUseCase
 import com.m7mdabaza.xogame.domain.usecase.StartChallengeUseCase
 import com.m7mdabaza.xogame.presentation.ads.AdUnitIds
 import com.m7mdabaza.xogame.presentation.di.DefaultDispatcher
@@ -57,6 +59,14 @@ enum class FailReason {
     MISSED_WIN,
 }
 
+sealed interface ChallengeEvent {
+    /** Show "achievement unlocked" for each of these. */
+    data class AchievementsUnlocked(val achievements: List<Achievement>) : ChallengeEvent
+
+    /** The player solved the puzzle and the review rules allow asking for a Play review. */
+    data object RequestReview : ChallengeEvent
+}
+
 data class ChallengeUiState(
     val phase: ChallengePhase = ChallengePhase.LOADING,
     val challenge: DailyChallenge? = null,
@@ -85,6 +95,8 @@ class DailyChallengeViewModel @Inject constructor(
     private val computerMove: ComputerMoveUseCase,
     private val recordSolved: RecordChallengeSolvedUseCase,
     private val evaluateAchievements: EvaluateAchievementsUseCase,
+    private val shouldRequestReview: ShouldRequestReviewUseCase,
+    private val recordReviewRequested: RecordReviewRequestedUseCase,
     observeProgress: ObserveChallengeProgressUseCase,
     observeAdsRemoved: ObserveAdsRemovedUseCase,
     private val feedback: GameFeedback,
@@ -95,10 +107,10 @@ class DailyChallengeViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(ChallengeUiState(bannerAdUnitId = adUnitIds.homeBanner))
     val uiState: StateFlow<ChallengeUiState> = _uiState.asStateFlow()
 
-    private val _unlocked = Channel<List<Achievement>>(Channel.BUFFERED)
+    private val _events = Channel<ChallengeEvent>(Channel.BUFFERED)
 
-    /** Achievements unlocked by solving, to announce once. */
-    val unlockedAchievements: Flow<List<Achievement>> = _unlocked.receiveAsFlow()
+    /** One-off things for the screen to show. */
+    val events: Flow<ChallengeEvent> = _events.receiveAsFlow()
 
     private var defenderJob: Job? = null
 
@@ -157,7 +169,11 @@ class DailyChallengeViewModel @Inject constructor(
                 recordSolved(challenge.epochDay)
                 evaluateAchievements()
             }
-            if (unlocked.isNotEmpty()) _unlocked.send(unlocked)
+            if (unlocked.isNotEmpty()) _events.send(ChallengeEvent.AchievementsUnlocked(unlocked))
+            if (shouldRequestReview()) {
+                recordReviewRequested()
+                _events.send(ChallengeEvent.RequestReview)
+            }
         }
     }
 

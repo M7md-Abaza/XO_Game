@@ -14,7 +14,7 @@
         android:localeConfig="@xml/locales_config"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme"
+        android:theme="@style/Theme.XoGame"
         tools:ignore="AllowBackup,GoogleAppIndexingWarning"
         tools:targetApi="33">
 
@@ -30,7 +30,6 @@
             android:name="com.m7mdabaza.xogame.MainActivity"
             android:screenOrientation="portrait"
             android:exported="false"
-            android:theme="@style/Theme.XoGame"
             tools:ignore="LockedOrientationActivity,DiscouragedApi" />
         <activity
             android:name="com.m7mdabaza.xogame.startActivities.splash"

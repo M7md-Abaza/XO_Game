@@ -32,4 +32,8 @@ data class GameState internal constructor(
     /** True when the computer should move now. */
     val isComputerTurn: Boolean
         get() = !isOver && turn == config.computerSymbol
+
+    /** True when the human won against the computer (always false in two-player games). */
+    val humanBeatComputer: Boolean
+        get() = config.mode == GameMode.VS_COMPUTER && (result as? GameResult.Win)?.player == config.humanSymbol
 }

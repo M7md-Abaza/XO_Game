@@ -176,4 +176,9 @@
     <string name="achievement_first_challenge_desc">حلّ تحديًا يوميًا.</string>
     <string name="achievement_challenge_streak_7">عادة يومية</string>
     <string name="achievement_challenge_streak_7_desc">حلّ التحدي اليومي 7 أيام متتالية.</string>
+
+
+    <!-- In-app update (Google Play) -->
+    <string name="update_downloaded">إصدار جديد جاهز.</string>
+    <string name="update_restart">إعادة التشغيل</string>
 </resources>

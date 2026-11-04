@@ -77,6 +77,9 @@ sealed interface GameEvent {
 
     /** Show "achievement unlocked" for each of these. */
     data class AchievementsUnlocked(val achievements: List<Achievement>) : GameEvent
+
+    /** A happy moment (the player beat the phone) and the review rules allow asking for a Play review. */
+    data object RequestReview : GameEvent
 }
 
 data class GameUiState(

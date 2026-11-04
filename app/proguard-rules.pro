@@ -1,21 +1,12 @@
-# Add project specific ProGuard rules here.
-# You can control the set of applied configuration files using the
-# proguardFiles setting in build.gradle.
-#
-# For more details, see
-#   http://developer.android.com/guide/developing/tools/proguard.html
+# R8 rules for the release build. Libraries (Compose, Hilt, Navigation,
+# kotlinx.serialization, DataStore, Play Billing, Google Mobile Ads, UMP)
+# ship their own consumer rules, so only app-specific rules belong here.
 
-# If your project uses WebView with JS, uncomment the following
-# and specify the fully qualified class name to the JavaScript interface
-# class:
-#-keepclassmembers class fqcn.of.javascript.interface.for.webview {
-#   public *;
-#}
+# Readable crash stack traces in Play Console. The AAB carries mapping.txt,
+# which Play uses to restore the class and method names.
+-keepattributes SourceFile,LineNumberTable
+-renamesourcefileattribute SourceFile
 
-# Uncomment this to preserve the line number information for
-# debugging stack traces.
-#-keepattributes SourceFile,LineNumberTable
-
-# If you keep the line number information, uncomment this to
-# hide the original source file name.
-#-renamesourcefileattribute SourceFile
+# Play In-App Review (review-ktx 2.0.2) references this Play services annotation,
+# which isn't shipped in any library. It is only an annotation, so ignore it.
+-dontwarn com.google.android.gms.common.annotation.NoNullnessRewrite

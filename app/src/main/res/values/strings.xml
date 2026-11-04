@@ -1,6 +1,4 @@
 <resources>
     <!-- The brand name; the same in every language. -->
     <string name="app_name" translatable="false">XO Game</string>
-    <!-- Splash screen (legacy XML until the splash moves to Compose) -->
-    <string name="have_fun_and_enjoy">Have Fun And Enjoy</string>
 </resources>

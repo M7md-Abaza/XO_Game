@@ -70,6 +70,8 @@ dependencies {
 
     implementation(libs.play.services.ads)
     implementation(libs.ump)
+    implementation(libs.play.review.ktx)     // in-app review
+    implementation(libs.play.app.update.ktx) // in-app updates
 
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)

@@ -12,11 +12,13 @@ import com.m7mdabaza.xogame.data.billing.PlayBillingGateway
 import com.m7mdabaza.xogame.data.billing.PurchaseRepositoryImpl
 import com.m7mdabaza.xogame.data.progress.AchievementsRepositoryImpl
 import com.m7mdabaza.xogame.data.progress.ChallengeRepositoryImpl
+import com.m7mdabaza.xogame.data.prompts.PromptsRepositoryImpl
 import com.m7mdabaza.xogame.data.settings.SettingsRepositoryImpl
 import com.m7mdabaza.xogame.data.stats.StatsRepositoryImpl
 import com.m7mdabaza.xogame.domain.repository.AchievementsRepository
 import com.m7mdabaza.xogame.domain.repository.AdPolicyRepository
 import com.m7mdabaza.xogame.domain.repository.ChallengeRepository
+import com.m7mdabaza.xogame.domain.repository.PromptsRepository
 import com.m7mdabaza.xogame.domain.repository.PurchaseRepository
 import com.m7mdabaza.xogame.domain.repository.SettingsRepository
 import com.m7mdabaza.xogame.domain.repository.StatsRepository
@@ -54,6 +56,10 @@ annotation class ChallengeStore
 @Retention(AnnotationRetention.BINARY)
 annotation class AchievementsStore
 
+@Qualifier
+@Retention(AnnotationRetention.BINARY)
+annotation class PromptsStore
+
 /** Binds the :domain repository interfaces to their :data implementations. */
 @Module
 @InstallIn(SingletonComponent::class)
@@ -82,6 +88,9 @@ internal abstract class DataModule {
 
     @Binds
     abstract fun bindAchievementsRepository(impl: AchievementsRepositoryImpl): AchievementsRepository
+
+    @Binds
+    abstract fun bindPromptsRepository(impl: PromptsRepositoryImpl): PromptsRepository
 
     companion object {
         // DataStore allows only one instance per file in a process, hence @Singleton.
@@ -114,6 +123,11 @@ internal abstract class DataModule {
         @Singleton
         @AchievementsStore
         fun provideAchievementsStore(@ApplicationContext context: Context): DataStore<Preferences> = store(context, "achievements")
+
+        @Provides
+        @Singleton
+        @PromptsStore
+        fun providePromptsStore(@ApplicationContext context: Context): DataStore<Preferences> = store(context, "prompts")
 
         private fun store(context: Context, name: String): DataStore<Preferences> =
             PreferenceDataStoreFactory.create { context.preferencesDataStoreFile(name) }

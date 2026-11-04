@@ -199,4 +199,9 @@
     <string name="achievement_first_challenge_desc">Solve a daily challenge.</string>
     <string name="achievement_challenge_streak_7">Daily habit</string>
     <string name="achievement_challenge_streak_7_desc">Solve the daily challenge 7 days in a row.</string>
+
+
+    <!-- In-app update (Google Play). Snackbar once a new version has downloaded. -->
+    <string name="update_downloaded">A new version is ready.</string>
+    <string name="update_restart">Restart</string>
 </resources>

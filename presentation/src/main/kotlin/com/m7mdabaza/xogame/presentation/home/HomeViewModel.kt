@@ -6,6 +6,8 @@ import androidx.lifecycle.viewModelScope
 import com.m7mdabaza.xogame.domain.usecase.EvaluateAchievementsUseCase
 import com.m7mdabaza.xogame.domain.usecase.ObserveAdsRemovedUseCase
 import com.m7mdabaza.xogame.domain.usecase.ObserveChallengeProgressUseCase
+import com.m7mdabaza.xogame.domain.usecase.RecordUpdatePromptedUseCase
+import com.m7mdabaza.xogame.domain.usecase.ShouldPromptForUpdateUseCase
 import com.m7mdabaza.xogame.presentation.ads.AdUnitIds
 import com.m7mdabaza.xogame.presentation.ads.ConsentManager
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -34,6 +36,8 @@ class HomeViewModel @Inject constructor(
     observeAdsRemoved: ObserveAdsRemovedUseCase,
     observeChallengeProgress: ObserveChallengeProgressUseCase,
     evaluateAchievements: EvaluateAchievementsUseCase,
+    private val shouldPromptForUpdate: ShouldPromptForUpdateUseCase,
+    private val recordUpdatePrompted: RecordUpdatePromptedUseCase,
 ) : AndroidViewModel(application) {
 
     private val _uiState = MutableStateFlow(
@@ -57,6 +61,11 @@ class HomeViewModel @Inject constructor(
             }
         }
     }
+
+    /** Whether a waiting Play update may be offered now (at most every few days). */
+    suspend fun shouldOfferUpdate(): Boolean = shouldPromptForUpdate()
+
+    suspend fun onUpdateOffered() = recordUpdatePrompted()
 
     /** Call when the screen resumes: consent may have changed (e.g. in Settings). */
     fun refreshConsentState() {

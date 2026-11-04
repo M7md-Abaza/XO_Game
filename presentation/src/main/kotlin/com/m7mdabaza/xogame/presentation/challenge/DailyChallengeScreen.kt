@@ -21,6 +21,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -42,6 +43,8 @@ import com.m7mdabaza.xogame.presentation.ads.ConsentManager
 import com.m7mdabaza.xogame.presentation.components.ScreenTopBar
 import com.m7mdabaza.xogame.presentation.components.formatEpochDay
 import com.m7mdabaza.xogame.presentation.game.GameBoard
+import com.m7mdabaza.xogame.presentation.review.rememberInAppReview
+import kotlinx.coroutines.launch
 
 /** Stateful entry point used by the navigation graph. */
 @Composable
@@ -54,9 +57,17 @@ fun DailyChallengeRoute(
     val canRequestAds = remember { ConsentManager.canRequestAds(context) }
     val snackbar = remember { SnackbarHostState() }
     val resources = LocalResources.current
+    val requestReview = rememberInAppReview()
+    val scope = rememberCoroutineScope()
     LaunchedEffect(viewModel) {
-        viewModel.unlockedAchievements.collect { list ->
-            list.forEach { snackbar.showSnackbar(resources.getString(R.string.achievements_unlocked_toast, resources.getString(it.titleRes()))) }
+        viewModel.events.collect { event ->
+            when (event) {
+                is ChallengeEvent.AchievementsUnlocked -> event.achievements.forEach {
+                    val text = resources.getString(R.string.achievements_unlocked_toast, resources.getString(it.titleRes()))
+                    scope.launch { snackbar.showSnackbar(text) }
+                }
+                ChallengeEvent.RequestReview -> scope.launch { requestReview() }
+            }
         }
     }
     DailyChallengeScreen(

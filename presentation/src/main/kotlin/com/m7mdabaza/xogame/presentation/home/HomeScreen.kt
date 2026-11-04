@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -23,10 +24,13 @@ import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -46,6 +50,7 @@ import com.m7mdabaza.xogame.presentation.ads.BannerAd
 import com.m7mdabaza.xogame.presentation.components.BrandBackground
 import com.m7mdabaza.xogame.presentation.components.XoLogo
 import com.m7mdabaza.xogame.presentation.theme.XoTheme
+import com.m7mdabaza.xogame.presentation.update.InAppUpdates
 
 /** Stateful entry point used by the navigation graph. */
 @Composable
@@ -58,6 +63,8 @@ fun HomeRoute(
     viewModel: HomeViewModel = hiltViewModel(),
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
+    val snackbar = remember { SnackbarHostState() }
+    InAppUpdates(snackbar, shouldPrompt = viewModel::shouldOfferUpdate, onPrompted = viewModel::onUpdateOffered)
 
     // Consent can change while the app is in the background (or on first launch).
     LifecycleResumeEffect(Unit) {
@@ -72,6 +79,7 @@ fun HomeRoute(
         onOpenSettings = onOpenSettings,
         onOpenChallenge = onOpenChallenge,
         onOpenAchievements = onOpenAchievements,
+        snackbar = snackbar,
     )
 }
 
@@ -83,6 +91,7 @@ fun HomeScreen(
     onOpenSettings: () -> Unit,
     onOpenChallenge: () -> Unit = {},
     onOpenAchievements: () -> Unit = {},
+    snackbar: SnackbarHostState = remember { SnackbarHostState() },
 ) {
     var pickerMode by rememberSaveable { mutableStateOf<GameMode?>(null) }
 
@@ -144,7 +153,11 @@ fun HomeScreen(
             Spacer(Modifier.height(16.dp))
             ChallengeButton(solvedToday = state.challengeSolvedToday, streak = state.challengeStreak, onClick = onOpenChallenge)
 
-            Spacer(Modifier.weight(1.3f))
+            // The free space above the banner also holds messages (such as "update ready"),
+            // so they never cover the ad; a tall one may grow upwards over the buttons.
+            Box(Modifier.weight(1.3f).fillMaxWidth(), contentAlignment = Alignment.BottomCenter) {
+                SnackbarHost(snackbar, Modifier.wrapContentHeight(Alignment.Bottom, unbounded = true))
+            }
             if (state.canRequestAds && !state.adsRemoved) {
                 BannerAd(adUnitId = state.bannerAdUnitId)
             }

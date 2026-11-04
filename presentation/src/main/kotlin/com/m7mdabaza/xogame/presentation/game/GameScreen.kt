@@ -44,6 +44,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -76,6 +77,7 @@ import com.m7mdabaza.xogame.domain.model.GameResult
 import com.m7mdabaza.xogame.domain.model.MatchLength
 import com.m7mdabaza.xogame.domain.model.Player
 import com.m7mdabaza.xogame.presentation.R
+import com.m7mdabaza.xogame.presentation.review.rememberInAppReview
 import com.m7mdabaza.xogame.presentation.achievements.titleRes
 import com.m7mdabaza.xogame.presentation.ads.BannerAd
 import com.m7mdabaza.xogame.presentation.ads.ConsentManager
@@ -85,6 +87,7 @@ import com.m7mdabaza.xogame.presentation.components.OMark
 import com.m7mdabaza.xogame.presentation.components.XMark
 import com.m7mdabaza.xogame.presentation.home.titleRes
 import com.m7mdabaza.xogame.presentation.theme.XoTheme
+import kotlinx.coroutines.launch
 
 /** Stateful entry point used by the navigation graph. */
 @Composable
@@ -111,6 +114,9 @@ fun GameRoute(
     LaunchedEffect(interstitial, state.adsRemoved) { if (!state.adsRemoved) interstitial?.load() }
     LaunchedEffect(rewarded) { rewarded?.load() }
 
+    val requestReview = rememberInAppReview()
+    val scope = rememberCoroutineScope()
+
     LaunchedEffect(viewModel) {
         viewModel.events.collect { event ->
             when (event) {
@@ -120,10 +126,14 @@ fun GameRoute(
                     val shown = rewarded?.show { earned -> viewModel.onRewardedFinished(event.kind, earned) } ?: false
                     if (!shown) viewModel.onRewardedUnavailable()
                 }
-                GameEvent.AdNotReady -> snackbar.showSnackbar(adNotReady)
+                // Messages and the review sheet run on their own, so they never hold up the next event
+                // (a snackbar waits several seconds; the host queues them).
+                GameEvent.AdNotReady -> scope.launch { snackbar.showSnackbar(adNotReady) }
                 is GameEvent.AchievementsUnlocked -> event.achievements.forEach {
-                    snackbar.showSnackbar(resources.getString(R.string.achievements_unlocked_toast, resources.getString(it.titleRes())))
+                    val text = resources.getString(R.string.achievements_unlocked_toast, resources.getString(it.titleRes()))
+                    scope.launch { snackbar.showSnackbar(text) }
                 }
+                GameEvent.RequestReview -> scope.launch { requestReview() }
             }
         }
     }

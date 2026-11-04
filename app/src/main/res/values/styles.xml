@@ -1,17 +1,10 @@
 <resources>
 
-    <!-- Theme of the legacy XML splash screen. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
-        <item name="android:textColorSecondary">@color/linesAccent</item>
-    </style>
-
     <!--
-      Window theme of the Compose MainActivity. AppCompat-based so per-app
-      language switching (Arabic/English) also works below Android 13.
-      All visible styling comes from the Compose XoTheme.
+      Window theme of both activities (the splash and MainActivity). AppCompat-based
+      so per-app language switching (Arabic/English) also works below Android 13.
+      All visible styling comes from the Compose XoTheme; the window background is
+      what Android shows before the first frame (and behind the Android 12+ launch icon).
     -->
     <style name="Theme.XoGame" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="android:windowBackground">@android:color/white</item>

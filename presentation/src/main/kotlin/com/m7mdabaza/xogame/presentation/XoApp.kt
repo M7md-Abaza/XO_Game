@@ -20,6 +20,7 @@ import androidx.lifecycle.viewModelScope
 import com.m7mdabaza.xogame.domain.model.ThemeMode
 import com.m7mdabaza.xogame.domain.usecase.ObserveSettingsUseCase
 import com.m7mdabaza.xogame.presentation.navigation.XoNavHost
+import com.m7mdabaza.xogame.presentation.splash.SplashContent
 import com.m7mdabaza.xogame.presentation.theme.XoTheme
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
@@ -41,6 +42,18 @@ class XoAppViewModel @Inject constructor(
 /** Root of the Compose UI, hosted by MainActivity in :app. */
 @Composable
 fun XoApp(viewModel: XoAppViewModel = hiltViewModel()) {
+    XoRoot(viewModel) { XoNavHost() }
+}
+
+/** The launch screen, hosted by the splash activity in :app (which runs the consent flow). */
+@Composable
+fun XoSplash(viewModel: XoAppViewModel = hiltViewModel()) {
+    XoRoot(viewModel) { SplashContent() }
+}
+
+/** The app theme (from the theme setting), matching system-bar icons and the base surface. */
+@Composable
+private fun XoRoot(viewModel: XoAppViewModel, content: @Composable () -> Unit) {
     val themeMode by viewModel.themeMode.collectAsStateWithLifecycle()
     val darkTheme = when (themeMode) {
         ThemeMode.LIGHT -> false
@@ -52,7 +65,7 @@ fun XoApp(viewModel: XoAppViewModel = hiltViewModel()) {
         // The Surface sets the default text/icon colour (onBackground) for every screen,
         // which matters in the dark theme.
         Surface(color = MaterialTheme.colorScheme.background, modifier = Modifier.fillMaxSize()) {
-            XoNavHost()
+            content()
         }
     }
 }

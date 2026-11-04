@@ -14,6 +14,7 @@ import com.m7mdabaza.xogame.domain.model.Stats
 import com.m7mdabaza.xogame.domain.repository.AchievementsRepository
 import com.m7mdabaza.xogame.domain.repository.AdPolicyRepository
 import com.m7mdabaza.xogame.domain.repository.ChallengeRepository
+import com.m7mdabaza.xogame.domain.repository.PromptsRepository
 import com.m7mdabaza.xogame.domain.repository.PurchaseRepository
 import com.m7mdabaza.xogame.domain.repository.SettingsRepository
 import com.m7mdabaza.xogame.domain.repository.StatsRepository
@@ -133,4 +134,17 @@ object FakeAdUnitIds : AdUnitIds {
     override fun gameBanner(mode: GameMode, level: Level) = "banner-$mode-$level"
     override fun interstitial(mode: GameMode, level: Level) = "interstitial"
     override val rewarded = "rewarded"
+}
+
+class FakePromptsRepository : PromptsRepository {
+    override val reviewRequestedAt = MutableStateFlow<Long?>(null)
+    override val updatePromptedAt = MutableStateFlow<Long?>(null)
+
+    override suspend fun setReviewRequestedAt(millis: Long) {
+        reviewRequestedAt.value = millis
+    }
+
+    override suspend fun setUpdatePromptedAt(millis: Long) {
+        updatePromptedAt.value = millis
+    }
 }

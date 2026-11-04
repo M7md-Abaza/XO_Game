@@ -1,21 +1,35 @@
 package com.m7mdabaza.xogame.startActivities
 
-import com.m7mdabaza.xogame.ui.setupEdgeToEdge
-import com.m7mdabaza.xogame.MainActivity
 import android.content.Intent
-import android.graphics.Typeface
-import androidx.appcompat.app.AppCompatActivity
+import android.graphics.Color
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import androidx.activity.SystemBarStyle
+import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
+import androidx.appcompat.app.AppCompatActivity
+import com.m7mdabaza.xogame.MainActivity
+import com.m7mdabaza.xogame.presentation.XoSplash
 import com.m7mdabaza.xogame.presentation.ads.ConsentManager
-import com.m7mdabaza.xogame.R
+import dagger.hilt.android.AndroidEntryPoint
+
+/**
+ * Launcher activity: shows the brand screen while the EU consent form (UMP)
+ * is gathered, then opens [MainActivity]. Keep the class name: it is the
+ * exported launcher component, and renaming it breaks home-screen shortcuts.
+ */
+@AndroidEntryPoint
 class splash : AppCompatActivity() {
 
     private var minTimeElapsed = false
     private var consentDone = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        enableEdgeToEdge(
+            statusBarStyle = SystemBarStyle.light(Color.TRANSPARENT, Color.TRANSPARENT),
+            navigationBarStyle = SystemBarStyle.light(Color.TRANSPARENT, Color.TRANSPARENT),
+        )
         super.onCreate(savedInstanceState)
         // Reopened from the launcher while the app's task still exists (for example after
         // Android killed the process in the background): this splash finished long ago, so
@@ -25,11 +39,7 @@ class splash : AppCompatActivity() {
             finish()
             return
         }
-        setupEdgeToEdge()
-        setContentView(R.layout.activity_splash)
-
-        val typeface = Typeface.createFromAsset(assets, "sukar.ttf")
-        textView.typeface = typeface
+        setContent { XoSplash() }
 
         // Show the splash for at least 2 s, and wait for the EU consent form
         // (if one is required) before opening the main menu.
@@ -49,6 +59,3 @@ class splash : AppCompatActivity() {
         finish()
     }
 }
-
-// View accessors (replace the removed kotlin-android-extensions synthetics)
-private val splash.textView: android.widget.TextView get() = findViewById(R.id.textView)

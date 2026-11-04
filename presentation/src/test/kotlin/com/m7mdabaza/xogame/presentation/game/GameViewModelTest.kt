@@ -15,13 +15,16 @@ import com.m7mdabaza.xogame.domain.model.MatchLength
 import com.m7mdabaza.xogame.domain.model.Player
 import com.m7mdabaza.xogame.domain.model.Settings
 import com.m7mdabaza.xogame.domain.model.Starter
+import com.m7mdabaza.xogame.domain.model.Stats
 import com.m7mdabaza.xogame.domain.usecase.ComputerMoveUseCase
 import com.m7mdabaza.xogame.domain.usecase.EvaluateAchievementsUseCase
 import com.m7mdabaza.xogame.domain.usecase.GetAssistAccessUseCase
 import com.m7mdabaza.xogame.domain.usecase.GetHintUseCase
 import com.m7mdabaza.xogame.domain.usecase.ObserveAdsRemovedUseCase
 import com.m7mdabaza.xogame.domain.usecase.RecordInterstitialShownUseCase
+import com.m7mdabaza.xogame.domain.usecase.RecordReviewRequestedUseCase
 import com.m7mdabaza.xogame.domain.usecase.RecordRoundForAdsUseCase
+import com.m7mdabaza.xogame.domain.usecase.ShouldRequestReviewUseCase
 import com.m7mdabaza.xogame.domain.usecase.ShouldShowInterstitialUseCase
 import com.m7mdabaza.xogame.domain.usecase.ObserveSettingsUseCase
 import com.m7mdabaza.xogame.domain.usecase.RecordGameResultUseCase
@@ -34,6 +37,7 @@ import com.m7mdabaza.xogame.presentation.testing.FakeGameFeedback
 import com.m7mdabaza.xogame.presentation.testing.FakeAchievementsRepository
 import com.m7mdabaza.xogame.presentation.testing.FakeAdPolicyRepository
 import com.m7mdabaza.xogame.presentation.testing.FakeChallengeRepository
+import com.m7mdabaza.xogame.presentation.testing.FakePromptsRepository
 import com.m7mdabaza.xogame.presentation.testing.FakePurchaseRepository
 import com.m7mdabaza.xogame.presentation.testing.FakeSettingsRepository
 import com.m7mdabaza.xogame.presentation.testing.FakeTime
@@ -68,6 +72,7 @@ class GameViewModelTest {
     private val time = FakeTime()
     private val challengeRepository = FakeChallengeRepository()
     private val achievementsRepository = FakeAchievementsRepository()
+    private val prompts = FakePromptsRepository()
 
     @Before
     fun setUp() = Dispatchers.setMain(dispatcher)
@@ -94,6 +99,8 @@ class GameViewModelTest {
         recordInterstitialShown = RecordInterstitialShownUseCase(adPolicy, time),
         recordRoundForAds = RecordRoundForAdsUseCase(adPolicy),
         evaluateAchievements = EvaluateAchievementsUseCase(statsRepository, challengeRepository, achievementsRepository, time),
+        shouldRequestReview = ShouldRequestReviewUseCase(statsRepository, prompts, time),
+        recordReviewRequested = RecordReviewRequestedUseCase(prompts, time),
         feedback = feedback,
         adUnitIds = FakeAdUnitIds,
         computeDispatcher = dispatcher,
@@ -493,6 +500,16 @@ class GameViewModelTest {
         vm.tap(*xWinsTopRow)
         advanceUntilIdle()
         assertEquals("unlocked only once", 1, achievementsRepository.unlocked.value.size)
+    }
+
+    @Test
+    fun `a two-player win never asks for a Play review`() = runTest(dispatcher) {
+        statsRepository.stats.value = Stats(mapOf((GameMode.TWO_PLAYERS to Level.EASY) to LevelStats(draws = 20)))
+        val vm = viewModel(GameMode.TWO_PLAYERS)
+        vm.onStartMatch(MatchSettings())
+        vm.tap(*xWinsTopRow)
+        advanceUntilIdle()
+        assertNull(prompts.reviewRequestedAt.value)
     }
 
     @Test

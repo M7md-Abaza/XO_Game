@@ -5,8 +5,12 @@ import com.m7mdabaza.xogame.domain.engine.WinChecker
 import com.m7mdabaza.xogame.domain.model.Achievement
 import com.m7mdabaza.xogame.domain.model.Cell
 import com.m7mdabaza.xogame.domain.model.GameResult
+import com.m7mdabaza.xogame.domain.model.GameMode
 import com.m7mdabaza.xogame.domain.model.GameState
+import com.m7mdabaza.xogame.domain.model.Level
+import com.m7mdabaza.xogame.domain.model.LevelStats
 import com.m7mdabaza.xogame.domain.model.Player
+import com.m7mdabaza.xogame.domain.model.Stats
 import com.m7mdabaza.xogame.domain.repository.TimeProvider
 import com.m7mdabaza.xogame.domain.usecase.ComputerMoveUseCase
 import com.m7mdabaza.xogame.domain.usecase.EvaluateAchievementsUseCase
@@ -16,18 +20,23 @@ import com.m7mdabaza.xogame.domain.usecase.ObserveAdsRemovedUseCase
 import com.m7mdabaza.xogame.domain.usecase.ObserveChallengeProgressUseCase
 import com.m7mdabaza.xogame.domain.usecase.PlayMoveUseCase
 import com.m7mdabaza.xogame.domain.usecase.RecordChallengeSolvedUseCase
+import com.m7mdabaza.xogame.domain.usecase.RecordReviewRequestedUseCase
+import com.m7mdabaza.xogame.domain.usecase.ShouldRequestReviewUseCase
 import com.m7mdabaza.xogame.domain.usecase.StartChallengeUseCase
 import com.m7mdabaza.xogame.domain.usecase.StartGameUseCase
 import com.m7mdabaza.xogame.presentation.testing.FakeAchievementsRepository
 import com.m7mdabaza.xogame.presentation.testing.FakeAdUnitIds
 import com.m7mdabaza.xogame.presentation.testing.FakeChallengeRepository
 import com.m7mdabaza.xogame.presentation.testing.FakeGameFeedback
+import com.m7mdabaza.xogame.presentation.testing.FakePromptsRepository
 import com.m7mdabaza.xogame.presentation.testing.FakePurchaseRepository
 import com.m7mdabaza.xogame.presentation.testing.FakeStatsRepository
 import com.m7mdabaza.xogame.presentation.testing.FakeTime
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.take
+import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceTimeBy
@@ -53,6 +62,8 @@ class DailyChallengeViewModelTest {
     private val achievements = FakeAchievementsRepository()
     private val feedback = FakeGameFeedback()
     private val playMove = PlayMoveUseCase(WinChecker())
+    private val stats = FakeStatsRepository()
+    private val prompts = FakePromptsRepository()
 
     @Before
     fun setUp() = Dispatchers.setMain(dispatcher)
@@ -66,7 +77,9 @@ class DailyChallengeViewModelTest {
         playMove = playMove,
         computerMove = ComputerMoveUseCase(SearchAi()),
         recordSolved = RecordChallengeSolvedUseCase(challenges),
-        evaluateAchievements = EvaluateAchievementsUseCase(FakeStatsRepository(), challenges, achievements, time),
+        evaluateAchievements = EvaluateAchievementsUseCase(stats, challenges, achievements, time),
+        shouldRequestReview = ShouldRequestReviewUseCase(stats, prompts, time),
+        recordReviewRequested = RecordReviewRequestedUseCase(prompts, time),
         observeProgress = ObserveChallengeProgressUseCase(challenges, time),
         observeAdsRemoved = ObserveAdsRemovedUseCase(FakePurchaseRepository()),
         feedback = feedback,
@@ -115,7 +128,7 @@ class DailyChallengeViewModelTest {
         assertEquals(setOf(today), challenges.solvedDays.value)
         assertTrue(vm.state.progress.solvedToday)
         assertEquals(1, vm.state.progress.currentStreak)
-        assertEquals(listOf(Achievement.FIRST_CHALLENGE), vm.unlockedAchievements.first())
+        assertEquals(ChallengeEvent.AchievementsUnlocked(listOf(Achievement.FIRST_CHALLENGE)), vm.events.first())
         assertEquals("end WIN", feedback.events.last())
     }
 
@@ -167,6 +180,26 @@ class DailyChallengeViewModelTest {
         val solved = vm.game
         vm.onCellClick(vm.game.board.emptyCells.first())
         assertEquals(solved, vm.game)
+    }
+
+    @Test
+    fun `solving asks for a Play review once the player has played enough`() = runTest(dispatcher) {
+        stats.stats.value = Stats(mapOf((GameMode.TWO_PLAYERS to Level.EASY) to LevelStats(draws = 10)))
+        val vm = viewModel()
+        playSolution(vm)
+        vm.onCellClick(winningSquare(vm.game)!!)
+        advanceUntilIdle()
+        assertEquals(ChallengeEvent.RequestReview, vm.events.take(2).toList().last())
+        assertEquals(time.now, prompts.reviewRequestedAt.value)
+    }
+
+    @Test
+    fun `no review request for a player with few games`() = runTest(dispatcher) {
+        val vm = viewModel()
+        playSolution(vm)
+        vm.onCellClick(winningSquare(vm.game)!!)
+        advanceUntilIdle()
+        assertNull(prompts.reviewRequestedAt.value)
     }
 
     @Test
