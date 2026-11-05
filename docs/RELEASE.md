@@ -4,21 +4,46 @@ Version **2.0**, versionCode **20**. The current Play build is 1.2 (versionCode 
 versionCode higher than every build ever uploaded, so check the highest code in Play Console →
 App bundle explorer; if it is 20 or more, raise `versionCode` in `app/build.gradle.kts`.
 
+Checked before release (2026-11-05, commit a92c718): all JVM tests in debug and release, lint (no
+errors), minified release APK and AAB built; release manifest not debuggable, real AdMob IDs, debug
+switches (EEA consent, "Simulate Remove ads") off; native libraries 16 KB aligned; AAB carries the R8
+mapping; purchases acknowledged on every start; update from v1.2 (versionCode 6 build of `master`)
+to 2.0 works on the emulator, with the v1 consent kept.
+
 ## 1. Build the bundle
 
-1. Android Studio → **Build → Generate Signed App Bundle or APK → Android App Bundle**, build variant
+1. **App signing:** Play Console → Test and release → App integrity. If Play App Signing is on (it
+   shows an "upload key"), sign with that upload key. If the upload key is lost, request an upload
+   key reset there (it takes a few days). If the app still uses the old self-managed key (no Play
+   App Signing), either enroll in Play App Signing or upload a signed APK instead of the AAB.
+2. Android Studio → **Build → Generate Signed App Bundle or APK → Android App Bundle**, build variant
    **release**, signed with the same upload key as v1.
-2. The bundle already contains R8's `mapping.txt`, so Play Console shows readable crash reports.
+3. The bundle already contains R8's `mapping.txt`, so Play Console shows readable crash reports.
 
 ## 2. Play Console, before the first upload
 
+- **Payments profile:** selling anything needs a payments (merchant) profile linked to the developer
+  account (Settings → Payments profile), with tax and bank details for payouts.
 - **In-app product:** Monetize → Products → In-app products → create `remove_ads` (one-time), set the
   price, activate it. Until it exists, Settings shows "Not available right now" for Remove ads.
 - **License testers:** add your Google account under Settings → License testing, so test purchases
   cost nothing.
 - **Data safety:** review the form. The app itself stores everything on the phone (settings, stats,
   daily challenge, achievements). The ads SDK (AdMob + UMP consent) is unchanged from v1; the purchase
-  is handled by Google Play Billing.
+  is handled by Google Play Billing (the app sends no purchase data anywhere itself; check the form's
+  help on whether Play Billing needs a "Purchase history" entry).
+- **Content rating:** answer the questionnaire again; the app now sells a digital item (Remove ads).
+- **Advertising ID:** App content → Advertising ID → "Yes", for advertising (the ads SDK adds the
+  `AD_ID` permission).
+- **Ads and target audience:** "Contains ads" stays Yes. If the target audience includes children
+  under 13, the Families policy applies and the ad requests need child-directed settings, which the
+  app doesn't set yet; keep the audience 13+ or change the app first.
+- **Privacy policy:** the listing needs a privacy policy URL that covers ads (AdMob, advertising ID,
+  consent) and in-app purchases. The text (English + Arabic) is `docs/xo-game-privacy-policy.html`.
+  Upload it unchanged to the `M7md-Abaza.github.io` repo (next to Fragile Freight's
+  `privacy-policy.html`, which must stay), so it is served at
+  `https://m7md-abaza.github.io/xo-game-privacy-policy.html`, and enter that URL under App content →
+  Privacy policy. Don't publish this repo's `docs` folder, which holds internal notes.
 - **Store listing:** add the Arabic listing and new screenshots (the whole UI changed). Store texts
   are below.
 - **Target API:** the app targets API 36, which meets Play's current requirement.
@@ -41,6 +66,12 @@ Installs from Play are the only way to test these:
 5. Quick pass on a real phone in English and Arabic: every board at every level (3×3 Hard never
    loses), two players on each board, the daily challenge,
    achievements, a rewarded hint and an interstitial (after round 2 of a session).
+6. **Pre-launch report** (Test and release → Pre-launch report): Play runs the uploaded build on
+   real devices; check it for crashes and serious warnings before promoting.
+
+AdMob, before production: the GDPR consent message is published in AdMob → Privacy & messaging
+(the form real EEA/UK users see), and `app-ads.txt` on the developer website shown in the store
+listing is verified in AdMob → Apps.
 
 ## 4. Release
 
