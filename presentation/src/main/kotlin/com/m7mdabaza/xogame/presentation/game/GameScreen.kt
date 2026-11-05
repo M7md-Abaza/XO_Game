@@ -86,6 +86,9 @@ import com.m7mdabaza.xogame.presentation.components.OMark
 import com.m7mdabaza.xogame.presentation.components.XMark
 import com.m7mdabaza.xogame.presentation.home.label
 import com.m7mdabaza.xogame.presentation.home.titleRes
+import com.m7mdabaza.xogame.presentation.purchase.RemoveAdsBadge
+import com.m7mdabaza.xogame.presentation.purchase.RemoveAdsDialogHost
+import com.m7mdabaza.xogame.presentation.purchase.RemoveAdsViewModel
 import com.m7mdabaza.xogame.presentation.review.rememberInAppReview
 import com.m7mdabaza.xogame.presentation.theme.XoTheme
 import kotlinx.coroutines.launch
@@ -94,10 +97,11 @@ import kotlinx.coroutines.launch
 @Composable
 fun GameRoute(
     onBack: () -> Unit,
-    onOpenSettings: () -> Unit,
     viewModel: GameViewModel = hiltViewModel(),
+    removeAdsViewModel: RemoveAdsViewModel = hiltViewModel(),
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
+    val removeAds by removeAdsViewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
     val resources = LocalResources.current
     val activity = LocalActivity.current
@@ -139,9 +143,12 @@ fun GameRoute(
         }
     }
 
+    RemoveAdsDialogHost(removeAds, removeAdsViewModel, snackbar)
+
     GameScreen(
         state = state,
         showBanner = canRequestAds,
+        showRemoveAdsBadge = removeAds.showBadge,
         snackbar = snackbar,
         actions = GameActions(
             onBack = onBack,
@@ -156,9 +163,10 @@ fun GameRoute(
             onDismissSetup = { if (state.hasStarted) viewModel.onDismissSetup() else onBack() },
             onAssistOfferAccepted = viewModel::onAssistOfferAccepted,
             onAssistOfferDismissed = viewModel::onAssistOfferDismissed,
+            // From the "No ads" badge or the hint/undo ad offer (which it replaces).
             onRemoveAds = {
                 viewModel.onAssistOfferDismissed()
-                onOpenSettings()
+                removeAdsViewModel.openDialog()
             },
         ),
     )
@@ -177,16 +185,18 @@ data class GameActions(
     val onDismissSetup: () -> Unit = {},
     val onAssistOfferAccepted: () -> Unit = {},
     val onAssistOfferDismissed: () -> Unit = {},
-    /** Go to the Remove-ads offer (in Settings). */
+    /** Open the Remove-ads dialog. */
     val onRemoveAds: () -> Unit = {},
 )
 
+/** @param showRemoveAdsBadge show the "No ads" badge in the top bar (see `RemoveAdsUiState.showBadge`). */
 @Composable
 fun GameScreen(
     state: GameUiState,
     showBanner: Boolean,
     actions: GameActions,
     snackbar: SnackbarHostState = remember { SnackbarHostState() },
+    showRemoveAdsBadge: Boolean = false,
 ) {
     BackHandler(onBack = actions.onBack)
 
@@ -211,7 +221,7 @@ fun GameScreen(
                         Board(state, actions, Modifier.fillMaxHeight().padding(vertical = 8.dp))
                         Spacer(Modifier.width(16.dp))
                         Column(Modifier.weight(1f).fillMaxHeight(), horizontalAlignment = Alignment.CenterHorizontally) {
-                            TopBar(state, actions)
+                            TopBar(state, actions, showRemoveAdsBadge)
                             Column(
                                 Modifier.weight(1f).padding(horizontal = 16.dp),
                                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -223,7 +233,7 @@ fun GameScreen(
                     }
                 } else {
                     Column(Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
-                        TopBar(state, actions)
+                        TopBar(state, actions, showRemoveAdsBadge)
                         Column(
                             Modifier.weight(1f),
                             horizontalAlignment = Alignment.CenterHorizontally,
@@ -288,7 +298,7 @@ private fun Board(state: GameUiState, actions: GameActions, modifier: Modifier =
 }
 
 @Composable
-private fun TopBar(state: GameUiState, actions: GameActions) {
+private fun TopBar(state: GameUiState, actions: GameActions, showRemoveAdsBadge: Boolean) {
     Row(
         Modifier
             .fillMaxWidth()
@@ -315,6 +325,7 @@ private fun TopBar(state: GameUiState, actions: GameActions) {
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
+        if (showRemoveAdsBadge) RemoveAdsBadge(onClick = actions.onRemoveAds)
         IconButton(onClick = actions.onOpenSetup, enabled = state.hasStarted) {
             Icon(painterResource(R.drawable.ic_tune), contentDescription = stringResource(R.string.game_new_match))
         }

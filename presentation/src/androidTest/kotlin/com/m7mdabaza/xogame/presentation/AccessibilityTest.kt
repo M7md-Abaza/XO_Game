@@ -45,6 +45,8 @@ import com.m7mdabaza.xogame.presentation.game.MatchSettings
 import com.m7mdabaza.xogame.presentation.home.GamePickerContent
 import com.m7mdabaza.xogame.presentation.home.HomeScreen
 import com.m7mdabaza.xogame.presentation.home.HomeUiState
+import com.m7mdabaza.xogame.presentation.purchase.RemoveAdsDialog
+import com.m7mdabaza.xogame.presentation.purchase.RemoveAdsUiState
 import com.m7mdabaza.xogame.presentation.settings.SettingsActions
 import com.m7mdabaza.xogame.presentation.settings.SettingsScreen
 import com.m7mdabaza.xogame.presentation.settings.SettingsUiState
@@ -99,7 +101,7 @@ class AccessibilityTest {
 
     @Test
     fun home() = check {
-        HomeScreen(HomeUiState(bannerAdUnitId = "", canRequestAds = false), { _, _, _ -> }, {}, {})
+        HomeScreen(HomeUiState(bannerAdUnitId = "", canRequestAds = false), { _, _, _ -> }, {}, {}, showRemoveAdsBadge = true)
     }
 
     @Test
@@ -113,7 +115,7 @@ class AccessibilityTest {
     }
 
     private fun checkBoard(boardSize: BoardSize) = check {
-        GameScreen(gameState(game(GameMode.VS_COMPUTER, boardSize, Cell(0, 0))), showBanner = false, actions = GameActions())
+        GameScreen(gameState(game(GameMode.VS_COMPUTER, boardSize, Cell(0, 0))), showBanner = false, actions = GameActions(), showRemoveAdsBadge = true)
     }
 
     @Test
@@ -138,7 +140,12 @@ class AccessibilityTest {
 
     @Test
     fun settings() = check {
-        SettingsScreen(SettingsUiState(removeAdsPrice = "$1.99", canSimulatePurchase = true), showPrivacySettings = true, actions = SettingsActions())
+        SettingsScreen(
+            SettingsUiState(),
+            showPrivacySettings = true,
+            actions = SettingsActions(),
+            removeAds = RemoveAdsUiState(price = "$1.99", canSimulatePurchase = true),
+        )
     }
 
     @Test
@@ -174,7 +181,7 @@ class AccessibilityTest {
 
     @Test
     fun dailyChallenge() = check {
-        DailyChallengeScreen(challengeState(ChallengePhase.PLAYING), showBanner = false, onBack = {}, onCellClick = {}, onRetry = {})
+        DailyChallengeScreen(challengeState(ChallengePhase.PLAYING), showBanner = false, onBack = {}, onCellClick = {}, onRetry = {}, showRemoveAdsBadge = true)
     }
 
     @Test
@@ -197,6 +204,15 @@ class AccessibilityTest {
 
     @Test
     fun splashDark() = check(dark = true) { SplashContent() }
+
+    @Test
+    fun removeAdsDialog() = check { RemoveAdsDialog(RemoveAdsUiState(price = "$1.99"), {}, {}, {}) }
+
+    @Test
+    fun removeAdsDialogDark() = check(dark = true) { RemoveAdsDialog(RemoveAdsUiState(price = "$1.99"), {}, {}, {}) }
+
+    @Test
+    fun removeAdsDialogUnavailable() = check { RemoveAdsDialog(RemoveAdsUiState(price = null), {}, {}, {}) }
 
     // --- Specific fixes ------------------------------------------------------------------
 

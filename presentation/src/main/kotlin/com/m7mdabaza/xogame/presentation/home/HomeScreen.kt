@@ -2,7 +2,6 @@ package com.m7mdabaza.xogame.presentation.home
 
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -50,6 +49,9 @@ import com.m7mdabaza.xogame.presentation.R
 import com.m7mdabaza.xogame.presentation.ads.BannerAd
 import com.m7mdabaza.xogame.presentation.components.BrandBackground
 import com.m7mdabaza.xogame.presentation.components.XoLogo
+import com.m7mdabaza.xogame.presentation.purchase.RemoveAdsBadge
+import com.m7mdabaza.xogame.presentation.purchase.RemoveAdsDialogHost
+import com.m7mdabaza.xogame.presentation.purchase.RemoveAdsViewModel
 import com.m7mdabaza.xogame.presentation.reminder.AskNotificationPermissionOnce
 import com.m7mdabaza.xogame.presentation.theme.XoTheme
 import com.m7mdabaza.xogame.presentation.update.InAppUpdates
@@ -63,9 +65,12 @@ fun HomeRoute(
     onOpenChallenge: () -> Unit,
     onOpenAchievements: () -> Unit,
     viewModel: HomeViewModel = hiltViewModel(),
+    removeAdsViewModel: RemoveAdsViewModel = hiltViewModel(),
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
+    val removeAds by removeAdsViewModel.uiState.collectAsStateWithLifecycle()
     val snackbar = remember { SnackbarHostState() }
+    RemoveAdsDialogHost(removeAds, removeAdsViewModel, snackbar)
     InAppUpdates(snackbar, shouldPrompt = viewModel::shouldOfferUpdate, onPrompted = viewModel::onUpdateOffered)
     // Once ever, at startup (user decision): the daily-challenge reminder needs it on Android 13+.
     AskNotificationPermissionOnce(shouldAsk = viewModel::shouldAskForNotifications, onAsked = viewModel::onNotificationsAsked)
@@ -87,9 +92,12 @@ fun HomeRoute(
         onOpenChallenge = onOpenChallenge,
         onOpenAchievements = onOpenAchievements,
         snackbar = snackbar,
+        showRemoveAdsBadge = removeAds.showBadge,
+        onRemoveAds = removeAdsViewModel::openDialog,
     )
 }
 
+/** @param showRemoveAdsBadge show the "No ads" badge (see `RemoveAdsUiState.showBadge`); [onRemoveAds] opens its dialog. */
 @Composable
 fun HomeScreen(
     state: HomeUiState,
@@ -99,6 +107,8 @@ fun HomeScreen(
     onOpenChallenge: () -> Unit = {},
     onOpenAchievements: () -> Unit = {},
     snackbar: SnackbarHostState = remember { SnackbarHostState() },
+    showRemoveAdsBadge: Boolean = false,
+    onRemoveAds: () -> Unit = {},
 ) {
     var pickerMode by rememberSaveable { mutableStateOf<GameMode?>(null) }
 
@@ -119,8 +129,11 @@ fun HomeScreen(
                     .fillMaxWidth()
                     .heightIn(min = 48.dp)
                     .padding(horizontal = 8.dp),
-                horizontalArrangement = Arrangement.End,
+                verticalAlignment = Alignment.CenterVertically,
             ) {
+                // There is no title here, so the badge keeps its label at every font size.
+                if (showRemoveAdsBadge) RemoveAdsBadge(onClick = onRemoveAds, showLabel = true)
+                Spacer(Modifier.weight(1f))
                 IconButton(onClick = onOpenStats) {
                     Icon(painterResource(R.drawable.ic_bar_chart), contentDescription = stringResource(R.string.stats_title))
                 }

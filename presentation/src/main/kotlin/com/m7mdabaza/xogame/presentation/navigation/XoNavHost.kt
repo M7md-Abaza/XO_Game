@@ -71,11 +71,7 @@ fun XoNavHost(
             )
         }
         composable<Destination.Game> {
-            GameRoute(
-                onBack = { navController.popBackStack(Destination.Home, inclusive = false) },
-                // Settings opens on top of the game, so Back returns to the same round.
-                onOpenSettings = { navController.navigate(Destination.Settings) { launchSingleTop = true } },
-            )
+            GameRoute(onBack = { navController.popBackStack(Destination.Home, inclusive = false) })
         }
         composable<Destination.Stats> {
             StatsRoute(onBack = { navController.popBackStack(Destination.Home, inclusive = false) })

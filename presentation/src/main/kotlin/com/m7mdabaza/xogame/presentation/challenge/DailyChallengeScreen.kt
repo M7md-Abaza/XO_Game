@@ -43,6 +43,9 @@ import com.m7mdabaza.xogame.presentation.ads.ConsentManager
 import com.m7mdabaza.xogame.presentation.components.ScreenTopBar
 import com.m7mdabaza.xogame.presentation.components.formatEpochDay
 import com.m7mdabaza.xogame.presentation.game.GameBoard
+import com.m7mdabaza.xogame.presentation.purchase.RemoveAdsBadge
+import com.m7mdabaza.xogame.presentation.purchase.RemoveAdsDialogHost
+import com.m7mdabaza.xogame.presentation.purchase.RemoveAdsViewModel
 import com.m7mdabaza.xogame.presentation.review.rememberInAppReview
 import kotlinx.coroutines.launch
 
@@ -51,8 +54,10 @@ import kotlinx.coroutines.launch
 fun DailyChallengeRoute(
     onBack: () -> Unit,
     viewModel: DailyChallengeViewModel = hiltViewModel(),
+    removeAdsViewModel: RemoveAdsViewModel = hiltViewModel(),
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
+    val removeAds by removeAdsViewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
     val canRequestAds = remember { ConsentManager.canRequestAds(context) }
     val snackbar = remember { SnackbarHostState() }
@@ -70,6 +75,7 @@ fun DailyChallengeRoute(
             }
         }
     }
+    RemoveAdsDialogHost(removeAds, removeAdsViewModel, snackbar)
     DailyChallengeScreen(
         state = state,
         showBanner = canRequestAds,
@@ -77,9 +83,12 @@ fun DailyChallengeRoute(
         onBack = onBack,
         onCellClick = viewModel::onCellClick,
         onRetry = viewModel::onRetry,
+        showRemoveAdsBadge = removeAds.showBadge,
+        onRemoveAds = removeAdsViewModel::openDialog,
     )
 }
 
+/** @param showRemoveAdsBadge show the "No ads" badge (see `RemoveAdsUiState.showBadge`); [onRemoveAds] opens its dialog. */
 @Composable
 fun DailyChallengeScreen(
     state: ChallengeUiState,
@@ -88,6 +97,8 @@ fun DailyChallengeScreen(
     onCellClick: (Cell) -> Unit,
     onRetry: () -> Unit,
     snackbar: SnackbarHostState = remember { SnackbarHostState() },
+    showRemoveAdsBadge: Boolean = false,
+    onRemoveAds: () -> Unit = {},
 ) {
     Column(
         Modifier
@@ -96,7 +107,9 @@ fun DailyChallengeScreen(
             .safeDrawingPadding(),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        ScreenTopBar(stringResource(R.string.challenge_title), onBack = onBack)
+        ScreenTopBar(stringResource(R.string.challenge_title), onBack = onBack) {
+            if (showRemoveAdsBadge) RemoveAdsBadge(onClick = onRemoveAds, modifier = Modifier.padding(end = 4.dp))
+        }
         val challenge = state.challenge
         val game = state.game
         Box(Modifier.weight(1f).fillMaxWidth()) {

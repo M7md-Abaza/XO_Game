@@ -164,6 +164,15 @@
     <string name="restore_restored">Remove ads restored.</string>
     <string name="restore_nothing">No purchases found for this Google account.</string>
     <string name="restore_error">Couldn\'t reach Google Play. Please try again.</string>
+    <!-- The tappable badge in the top bars that opens the Remove-ads dialog. Keep it short. -->
+    <string name="remove_ads_badge">No ads</string>
+    <string name="remove_ads_benefit_banners">No banners</string>
+    <string name="remove_ads_benefit_interstitials">No ads between rounds</string>
+    <string name="remove_ads_benefit_assists">A free hint and a free undo every game</string>
+    <string name="remove_ads_one_time">One-time purchase. On a new phone, use Restore purchases.</string>
+    <!-- %1$s = price with currency, e.g. $1.99 -->
+    <string name="remove_ads_dialog_buy">Buy for %1$s</string>
+    <string name="remove_ads_not_now">Not now</string>
 
 
     <!-- Daily challenge -->

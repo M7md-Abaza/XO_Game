@@ -5,7 +5,6 @@ import android.os.Build
 import androidx.activity.compose.LocalActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.annotation.StringRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -35,7 +34,6 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -59,6 +57,9 @@ import com.m7mdabaza.xogame.presentation.R
 import com.m7mdabaza.xogame.presentation.ads.ConsentManager
 import com.m7mdabaza.xogame.presentation.components.ScreenTopBar
 import com.m7mdabaza.xogame.presentation.components.TextChoices
+import com.m7mdabaza.xogame.presentation.purchase.RemoveAdsMessages
+import com.m7mdabaza.xogame.presentation.purchase.RemoveAdsUiState
+import com.m7mdabaza.xogame.presentation.purchase.RemoveAdsViewModel
 import com.m7mdabaza.xogame.presentation.reminder.hasNotificationPermission
 import com.m7mdabaza.xogame.presentation.reminder.openNotificationSettings
 import com.m7mdabaza.xogame.presentation.reminder.reminderNotificationsAllowed
@@ -70,8 +71,10 @@ import kotlinx.coroutines.launch
 fun SettingsRoute(
     onBack: () -> Unit,
     viewModel: SettingsViewModel = hiltViewModel(),
+    removeAdsViewModel: RemoveAdsViewModel = hiltViewModel(),
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
+    val removeAds by removeAdsViewModel.uiState.collectAsStateWithLifecycle()
     val activity = LocalActivity.current
     val context = LocalContext.current
     // UMP decides whether an entry point to change consent is required (EU users).
@@ -85,13 +88,7 @@ fun SettingsRoute(
     }
 
     val snackbar = remember { SnackbarHostState() }
-    val messageText = state.message?.let { stringResource(it.textRes()) }
-    LaunchedEffect(state.message) {
-        if (messageText != null) {
-            snackbar.showSnackbar(messageText)
-            viewModel.onMessageShown()
-        }
-    }
+    RemoveAdsMessages(removeAds.message, snackbar, removeAdsViewModel::onMessageShown)
 
     // Reminders switched on while notifications are blocked: point to the system settings.
     val scope = rememberCoroutineScope()
@@ -110,6 +107,7 @@ fun SettingsRoute(
 
     SettingsScreen(
         state = state,
+        removeAds = removeAds,
         showPrivacySettings = privacyRequired,
         notificationsAllowed = notificationsAllowed,
         snackbar = snackbar,
@@ -138,23 +136,11 @@ fun SettingsRoute(
                     }
                 }
             },
-            onRemoveAds = viewModel::onRemoveAds,
-            onRestorePurchases = viewModel::onRestorePurchases,
-            onSimulateRemoveAds = viewModel::onSimulateRemoveAds,
+            onRemoveAds = removeAdsViewModel::buy,
+            onRestorePurchases = removeAdsViewModel::restore,
+            onSimulateRemoveAds = removeAdsViewModel::simulate,
         ),
     )
-}
-
-@StringRes
-private fun SettingsMessage.textRes(): Int = when (this) {
-    SettingsMessage.PURCHASED -> R.string.remove_ads_purchased
-    SettingsMessage.PENDING -> R.string.remove_ads_pending
-    SettingsMessage.ALREADY_OWNED -> R.string.remove_ads_already_owned
-    SettingsMessage.UNAVAILABLE -> R.string.remove_ads_unavailable
-    SettingsMessage.PURCHASE_ERROR -> R.string.remove_ads_error
-    SettingsMessage.RESTORED -> R.string.restore_restored
-    SettingsMessage.NOTHING_TO_RESTORE -> R.string.restore_nothing
-    SettingsMessage.RESTORE_ERROR -> R.string.restore_error
 }
 
 data class SettingsActions(
@@ -181,6 +167,7 @@ fun SettingsScreen(
     state: SettingsUiState,
     showPrivacySettings: Boolean,
     actions: SettingsActions,
+    removeAds: RemoveAdsUiState = RemoveAdsUiState(),
     notificationsAllowed: Boolean = true,
     snackbar: SnackbarHostState = remember { SnackbarHostState() },
 ) {
@@ -199,7 +186,7 @@ fun SettingsScreen(
                     .padding(horizontal = 24.dp)
                     .padding(bottom = 24.dp),
             ) {
-                RemoveAdsSection(state, actions)
+                RemoveAdsSection(removeAds, actions)
 
                 SectionTitle(stringResource(R.string.settings_section_feedback))
                 SwitchRow(stringResource(R.string.settings_sound), settings.soundEnabled, actions.onSoundChange)
@@ -277,7 +264,7 @@ fun SettingsScreen(
 
 /** The Remove-ads offer (or a thank-you once bought) and Restore purchases. */
 @Composable
-private fun RemoveAdsSection(state: SettingsUiState, actions: SettingsActions) {
+private fun RemoveAdsSection(state: RemoveAdsUiState, actions: SettingsActions) {
     SectionTitle(stringResource(R.string.remove_ads_title), divider = false)
     if (state.adsRemoved) {
         Text(stringResource(R.string.remove_ads_thanks), style = MaterialTheme.typography.bodyLarge)
@@ -288,7 +275,7 @@ private fun RemoveAdsSection(state: SettingsUiState, actions: SettingsActions) {
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
         Spacer(Modifier.height(12.dp))
-        val price = state.removeAdsPrice
+        val price = state.price
         Button(
             onClick = actions.onRemoveAds,
             enabled = price != null && !state.busy,

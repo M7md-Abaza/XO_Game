@@ -25,6 +25,7 @@ import com.m7mdabaza.xogame.presentation.game.GameFeedback
 import com.m7mdabaza.xogame.presentation.game.RoundSound
 import com.m7mdabaza.xogame.presentation.settings.AppLanguage
 import com.m7mdabaza.xogame.presentation.settings.AppLanguageController
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 
@@ -78,7 +79,13 @@ class FakePurchaseRepository(adsRemoved: Boolean = false) : PurchaseRepository {
     var restoreResult = RestoreResult.NOTHING_TO_RESTORE
     override val canSimulatePurchase = true
 
+    /** When set, a purchase waits for it (to test what shows while Google Play is busy). */
+    var purchaseGate: CompletableDeferred<Unit>? = null
+    var purchaseCalls = 0
+
     override suspend fun purchaseRemoveAds(): PurchaseResult {
+        purchaseCalls++
+        purchaseGate?.await()
         if (purchaseResult == PurchaseResult.PURCHASED) adsRemoved.value = true
         return purchaseResult
     }
