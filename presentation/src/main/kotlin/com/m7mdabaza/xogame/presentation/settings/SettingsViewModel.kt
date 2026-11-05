@@ -89,6 +89,8 @@ class SettingsViewModel @Inject constructor(
 
     fun setMatchLength(length: MatchLength) = update { it.copy(matchLength = length) }
 
+    fun setChallengeReminder(enabled: Boolean) = update { it.copy(challengeReminder = enabled) }
+
     fun setLanguage(language: AppLanguage) {
         if (language == local.value.language) return
         local.update { it.copy(language = language) }

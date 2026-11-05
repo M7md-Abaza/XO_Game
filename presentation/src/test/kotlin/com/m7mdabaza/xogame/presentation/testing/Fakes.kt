@@ -140,6 +140,7 @@ object FakeAdUnitIds : AdUnitIds {
 class FakePromptsRepository : PromptsRepository {
     override val reviewRequestedAt = MutableStateFlow<Long?>(null)
     override val updatePromptedAt = MutableStateFlow<Long?>(null)
+    override val notificationPermissionAskedAt = MutableStateFlow<Long?>(null)
 
     override suspend fun setReviewRequestedAt(millis: Long) {
         reviewRequestedAt.value = millis
@@ -147,5 +148,9 @@ class FakePromptsRepository : PromptsRepository {
 
     override suspend fun setUpdatePromptedAt(millis: Long) {
         updatePromptedAt.value = millis
+    }
+
+    override suspend fun setNotificationPermissionAskedAt(millis: Long) {
+        notificationPermissionAskedAt.value = millis
     }
 }

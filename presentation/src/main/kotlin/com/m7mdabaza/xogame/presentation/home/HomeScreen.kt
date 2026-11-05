@@ -50,6 +50,7 @@ import com.m7mdabaza.xogame.presentation.R
 import com.m7mdabaza.xogame.presentation.ads.BannerAd
 import com.m7mdabaza.xogame.presentation.components.BrandBackground
 import com.m7mdabaza.xogame.presentation.components.XoLogo
+import com.m7mdabaza.xogame.presentation.reminder.AskNotificationPermissionOnce
 import com.m7mdabaza.xogame.presentation.theme.XoTheme
 import com.m7mdabaza.xogame.presentation.update.InAppUpdates
 
@@ -66,6 +67,8 @@ fun HomeRoute(
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val snackbar = remember { SnackbarHostState() }
     InAppUpdates(snackbar, shouldPrompt = viewModel::shouldOfferUpdate, onPrompted = viewModel::onUpdateOffered)
+    // Once ever, at startup (user decision): the daily-challenge reminder needs it on Android 13+.
+    AskNotificationPermissionOnce(shouldAsk = viewModel::shouldAskForNotifications, onAsked = viewModel::onNotificationsAsked)
 
     // Consent can change while the app is in the background (or on first launch).
     LifecycleResumeEffect(Unit) {

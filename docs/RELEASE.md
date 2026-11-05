@@ -8,7 +8,9 @@ Checked before release (2026-11-05, commit a92c718): all JVM tests in debug and 
 errors), minified release APK and AAB built; release manifest not debuggable, real AdMob IDs, debug
 switches (EEA consent, "Simulate Remove ads") off; native libraries 16 KB aligned; AAB carries the R8
 mapping; purchases acknowledged on every start; update from v1.2 (versionCode 6 build of `master`)
-to 2.0 works on the emulator, with the v1 consent kept.
+to 2.0 works on the emulator, with the v1 consent kept. Added after that check: the daily-challenge
+reminder (notification permission, a WorkManager job), checked on the API 37 emulator in debug and as
+a minified release build; rebuild the bundle and re-run the checks before uploading.
 
 ## 1. Build the bundle
 
@@ -29,7 +31,7 @@ to 2.0 works on the emulator, with the v1 consent kept.
 - **License testers:** add your Google account under Settings → License testing, so test purchases
   cost nothing.
 - **Data safety:** review the form. The app itself stores everything on the phone (settings, stats,
-  daily challenge, achievements). The ads SDK (AdMob + UMP consent) is unchanged from v1; the purchase
+  daily challenge, achievements); the daily reminder is a local notification and sends nothing. The ads SDK (AdMob + UMP consent) is unchanged from v1; the purchase
   is handled by Google Play Billing (the app sends no purchase data anywhere itself; check the form's
   help on whether Play Billing needs a "Purchase history" entry).
 - **Content rating:** answer the questionnaire again; the app now sells a digital item (Remove ads).
@@ -66,6 +68,11 @@ Installs from Play are the only way to test these:
 5. Quick pass on a real phone in English and Arabic: every board at every level (3×3 Hard never
    loses), two players on each board, the daily challenge,
    achievements, a rewarded hint and an interstitial (after round 2 of a session).
+   **Daily reminder:** on Android 13+ the first start asks for notifications. The reminder comes
+   24 hours after the app was last opened; to see it at once, put the app in the background and
+   force the job with adb (the job id is in `adb shell dumpsys jobscheduler | grep ChallengeReminder`):
+   `adb shell cmd jobscheduler run -f -n androidx.work.systemjobscheduler com.m7mdabaza.x_ogame <id>`.
+   Tapping it opens the Daily challenge.
 6. **Pre-launch report** (Test and release → Pre-launch report): Play runs the uploaded build on
    real devices; check it for crashes and serious warnings before promoting.
 
@@ -95,7 +102,7 @@ XO Game 2.0, completely redesigned!
 • New look with a dark theme and full Arabic support
 • Choose your board (3×3, 4×4 or 8×8) and how hard the phone plays: Easy, Medium or Hard
 • A smarter computer, unbeatable on 3×3 Hard
-• Daily challenge: a new puzzle every day; keep your streak going
+• Daily challenge: a new puzzle every day; keep your streak going, with a friendly reminder so you never miss one
 • Achievements and detailed statistics
 • Best of 3 or best of 5 matches, player names, choose who starts
 • Hints and undo
@@ -109,7 +116,7 @@ XO Game 2.0, completely redesigned!
 • شكل جديد مع الوضع الداكن ودعم كامل للعربية
 • اختر اللوحة (3×3 أو 4×4 أو 8×8) ومستوى الهاتف: سهل أو متوسط أو صعب
 • كمبيوتر أذكى، لا يُهزم في المستوى الصعب على لوحة 3×3
-• التحدي اليومي: لغز جديد كل يوم، حافظ على سلسلتك
+• التحدي اليومي: لغز جديد كل يوم، حافظ على سلسلتك، مع تذكير لطيف حتى لا يفوتك أي لغز
 • إنجازات وإحصائيات مفصّلة
 • مباريات من 3 أو 5 جولات، أسماء اللاعبين، واختيار من يبدأ
 • تلميحات وتراجع عن الحركة

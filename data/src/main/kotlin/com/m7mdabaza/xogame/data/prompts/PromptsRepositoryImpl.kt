@@ -24,6 +24,7 @@ class PromptsRepositoryImpl @Inject constructor(
 
     override val reviewRequestedAt: Flow<Long?> = data.map { it[REVIEW] }.distinctUntilChanged()
     override val updatePromptedAt: Flow<Long?> = data.map { it[UPDATE] }.distinctUntilChanged()
+    override val notificationPermissionAskedAt: Flow<Long?> = data.map { it[NOTIFICATION_PERMISSION] }.distinctUntilChanged()
 
     override suspend fun setReviewRequestedAt(millis: Long) {
         store.edit { it[REVIEW] = millis }
@@ -33,8 +34,13 @@ class PromptsRepositoryImpl @Inject constructor(
         store.edit { it[UPDATE] = millis }
     }
 
+    override suspend fun setNotificationPermissionAskedAt(millis: Long) {
+        store.edit { it[NOTIFICATION_PERMISSION] = millis }
+    }
+
     private companion object {
         val REVIEW = longPreferencesKey("review_requested_at")
         val UPDATE = longPreferencesKey("update_prompted_at")
+        val NOTIFICATION_PERMISSION = longPreferencesKey("notification_permission_asked_at")
     }
 }

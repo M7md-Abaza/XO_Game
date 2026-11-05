@@ -83,6 +83,15 @@ android {
         resValues = true // the AdMob IDs above are resValues (off by default in AGP 9)
     }
 
+    // The app switches language itself (Settings, and the reminder notification's texts), so
+    // every install needs both English and Arabic: Play would otherwise install only the
+    // device language's resources. Two languages of strings cost almost nothing.
+    bundle {
+        language {
+            enableSplit = false
+        }
+    }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
@@ -105,8 +114,9 @@ dependencies {
 
     implementation(libs.play.services.ads)
     implementation(libs.ump)
-    // Not used directly: the ads SDK pulls in WorkManager 2.7.0 (Room 2.2.5), whose old keep
-    // rules let R8 strip the database constructor, so the release build crashed at startup.
+    // :presentation uses it for the daily-challenge reminder. Keep it here too: the ads SDK pulls
+    // in WorkManager 2.7.0 (Room 2.2.5), whose old keep rules let R8 strip the database
+    // constructor, so the release build crashed at startup.
     implementation(libs.androidx.work.runtime)
 
     testImplementation(libs.junit)

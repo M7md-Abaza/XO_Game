@@ -75,6 +75,7 @@ class RepositoriesTest {
             oName = "عمر",
             boardSize = BoardSize.EIGHT,
             level = Level.MEDIUM,
+            challengeReminder = false,
         )
         SettingsRepositoryImpl(store("settings")).update { changed }
         closeStores()

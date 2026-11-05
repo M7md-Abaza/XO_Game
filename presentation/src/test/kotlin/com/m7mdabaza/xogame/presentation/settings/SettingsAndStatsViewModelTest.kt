@@ -83,9 +83,16 @@ class SettingsAndStatsViewModelTest {
         vm.setVibration(false)
         vm.setTheme(ThemeMode.LIGHT)
         vm.setMatchLength(MatchLength.BEST_OF_5)
+        vm.setChallengeReminder(false)
         advanceUntilIdle()
         assertEquals(
-            Settings(soundEnabled = false, vibrationEnabled = false, theme = ThemeMode.LIGHT, matchLength = MatchLength.BEST_OF_5),
+            Settings(
+                soundEnabled = false,
+                vibrationEnabled = false,
+                theme = ThemeMode.LIGHT,
+                matchLength = MatchLength.BEST_OF_5,
+                challengeReminder = false,
+            ),
             settingsRepository.settings.value,
         )
     }

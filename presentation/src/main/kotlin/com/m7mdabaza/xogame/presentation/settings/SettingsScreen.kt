@@ -1,6 +1,10 @@
 package com.m7mdabaza.xogame.presentation.settings
 
+import android.Manifest
+import android.os.Build
 import androidx.activity.compose.LocalActivity
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.StringRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -23,8 +27,10 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -33,6 +39,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -52,7 +59,11 @@ import com.m7mdabaza.xogame.presentation.R
 import com.m7mdabaza.xogame.presentation.ads.ConsentManager
 import com.m7mdabaza.xogame.presentation.components.ScreenTopBar
 import com.m7mdabaza.xogame.presentation.components.TextChoices
+import com.m7mdabaza.xogame.presentation.reminder.hasNotificationPermission
+import com.m7mdabaza.xogame.presentation.reminder.openNotificationSettings
+import com.m7mdabaza.xogame.presentation.reminder.reminderNotificationsAllowed
 import com.m7mdabaza.xogame.presentation.theme.XoTheme
+import kotlinx.coroutines.launch
 
 /** Stateful entry point used by the navigation graph. */
 @Composable
@@ -65,8 +76,11 @@ fun SettingsRoute(
     val context = LocalContext.current
     // UMP decides whether an entry point to change consent is required (EU users).
     var privacyRequired by remember { mutableStateOf(ConsentManager.isPrivacyOptionsRequired(context)) }
+    // The user can turn notifications on or off in the system settings at any time.
+    var notificationsAllowed by remember { mutableStateOf(reminderNotificationsAllowed(context)) }
     LifecycleResumeEffect(Unit) {
         privacyRequired = ConsentManager.isPrivacyOptionsRequired(context)
+        notificationsAllowed = reminderNotificationsAllowed(context)
         onPauseOrDispose { }
     }
 
@@ -79,9 +93,25 @@ fun SettingsRoute(
         }
     }
 
+    // Reminders switched on while notifications are blocked: point to the system settings.
+    val scope = rememberCoroutineScope()
+    val blockedText = stringResource(R.string.settings_reminder_blocked)
+    val openSettingsText = stringResource(R.string.settings_reminder_open_settings)
+    fun showNotificationsBlocked() {
+        scope.launch {
+            val result = snackbar.showSnackbar(blockedText, actionLabel = openSettingsText, duration = SnackbarDuration.Long)
+            if (result == SnackbarResult.ActionPerformed) openNotificationSettings(context)
+        }
+    }
+    val permissionLauncher = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) {
+        notificationsAllowed = reminderNotificationsAllowed(context)
+        if (!notificationsAllowed) showNotificationsBlocked()
+    }
+
     SettingsScreen(
         state = state,
         showPrivacySettings = privacyRequired,
+        notificationsAllowed = notificationsAllowed,
         snackbar = snackbar,
         actions = SettingsActions(
             onBack = onBack,
@@ -90,6 +120,17 @@ fun SettingsRoute(
             onThemeChange = viewModel::setTheme,
             onLanguageChange = viewModel::setLanguage,
             onMatchLengthChange = viewModel::setMatchLength,
+            onChallengeReminderChange = { enabled ->
+                viewModel.setChallengeReminder(enabled)
+                if (enabled && !notificationsAllowed) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && !hasNotificationPermission(context)) {
+                        // Android shows its dialog, or answers "denied" at once after two refusals.
+                        permissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                    } else {
+                        showNotificationsBlocked()
+                    }
+                }
+            },
             onPrivacySettings = {
                 activity?.let {
                     ConsentManager.showPrivacyOptionsForm(it) {
@@ -123,17 +164,24 @@ data class SettingsActions(
     val onThemeChange: (ThemeMode) -> Unit = {},
     val onLanguageChange: (AppLanguage) -> Unit = {},
     val onMatchLengthChange: (MatchLength) -> Unit = {},
+    val onChallengeReminderChange: (Boolean) -> Unit = {},
     val onPrivacySettings: () -> Unit = {},
     val onRemoveAds: () -> Unit = {},
     val onRestorePurchases: () -> Unit = {},
     val onSimulateRemoveAds: (Boolean) -> Unit = {},
 )
 
+/**
+ * @param notificationsAllowed the system lets the reminder show (permission,
+ *   app notifications, channel). The reminder switch is on only if both the
+ *   setting and the system allow it, so it shows what will actually happen.
+ */
 @Composable
 fun SettingsScreen(
     state: SettingsUiState,
     showPrivacySettings: Boolean,
     actions: SettingsActions,
+    notificationsAllowed: Boolean = true,
     snackbar: SnackbarHostState = remember { SnackbarHostState() },
 ) {
     val settings = state.settings
@@ -156,6 +204,14 @@ fun SettingsScreen(
                 SectionTitle(stringResource(R.string.settings_section_feedback))
                 SwitchRow(stringResource(R.string.settings_sound), settings.soundEnabled, actions.onSoundChange)
                 SwitchRow(stringResource(R.string.settings_vibration), settings.vibrationEnabled, actions.onVibrationChange)
+
+                SectionTitle(stringResource(R.string.settings_section_notifications))
+                SwitchRow(
+                    stringResource(R.string.settings_reminder),
+                    settings.challengeReminder && notificationsAllowed,
+                    actions.onChallengeReminderChange,
+                    summary = stringResource(R.string.settings_reminder_summary),
+                )
 
                 SectionTitle(stringResource(R.string.settings_section_appearance))
                 Label(stringResource(R.string.settings_theme))
@@ -289,15 +345,21 @@ private fun Label(text: String) {
 
 /** A whole-row toggle: tapping the text toggles too, and screen readers read it as one switch. */
 @Composable
-private fun SwitchRow(text: String, checked: Boolean, onCheckedChange: (Boolean) -> Unit) {
+private fun SwitchRow(text: String, checked: Boolean, onCheckedChange: (Boolean) -> Unit, summary: String? = null) {
     Row(
         Modifier
             .fillMaxWidth()
             .heightIn(min = 56.dp)
-            .toggleable(value = checked, role = Role.Switch, onValueChange = onCheckedChange),
+            .toggleable(value = checked, role = Role.Switch, onValueChange = onCheckedChange)
+            .padding(vertical = if (summary != null) 8.dp else 0.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Text(text, style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f))
+        Column(Modifier.weight(1f).padding(end = 16.dp)) {
+            Text(text, style = MaterialTheme.typography.titleMedium)
+            if (summary != null) {
+                Text(summary, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            }
+        }
         Switch(checked = checked, onCheckedChange = null)
     }
 }

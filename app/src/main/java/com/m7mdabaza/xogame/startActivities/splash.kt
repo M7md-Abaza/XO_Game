@@ -12,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.m7mdabaza.xogame.MainActivity
 import com.m7mdabaza.xogame.presentation.XoSplash
 import com.m7mdabaza.xogame.presentation.ads.ConsentManager
+import com.m7mdabaza.xogame.presentation.reminder.ACTION_OPEN_DAILY_CHALLENGE
 import dagger.hilt.android.AndroidEntryPoint
 
 /**
@@ -39,6 +40,13 @@ class splash : AppCompatActivity() {
             finish()
             return
         }
+        // A tapped daily-challenge reminder while the app is already running: hand it to
+        // the existing MainActivity (onNewIntent) instead of starting a second one.
+        if (!isTaskRoot && opensDailyChallenge) {
+            startActivity(mainIntent().addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP))
+            finish()
+            return
+        }
         setContent { XoSplash() }
 
         // Show the splash for at least 2 s, and wait for the EU consent form
@@ -55,7 +63,16 @@ class splash : AppCompatActivity() {
 
     private fun continueToMain() {
         if (!minTimeElapsed || !consentDone || isFinishing) return
-        startActivity(Intent(applicationContext, MainActivity::class.java))
+        startActivity(mainIntent())
         finish()
+    }
+
+    /** Opened from a daily-challenge reminder (see `AppIntentsImpl`). */
+    private val opensDailyChallenge: Boolean
+        get() = intent.action == ACTION_OPEN_DAILY_CHALLENGE
+
+    /** MainActivity, told to open the Daily challenge if this splash was opened for it. */
+    private fun mainIntent(): Intent = Intent(applicationContext, MainActivity::class.java).apply {
+        if (opensDailyChallenge) action = ACTION_OPEN_DAILY_CHALLENGE
     }
 }

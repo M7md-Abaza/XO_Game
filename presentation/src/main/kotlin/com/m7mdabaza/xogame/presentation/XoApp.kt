@@ -39,10 +39,19 @@ class XoAppViewModel @Inject constructor(
         .stateIn(viewModelScope, SharingStarted.Eagerly, ThemeMode.SYSTEM)
 }
 
-/** Root of the Compose UI, hosted by MainActivity in :app. */
+/**
+ * Root of the Compose UI, hosted by MainActivity in :app. [openDailyChallenge]:
+ * a tapped reminder asks for the Daily challenge (see [XoNavHost]).
+ */
 @Composable
-fun XoApp(viewModel: XoAppViewModel = hiltViewModel()) {
-    XoRoot(viewModel) { XoNavHost() }
+fun XoApp(
+    openDailyChallenge: Boolean = false,
+    onDailyChallengeOpened: () -> Unit = {},
+    viewModel: XoAppViewModel = hiltViewModel(),
+) {
+    XoRoot(viewModel) {
+        XoNavHost(openDailyChallenge = openDailyChallenge, onDailyChallengeOpened = onDailyChallengeOpened)
+    }
 }
 
 /** The launch screen, hosted by the splash activity in :app (which runs the consent flow). */

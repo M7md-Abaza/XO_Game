@@ -1,6 +1,7 @@
 package com.m7mdabaza.xogame.di
 
 import com.m7mdabaza.xogame.presentation.ads.AdUnitIds
+import com.m7mdabaza.xogame.presentation.reminder.AppIntents
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -12,4 +13,7 @@ abstract class AppModule {
 
     @Binds
     abstract fun bindAdUnitIds(impl: AppAdUnitIds): AdUnitIds
+
+    @Binds
+    abstract fun bindAppIntents(impl: AppIntentsImpl): AppIntents
 }

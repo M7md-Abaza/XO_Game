@@ -1,6 +1,7 @@
 package com.m7mdabaza.xogame.presentation.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -41,10 +42,17 @@ sealed interface Destination {
     data object Achievements : Destination
 }
 
+/**
+ * @param openDailyChallenge a tapped reminder asks for the Daily challenge:
+ *   it opens on top of Home (Back returns to Home), then
+ *   [onDailyChallengeOpened] clears the request.
+ */
 @Composable
 fun XoNavHost(
     modifier: Modifier = Modifier,
     navController: NavHostController = rememberNavController(),
+    openDailyChallenge: Boolean = false,
+    onDailyChallengeOpened: () -> Unit = {},
 ) {
     NavHost(
         navController = navController,
@@ -81,5 +89,14 @@ fun XoNavHost(
         composable<Destination.Achievements> {
             AchievementsRoute(onBack = { navController.popBackStack(Destination.Home, inclusive = false) })
         }
+    }
+    // After NavHost, so the graph is set.
+    LaunchedEffect(openDailyChallenge) {
+        if (!openDailyChallenge) return@LaunchedEffect
+        navController.navigate(Destination.DailyChallenge) {
+            popUpTo<Destination.Home>()
+            launchSingleTop = true
+        }
+        onDailyChallengeOpened()
     }
 }

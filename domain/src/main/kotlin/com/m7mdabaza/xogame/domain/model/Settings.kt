@@ -16,6 +16,10 @@ enum class Starter { PLAYER_ONE, PLAYER_TWO, RANDOM }
  * The match-setup properties (match length to names) are the defaults of the
  * next setup, remembered from the last match the user started. [boardSize] and
  * [level] are the last choice in the "against the phone" picker.
+ *
+ * [challengeReminder]: the daily-challenge reminder notification (see
+ * `ReminderSchedule`). On by default; Android 13+ also needs the notification
+ * permission, which the app asks for once on Home.
  */
 data class Settings(
     val soundEnabled: Boolean = true,
@@ -28,4 +32,5 @@ data class Settings(
     val oName: String = "",
     val boardSize: BoardSize = BoardSize.THREE,
     val level: Level = Level.EASY,
+    val challengeReminder: Boolean = true,
 )

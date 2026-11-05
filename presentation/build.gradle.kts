@@ -72,6 +72,7 @@ dependencies {
     implementation(libs.ump)
     implementation(libs.play.review.ktx)     // in-app review
     implementation(libs.play.app.update.ktx) // in-app updates
+    implementation(libs.androidx.work.runtime) // daily-challenge reminder
 
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)

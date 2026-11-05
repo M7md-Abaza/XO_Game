@@ -190,4 +190,129 @@
     <!-- In-app update (Google Play) -->
     <string name="update_downloaded">إصدار جديد جاهز.</string>
     <string name="update_restart">إعادة التشغيل</string>
+
+    <!-- Settings: daily-challenge reminder -->
+    <string name="settings_section_notifications">الإشعارات</string>
+    <string name="settings_reminder">تذكير التحدي اليومي</string>
+    <string name="settings_reminder_summary">تنبيه باللغز الجديد إذا لم تفتح التطبيق منذ يوم</string>
+    <string name="settings_reminder_blocked">الإشعارات متوقفة لهذا التطبيق. فعّلها لتصلك التذكيرات.</string>
+    <string name="settings_reminder_open_settings">الإعدادات</string>
+
+    <!-- Daily-challenge reminder notification -->
+    <string name="reminder_channel_name">تذكيرات التحدي اليومي</string>
+    <string name="reminder_channel_description">تنبيه باللغز الجديد إذا لم تلعب منذ يوم</string>
+    <string name="reminder_daily_1_title">🔔 لغز اليوم جاهز</string>
+    <string name="reminder_daily_1_text">تحدٍّ جديد على لوحة 8×8 بانتظارك. هل تستطيع الفوز خلال حركتين؟</string>
+    <string name="reminder_daily_2_title">هل ترى التهديد المزدوج؟ 👀</string>
+    <string name="reminder_daily_2_text">اصنع تهديدين في وقت واحد ولن يستطيع الهاتف إيقافك. لغز اليوم بانتظارك.</string>
+    <string name="reminder_daily_3_title">أين الحركة الرابحة؟ ❌</string>
+    <string name="reminder_daily_3_text">إنها مختبئة في مكان ما على لوحة اليوم. هل تجدها؟</string>
+    <string name="reminder_daily_4_title">تمرينك اليومي للعقل 💡</string>
+    <string name="reminder_daily_4_text">لغز واحد، حركتان، ودقائق من المتعة.</string>
+    <string name="reminder_daily_5_title">حان وقت فوز سريع ⚡</string>
+    <string name="reminder_daily_5_text">تحدي اليوم يستغرق أقل من دقيقة، إذا وجدت المربع الصحيح.</string>
+    <string name="reminder_daily_6_title">الهاتف بانتظارك 📱</string>
+    <string name="reminder_daily_6_text">يظن أنه يستطيع الدفاع في لغز اليوم. أثبت له العكس!</string>
+    <string name="reminder_daily_7_title">يوم جديد، لغز جديد 🌟</string>
+    <string name="reminder_daily_7_text">وصل التحدي اليومي. هل أنت مستعد للعب؟</string>
+    <string name="reminder_daily_8_title">فكّر بحركتين إلى الأمام 🤔</string>
+    <string name="reminder_daily_8_text">لغز اليوم يكافئ العين الحادة. جرّبه الآن!</string>
+    <string name="reminder_daily_9_title">تشعر بالذكاء اليوم؟ 😎</string>
+    <string name="reminder_daily_9_text">اختبر ذكاءك مع التحدي اليومي.</string>
+    <string name="reminder_daily_10_title">لغز كل يوم يبقي ذهنك حادًا 🗓️</string>
+    <string name="reminder_daily_10_text">لغز اليوم جاهز متى شئت.</string>
+    <string name="reminder_daily_11_title">مستعد للتحدي؟ 🎯</string>
+    <string name="reminder_daily_11_text">في لغز اليوم حركة رابحة مخفية. اعثر عليها وفُز خلال حركتين.</string>
+    <string name="reminder_daily_12_title">استراحة قصيرة؟ ☕</string>
+    <string name="reminder_daily_12_text">اجعلها استراحة ذكية: لغز اليوم بانتظارك.</string>
+    <string name="reminder_daily_13_title">تفوّق على الهاتف 🤖</string>
+    <string name="reminder_daily_13_text">اليوم يدافع بكامل قوته. هل تستطيع الفوز رغم ذلك؟</string>
+    <string name="reminder_daily_14_title">حركة ذكية واحدة ✨</string>
+    <string name="reminder_daily_14_text">هذا كل ما تحتاجه لتمهّد لفوز اليوم. هل تجدها؟</string>
+    <string name="reminder_daily_15_title">استعد، انطلق! 🏁</string>
+    <string name="reminder_daily_15_text">تحدٍّ يومي جديد متاح الآن. كم ستستغرق لحله؟</string>
+    <string name="reminder_daily_16_title">ارتقِ بمستواك 🚀</string>
+    <string name="reminder_daily_16_text">الألغاز اليومية أفضل طريقة لتتحسن في XO. لغز اليوم جاهز.</string>
+
+    <string name="reminder_streak_1_title">🔥 حافظ على سلسلتك</string>
+    <plurals name="reminder_streak_1_text">
+        <item quantity="zero">%d يوم متتالٍ! حُلّ لغز اليوم لتواصل السلسلة.</item>
+        <item quantity="one">يوم واحد حتى الآن! حُلّ لغز اليوم لتواصل السلسلة.</item>
+        <item quantity="two">يومان متتاليان! حُلّ لغز اليوم لتواصل السلسلة.</item>
+        <item quantity="few">%d أيام متتالية! حُلّ لغز اليوم لتواصل السلسلة.</item>
+        <item quantity="many">%d يومًا متتاليًا! حُلّ لغز اليوم لتواصل السلسلة.</item>
+        <item quantity="other">%d يوم متتالٍ! حُلّ لغز اليوم لتواصل السلسلة.</item>
+    </plurals>
+    <string name="reminder_streak_2_title">سلسلتك في خطر ⏳</string>
+    <plurals name="reminder_streak_2_text">
+        <item quantity="zero">صمدت %d يوم. لا تدع السلسلة تنتهي عند منتصف الليل!</item>
+        <item quantity="one">صمدت يومًا واحدًا. لا تدع السلسلة تنتهي عند منتصف الليل!</item>
+        <item quantity="two">صمدت يومين. لا تدع السلسلة تنتهي عند منتصف الليل!</item>
+        <item quantity="few">صمدت %d أيام. لا تدع السلسلة تنتهي عند منتصف الليل!</item>
+        <item quantity="many">صمدت %d يومًا. لا تدع السلسلة تنتهي عند منتصف الليل!</item>
+        <item quantity="other">صمدت %d يوم. لا تدع السلسلة تنتهي عند منتصف الليل!</item>
+    </plurals>
+    <string name="reminder_streak_3_title">لا تقطع السلسلة ⛓️</string>
+    <plurals name="reminder_streak_3_text">
+        <item quantity="zero">حللت %d لغز متتالٍ. لغز اليوم بانتظارك.</item>
+        <item quantity="one">حللت لغزًا واحدًا. لغز اليوم بانتظارك.</item>
+        <item quantity="two">حللت لغزين متتاليين. لغز اليوم بانتظارك.</item>
+        <item quantity="few">حللت %d ألغاز متتالية. لغز اليوم بانتظارك.</item>
+        <item quantity="many">حللت %d لغزًا متتاليًا. لغز اليوم بانتظارك.</item>
+        <item quantity="other">حللت %d لغز متتالٍ. لغز اليوم بانتظارك.</item>
+    </plurals>
+    <string name="reminder_streak_4_title">بطل السلسلة 🏆</string>
+    <plurals name="reminder_streak_4_text">
+        <item quantity="zero">%d يوم والعدّ مستمر. هل تواصل؟</item>
+        <item quantity="one">يوم واحد والعدّ مستمر. هل تواصل؟</item>
+        <item quantity="two">يومان والعدّ مستمر. هل تواصل؟</item>
+        <item quantity="few">%d أيام والعدّ مستمر. هل تواصل؟</item>
+        <item quantity="many">%d يومًا والعدّ مستمر. هل تواصل؟</item>
+        <item quantity="other">%d يوم والعدّ مستمر. هل تواصل؟</item>
+    </plurals>
+    <string name="reminder_streak_5_title">سلسلتك تحتاجك 💪</string>
+    <plurals name="reminder_streak_5_text">
+        <item quantity="zero">%d يوم متتالٍ حتى الآن. لا تتوقف الآن!</item>
+        <item quantity="one">يوم واحد حتى الآن. لا تتوقف الآن!</item>
+        <item quantity="two">يومان متتاليان حتى الآن. لا تتوقف الآن!</item>
+        <item quantity="few">%d أيام متتالية حتى الآن. لا تتوقف الآن!</item>
+        <item quantity="many">%d يومًا متتاليًا حتى الآن. لا تتوقف الآن!</item>
+        <item quantity="other">%d يوم متتالٍ حتى الآن. لا تتوقف الآن!</item>
+    </plurals>
+    <string name="reminder_streak_6_title">أضف يومًا جديدًا 📅</string>
+    <plurals name="reminder_streak_6_text">
+        <item quantity="zero">سلسلتك من %d يوم تنتظر لغز اليوم.</item>
+        <item quantity="one">سلسلتك من يوم واحد تنتظر لغز اليوم.</item>
+        <item quantity="two">سلسلتك من يومين تنتظر لغز اليوم.</item>
+        <item quantity="few">سلسلتك من %d أيام تنتظر لغز اليوم.</item>
+        <item quantity="many">سلسلتك من %d يومًا تنتظر لغز اليوم.</item>
+        <item quantity="other">سلسلتك من %d يوم تنتظر لغز اليوم.</item>
+    </plurals>
+    <string name="reminder_streak_7_title">أنت في أفضل حالاتك 🎲</string>
+    <plurals name="reminder_streak_7_text">
+        <item quantity="zero">%d لغز محلول على التوالي. حافظ على الزخم!</item>
+        <item quantity="one">لغز واحد محلول حتى الآن. حافظ على الزخم!</item>
+        <item quantity="two">لغزان محلولان على التوالي. حافظ على الزخم!</item>
+        <item quantity="few">%d ألغاز محلولة على التوالي. حافظ على الزخم!</item>
+        <item quantity="many">%d لغزًا محلولًا على التوالي. حافظ على الزخم!</item>
+        <item quantity="other">%d لغز محلول على التوالي. حافظ على الزخم!</item>
+    </plurals>
+    <string name="reminder_streak_8_title">هل تستمر السلسلة؟ 🔥</string>
+    <plurals name="reminder_streak_8_text">
+        <item quantity="zero">%d يوم حتى الآن. لغز اليوم هو الحَكَم!</item>
+        <item quantity="one">يوم واحد حتى الآن. لغز اليوم هو الحَكَم!</item>
+        <item quantity="two">يومان حتى الآن. لغز اليوم هو الحَكَم!</item>
+        <item quantity="few">%d أيام حتى الآن. لغز اليوم هو الحَكَم!</item>
+        <item quantity="many">%d يومًا حتى الآن. لغز اليوم هو الحَكَم!</item>
+        <item quantity="other">%d يوم حتى الآن. لغز اليوم هو الحَكَم!</item>
+    </plurals>
+
+    <string name="reminder_comeback_1_title">اشتقنا إليك 👋</string>
+    <string name="reminder_comeback_1_text">اللوحة هادئة بدونك. لغز اليوم بانتظارك.</string>
+    <string name="reminder_comeback_2_title">عودة للعب سريع؟ 🎮</string>
+    <string name="reminder_comeback_2_text">لغز اليوم يستغرق دقيقة فقط. مستعد؟</string>
+    <string name="reminder_comeback_3_title">الهاتف يظن أنك استسلمت 😏</string>
+    <string name="reminder_comeback_3_text">أثبت له أنك ما زلت البطل مع لغز اليوم.</string>
+    <string name="reminder_comeback_4_title">ألغاز جديدة كل يوم 🎁</string>
+    <string name="reminder_comeback_4_text">فاتك بعضها. عُد وابدأ بتحدي اليوم!</string>
 </resources>

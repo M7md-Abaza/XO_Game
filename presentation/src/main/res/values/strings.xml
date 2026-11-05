@@ -218,4 +218,104 @@
     <!-- In-app update (Google Play). Snackbar once a new version has downloaded. -->
     <string name="update_downloaded">A new version is ready.</string>
     <string name="update_restart">Restart</string>
+
+    <!-- Settings: daily-challenge reminder -->
+    <string name="settings_section_notifications">Notifications</string>
+    <string name="settings_reminder">Daily challenge reminder</string>
+    <string name="settings_reminder_summary">A nudge about the new puzzle when you haven\'t opened the app for a day</string>
+    <!-- Snackbar when the reminder is switched on but Android blocks the app's notifications -->
+    <string name="settings_reminder_blocked">Notifications are off for this app. Turn them on to get reminders.</string>
+    <string name="settings_reminder_open_settings">Settings</string>
+
+    <!-- Daily-challenge reminder notification. The channel name and description show in Android's notification settings. -->
+    <string name="reminder_channel_name">Daily challenge reminders</string>
+    <string name="reminder_channel_description">A nudge about the new puzzle when you haven\'t played for a day</string>
+    <!--
+      Reminder texts (title + text), a different one each day so they don't get boring.
+      "daily": the usual ones. "streak": the player's streak is at stake (%d = days in a row, at least 2).
+      "comeback": the app hasn't been opened for 3 days or more. Keep them short and friendly;
+      the emojis are part of the text (only ones that Android 7 can show).
+    -->
+    <string name="reminder_daily_1_title">🔔 Today\'s puzzle is ready</string>
+    <string name="reminder_daily_1_text">A fresh 8×8 challenge is waiting. Can you win in 2 moves?</string>
+    <string name="reminder_daily_2_title">Can you spot the double threat? 👀</string>
+    <string name="reminder_daily_2_text">Make two threats at once and the phone can\'t stop you. Today\'s puzzle is waiting.</string>
+    <string name="reminder_daily_3_title">Where\'s the winning move? ❌</string>
+    <string name="reminder_daily_3_text">It\'s hiding somewhere on today\'s board. Can you find it?</string>
+    <string name="reminder_daily_4_title">Your daily brain workout 💡</string>
+    <string name="reminder_daily_4_text">One puzzle, two moves, a few minutes of fun.</string>
+    <string name="reminder_daily_5_title">Time for a quick win ⚡</string>
+    <string name="reminder_daily_5_text">Today\'s challenge takes less than a minute, if you find the right square.</string>
+    <string name="reminder_daily_6_title">The phone is waiting 📱</string>
+    <string name="reminder_daily_6_text">It thinks it can defend today\'s puzzle. Prove it wrong!</string>
+    <string name="reminder_daily_7_title">New day, new puzzle 🌟</string>
+    <string name="reminder_daily_7_text">Today\'s daily challenge is here. Ready to play?</string>
+    <string name="reminder_daily_8_title">Think two moves ahead 🤔</string>
+    <string name="reminder_daily_8_text">Today\'s puzzle rewards a sharp eye. Give it a try!</string>
+    <string name="reminder_daily_9_title">Feeling clever today? 😎</string>
+    <string name="reminder_daily_9_text">Put it to the test with today\'s daily challenge.</string>
+    <string name="reminder_daily_10_title">A puzzle a day keeps you sharp 🗓️</string>
+    <string name="reminder_daily_10_text">Today\'s puzzle is ready when you are.</string>
+    <string name="reminder_daily_11_title">Ready for a challenge? 🎯</string>
+    <string name="reminder_daily_11_text">Today\'s puzzle hides a winning move. Find it and win in two.</string>
+    <string name="reminder_daily_12_title">Quick break? ☕</string>
+    <string name="reminder_daily_12_text">Make it a smart one: today\'s puzzle is waiting.</string>
+    <string name="reminder_daily_13_title">Outsmart the phone 🤖</string>
+    <string name="reminder_daily_13_text">Today it defends at full strength. Can you still win?</string>
+    <string name="reminder_daily_14_title">One smart move ✨</string>
+    <string name="reminder_daily_14_text">That\'s all it takes to set up today\'s win. Can you find it?</string>
+    <string name="reminder_daily_15_title">Ready, set, play! 🏁</string>
+    <string name="reminder_daily_15_text">A new daily challenge is live. How fast can you solve it?</string>
+    <string name="reminder_daily_16_title">Level up your game 🚀</string>
+    <string name="reminder_daily_16_text">Daily puzzles are the best way to get better at XO. Today\'s is ready.</string>
+
+    <string name="reminder_streak_1_title">🔥 Keep your streak alive</string>
+    <plurals name="reminder_streak_1_text">
+        <item quantity="one">%d day in a row! Solve today\'s puzzle to keep it going.</item>
+        <item quantity="other">%d days in a row! Solve today\'s puzzle to keep it going.</item>
+    </plurals>
+    <string name="reminder_streak_2_title">Your streak is on the line ⏳</string>
+    <plurals name="reminder_streak_2_text">
+        <item quantity="one">%d day strong. Don\'t let your streak end at midnight!</item>
+        <item quantity="other">%d days strong. Don\'t let your streak end at midnight!</item>
+    </plurals>
+    <string name="reminder_streak_3_title">Don\'t break the chain ⛓️</string>
+    <plurals name="reminder_streak_3_text">
+        <item quantity="one">You\'ve solved %d puzzle in a row. Today\'s is waiting.</item>
+        <item quantity="other">You\'ve solved %d puzzles in a row. Today\'s is waiting.</item>
+    </plurals>
+    <string name="reminder_streak_4_title">Streak champion 🏆</string>
+    <plurals name="reminder_streak_4_text">
+        <item quantity="one">%d day and counting. Can you keep it going?</item>
+        <item quantity="other">%d days and counting. Can you keep it going?</item>
+    </plurals>
+    <string name="reminder_streak_5_title">Your streak needs you 💪</string>
+    <plurals name="reminder_streak_5_text">
+        <item quantity="one">%d day in a row so far. Don\'t stop now!</item>
+        <item quantity="other">%d days in a row so far. Don\'t stop now!</item>
+    </plurals>
+    <string name="reminder_streak_6_title">Make it one more day 📅</string>
+    <plurals name="reminder_streak_6_text">
+        <item quantity="one">Your %d-day streak is waiting for today\'s puzzle.</item>
+        <item quantity="other">Your %d-day streak is waiting for today\'s puzzle.</item>
+    </plurals>
+    <string name="reminder_streak_7_title">You\'re on a roll 🎲</string>
+    <plurals name="reminder_streak_7_text">
+        <item quantity="one">%d puzzle solved in a row. Keep the momentum!</item>
+        <item quantity="other">%d puzzles solved in a row. Keep the momentum!</item>
+    </plurals>
+    <string name="reminder_streak_8_title">Will the streak go on? 🔥</string>
+    <plurals name="reminder_streak_8_text">
+        <item quantity="one">%d day so far. Today\'s puzzle decides!</item>
+        <item quantity="other">%d days so far. Today\'s puzzle decides!</item>
+    </plurals>
+
+    <string name="reminder_comeback_1_title">We miss you 👋</string>
+    <string name="reminder_comeback_1_text">The board has been quiet without you. Today\'s puzzle is waiting.</string>
+    <string name="reminder_comeback_2_title">Back for a quick game? 🎮</string>
+    <string name="reminder_comeback_2_text">Today\'s puzzle takes just a minute. Ready?</string>
+    <string name="reminder_comeback_3_title">The phone thinks you gave up 😏</string>
+    <string name="reminder_comeback_3_text">Show it you\'re still the champion with today\'s puzzle.</string>
+    <string name="reminder_comeback_4_title">Fresh puzzles every day 🎁</string>
+    <string name="reminder_comeback_4_text">You\'ve missed a few. Jump back in with today\'s challenge!</string>
 </resources>

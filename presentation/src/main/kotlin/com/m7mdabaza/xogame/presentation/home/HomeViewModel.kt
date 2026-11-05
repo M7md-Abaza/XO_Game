@@ -10,7 +10,9 @@ import com.m7mdabaza.xogame.domain.usecase.EvaluateAchievementsUseCase
 import com.m7mdabaza.xogame.domain.usecase.ObserveAdsRemovedUseCase
 import com.m7mdabaza.xogame.domain.usecase.ObserveChallengeProgressUseCase
 import com.m7mdabaza.xogame.domain.usecase.ObserveSettingsUseCase
+import com.m7mdabaza.xogame.domain.usecase.RecordNotificationPermissionAskedUseCase
 import com.m7mdabaza.xogame.domain.usecase.RecordUpdatePromptedUseCase
+import com.m7mdabaza.xogame.domain.usecase.ShouldAskNotificationPermissionUseCase
 import com.m7mdabaza.xogame.domain.usecase.ShouldPromptForUpdateUseCase
 import com.m7mdabaza.xogame.domain.usecase.UpdateSettingsUseCase
 import com.m7mdabaza.xogame.presentation.ads.AdUnitIds
@@ -48,6 +50,8 @@ class HomeViewModel @Inject constructor(
     private val updateSettings: UpdateSettingsUseCase,
     private val shouldPromptForUpdate: ShouldPromptForUpdateUseCase,
     private val recordUpdatePrompted: RecordUpdatePromptedUseCase,
+    private val shouldAskNotificationPermission: ShouldAskNotificationPermissionUseCase,
+    private val recordNotificationPermissionAsked: RecordNotificationPermissionAskedUseCase,
 ) : AndroidViewModel(application) {
 
     private val _uiState = MutableStateFlow(
@@ -85,6 +89,11 @@ class HomeViewModel @Inject constructor(
     suspend fun shouldOfferUpdate(): Boolean = shouldPromptForUpdate()
 
     suspend fun onUpdateOffered() = recordUpdatePrompted()
+
+    /** Whether to ask for the notification permission now (Android 13+): once ever, for the daily-challenge reminder. */
+    suspend fun shouldAskForNotifications(): Boolean = shouldAskNotificationPermission()
+
+    suspend fun onNotificationsAsked() = recordNotificationPermissionAsked()
 
     /** Call when the screen resumes: consent may have changed (e.g. in Settings). */
     fun refreshConsentState() {
