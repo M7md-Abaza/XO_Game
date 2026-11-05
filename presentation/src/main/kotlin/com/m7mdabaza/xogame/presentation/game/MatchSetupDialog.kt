@@ -98,6 +98,8 @@ fun MatchSetupDialog(
                         Spacer(Modifier.height(8.dp))
                         NameField(Player.O, oName) { oName = it }
                     }
+                    // Each phone has its own player; the names come from the phones.
+                    GameMode.TWO_PHONES -> Unit
                 }
 
                 SectionLabel(stringResource(R.string.setup_who_starts))

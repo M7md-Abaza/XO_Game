@@ -34,10 +34,11 @@ class BoardSizeTest {
     }
 
     @Test
-    fun `every board and level has its own record, two-player boards one each`() {
-        assertEquals(9 + 3, StatsKey.all.size)
+    fun `every board and level has its own record, two-player and two-phone boards one each`() {
+        assertEquals(9 + 3 + 3, StatsKey.all.size)
         assertEquals(StatsKey.all.size, StatsKey.all.toSet().size)
         assertEquals(StatsKey(GameMode.VS_COMPUTER, BoardSize.EIGHT, Level.MEDIUM), GameConfig(GameMode.VS_COMPUTER, BoardSize.EIGHT, Level.MEDIUM).statsKey)
         assertEquals(StatsKey(GameMode.TWO_PLAYERS, BoardSize.THREE), GameConfig(GameMode.TWO_PLAYERS, BoardSize.THREE, null).statsKey)
+        assertEquals(StatsKey(GameMode.TWO_PHONES, BoardSize.FOUR), GameConfig(GameMode.TWO_PHONES, BoardSize.FOUR, null).statsKey)
     }
 }

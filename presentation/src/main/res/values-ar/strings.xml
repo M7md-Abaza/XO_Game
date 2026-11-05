@@ -188,6 +188,8 @@
     <string name="achievement_games_100_desc">أنهِ 100 مباراة.</string>
     <string name="achievement_two_player">مباراة ودية</string>
     <string name="achievement_two_player_desc">أنهِ مباراة بين لاعبين.</string>
+    <string name="achievement_beat_friend">تغلّب على صديق</string>
+    <string name="achievement_beat_friend_desc">فُز بجولة ضد صديق على هاتفين.</string>
     <string name="achievement_first_challenge">حلّال الألغاز</string>
     <string name="achievement_first_challenge_desc">حلّ تحديًا يوميًا.</string>
     <string name="achievement_challenge_streak_7">عادة يومية</string>

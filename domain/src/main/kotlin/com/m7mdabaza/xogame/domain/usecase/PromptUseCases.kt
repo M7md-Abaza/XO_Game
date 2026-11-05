@@ -20,8 +20,7 @@ class ShouldRequestReviewUseCase @Inject constructor(
 ) {
     suspend operator fun invoke(): Boolean {
         val current = stats.stats.first()
-        val played = current.played(GameMode.VS_COMPUTER) + current.played(GameMode.TWO_PLAYERS)
-        if (played < MIN_GAMES) return false
+        if (current.playedTotal < MIN_GAMES) return false
         val last = prompts.reviewRequestedAt.first() ?: return true
         return time.nowMillis() - last >= MIN_MILLIS_BETWEEN
     }

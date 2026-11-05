@@ -109,7 +109,8 @@ fun StatsScreen(
                 .padding(horizontal = 24.dp)
                 .padding(bottom = 24.dp),
         ) {
-            TextChoices(GameMode.entries, mode, { mode = it }) { option ->
+            // The two-phone records get their tab with the two-phone game (v3 milestone 4).
+            TextChoices(listOf(GameMode.VS_COMPUTER, GameMode.TWO_PLAYERS), mode, { mode = it }) { option ->
                 stringResource(
                     if (option == GameMode.VS_COMPUTER) R.string.stats_tab_vs_computer else R.string.stats_tab_two_players,
                 )
@@ -145,9 +146,10 @@ fun StatsScreen(
                         stats = stats[mode, board],
                     )
                 }
+                GameMode.TWO_PHONES -> Unit
             }
             Spacer(Modifier.height(24.dp))
-            if (stats.played(GameMode.VS_COMPUTER) + stats.played(GameMode.TWO_PLAYERS) > 0) {
+            if (stats.playedTotal > 0) {
                 TextButton(
                     onClick = { confirmReset = true },
                     colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error),

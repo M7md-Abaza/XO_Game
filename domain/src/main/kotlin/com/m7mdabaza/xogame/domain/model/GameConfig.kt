@@ -4,8 +4,9 @@ package com.m7mdabaza.xogame.domain.model
  * Everything chosen before a game starts.
  *
  * @property level the computer's strength; required against the computer
- *   and null in [GameMode.TWO_PLAYERS], where there is no computer.
- * @property humanSymbol the human's mark against the computer. Ignored in
+ *   and null in the other modes, where there is no computer.
+ * @property humanSymbol the human's mark against the computer, or this
+ *   phone's player's mark in [GameMode.TWO_PHONES]. Ignored in
  *   [GameMode.TWO_PLAYERS], where both marks are human.
  * @property firstPlayer the mark that moves first. A "random" choice is
  *   resolved to a concrete mark before the config is built.

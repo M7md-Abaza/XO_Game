@@ -60,6 +60,7 @@ fun Achievement.titleRes(): Int = when (this) {
     Achievement.WIN_STREAK_5 -> R.string.achievement_streak_5
     Achievement.GAMES_100 -> R.string.achievement_games_100
     Achievement.TWO_PLAYER_GAME -> R.string.achievement_two_player
+    Achievement.BEAT_A_FRIEND -> R.string.achievement_beat_friend
     Achievement.FIRST_CHALLENGE -> R.string.achievement_first_challenge
     Achievement.CHALLENGE_STREAK_7 -> R.string.achievement_challenge_streak_7
 }
@@ -72,6 +73,7 @@ fun Achievement.descriptionRes(): Int = when (this) {
     Achievement.WIN_STREAK_5 -> R.string.achievement_streak_5_desc
     Achievement.GAMES_100 -> R.string.achievement_games_100_desc
     Achievement.TWO_PLAYER_GAME -> R.string.achievement_two_player_desc
+    Achievement.BEAT_A_FRIEND -> R.string.achievement_beat_friend_desc
     Achievement.FIRST_CHALLENGE -> R.string.achievement_first_challenge_desc
     Achievement.CHALLENGE_STREAK_7 -> R.string.achievement_challenge_streak_7_desc
 }

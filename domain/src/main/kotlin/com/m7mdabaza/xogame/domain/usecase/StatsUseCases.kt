@@ -17,7 +17,8 @@ class ObserveStatsUseCase @Inject constructor(
 /**
  * Adds a finished round to the record of its mode, board and level, from player
  * one's point of view (`GameConfig.humanSymbol`: the human against the
- * computer, X in two-player mode), and updates the win streak.
+ * computer, X in two-player mode, this phone's player in a two-phone game),
+ * and updates the win streak.
  */
 class RecordGameResultUseCase @Inject constructor(
     private val repository: StatsRepository,

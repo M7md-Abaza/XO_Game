@@ -341,6 +341,13 @@ private fun nameOf(state: GameUiState, player: Player): String = when (state.mod
         val name = if (player == Player.X) state.settings.xName else state.settings.oName
         name.ifBlank { stringResource(R.string.game_player_default, player.name) }
     }
+    // This phone's player is "You"; the friend goes by the name their phone sent.
+    GameMode.TWO_PHONES -> if (player == state.settings.humanSymbol) {
+        stringResource(R.string.game_you)
+    } else {
+        val name = if (player == Player.X) state.settings.xName else state.settings.oName
+        name.ifBlank { stringResource(R.string.game_player_default, player.name) }
+    }
 }
 
 /**

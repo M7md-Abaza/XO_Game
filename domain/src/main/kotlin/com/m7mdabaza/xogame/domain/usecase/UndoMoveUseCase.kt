@@ -13,6 +13,8 @@ import javax.inject.Inject
  *   last move (normally the computer's reply plus the human's move), so it is
  *   the human's turn again.
  *
+ * - Two phones: never (user decision: no undo between two phones).
+ *
  * Works on finished games too, which reopens them. Returns null when there is
  * nothing to undo (no moves, or against the computer only its opening move).
  */
@@ -22,6 +24,7 @@ class UndoMoveUseCase @Inject constructor() {
         val config = state.config
         val removeCount = when (config.mode) {
             GameMode.TWO_PLAYERS -> if (state.history.isEmpty()) return null else 1
+            GameMode.TWO_PHONES -> return null
             GameMode.VS_COMPUTER -> {
                 val lastHumanMove = state.history.indexOfLast { it.player == config.humanSymbol }
                 if (lastHumanMove < 0) return null

@@ -11,7 +11,7 @@ Two features:
 | Milestone | Status |
 |---|---|
 | 1. No-ads badge + dialog | **Done, not committed.** `presentation/purchase`: `RemoveAdsBadge` (yellow pill with a crossed-out "AD"; icon only in title bars from font scale 1.5), `RemoveAdsDialog` (benefits, Buy for {price}, Restore purchases, Not now), `RemoveAdsViewModel` (shared; Settings' purchase/restore code moved there). Badge on Home, the game screen and the Daily challenge, hidden after Remove ads or when Play has no price. The hint/undo offer's "Remove ads" link opens the dialog instead of Settings. A result closes the dialog and shows a snackbar; a cancel keeps it open. Tests: 142 domain, 27 data, 70 presentation JVM (11 new), 41 Compose UI (7 new + 3 accessibility checks of the dialog; badge added to the Home / game / challenge checks); lint clean. Checked on the API 37 emulator with a temporary placeholder price: badge on all three screens, dialog from the badge and from the hint offer, billing-unavailable message, Settings restore message, simulated purchase removes badge + banner, Arabic + dark + font scale 2.0 (icon-only badge in the game title bar). The real build hides the badge on the emulator (no Play price). |
-| 2. Two-phone domain | Not started |
+| 2. Two-phone domain | **Done, not committed.** Accepted the open defaults (user, 2026-11-06). `GameMode.TWO_PHONES` (`humanSymbol` = this phone's mark; no undo). `StatsKey(TWO_PHONES, board)` from this phone's side, with streaks; the data layer stores them with no change (`TWO_PHONES_THREE_wins`, ...). `Stats.playedTotal` now drives "100 games" and the review prompt. New achievement `BEAT_A_FRIEND` (en + ar). `domain/multiplayer`: `PeerChannel`, `PeerMessage` (protocol v1), `TwoPhoneRules`, `TwoPhoneState`, `TwoPhoneSession` (see "How it's built"). Stats keeps its two tabs until milestone 4; two-phone ad units fall back to the two-player ones until milestone 5. Tests: 178 domain (36 new: the rules with controlled message delivery, the session over an in-memory channel pair, the mode in stats and achievements), 27 data, 70 presentation JVM, 41 Compose UI; lint clean. The randomized test plays 3,000 games with random actions and random delivery orders and checks both phones agree whenever nothing is in flight. It reaches about 3,400 rounds, 4,300 granted and 4,300 declined requests, 600 crossed requests and 190 lapsed restarts. Two deliberate bugs (no tie-break; moving while your own request waits) both made it fail at once. |
 | 3. Nearby connection + lobby | Not started |
 | 4. Two-phone game screen | Not started |
 | 5. Two-phone ads | Not started |
@@ -29,7 +29,7 @@ How to resume: build with `export JAVA_HOME=~/.jdks/jbr-21.0.11 && ./gradlew ass
 | Ads between rounds | None in two-phone games: an ad on one phone would freeze the game on the other (user decision, 2026-11-06) |
 | Hint / undo | **Off** in two-phone games (user decision, 2026-11-06) |
 
-The proposed defaults below (marked **Default**) are not yet confirmed; the user can change any of them.
+The proposed defaults below (marked **Default**) were accepted by the user on 2026-11-06 ("go ahead" with milestone 2).
 
 Things that must not change (unchanged from v2):
 - `applicationId` stays `com.m7mdabaza.x_ogame`.
@@ -106,9 +106,12 @@ The manifest also lists the install-time ones (`BLUETOOTH` / `BLUETOOTH_ADMIN` u
 - If the player refuses: the lobby explains and offers **Open settings**. If Bluetooth is off: ask to turn it on (`ACTION_REQUEST_ENABLE`). On Android 7–11 Location services may have to be on as well; this gets checked on the API 29 phone.
 
 ### Game rules over two phones
-- Same boards, win lengths and match rules as local two-player play (`MatchState`). In best-of matches the players take turns to start.
+- Same boards, win lengths and match rules as local two-player play (`MatchState`). The players take turns to start: each next round, and a rematch, is started by the player who didn't start the round before. This applies in single rounds too, unlike local play, where the chosen starter repeats; there's no random roll each round that both phones would have to agree on. A restart keeps the starter, and a new match uses the starter from its setup.
 - Each phone shows its own player as "You". The board is enabled only on your turn, and the status line reads "Your turn" / "Sara's turn".
-- **No hint and no undo** (decision). **Default:** Restart round and New match send a request that the friend accepts or declines ("Ahmed wants to restart the round"). After the match: **Rematch** (both tap) or **Leave**.
+- **No hint and no undo** (decision). Restart round and New match send a request that the friend accepts or declines ("Ahmed wants to restart the round"). After the match: **Rematch** (both tap) or **Leave**.
+  - While a request waits, its sender can't move or continue, and the friend must answer it before continuing. That way both phones apply it to the same board.
+  - If both ask at the same moment, the host's request wins and the guest's is dropped on both phones.
+  - A restart request lapses if the round ends first.
 - **Disconnect** (Bluetooth off, out of range, app swiped away): "Connection lost" with "Back to Home". If the friend left on purpose: "Sara left the game". An unfinished round doesn't count.
 - A two-phone game is **not** restored after process death, because the connection is gone. Rotation and short trips to another app keep the game while the process lives.
 - Sounds and vibration as usual, also when the friend moves.
@@ -120,12 +123,15 @@ The manifest also lists the install-time ones (`BLUETOOTH` / `BLUETOOTH_ADMIN` u
 ### How it's built
 - **`:domain`**
   - `GameMode.TWO_PHONES`. The compiler flags every exhaustive `when` (about 50 places use `GameMode`).
-  - `multiplayer/`: `PeerConnection` interface (advertise, discover, connect, accept, `incoming: Flow<PeerEvent>`, `send(message)`, `disconnect()`), `PeerMessage` sealed types, and `TwoPhoneMatch`, a pure state machine for setup, turns, rounds, requests and rematch. It is shared by both phones and tested on the JVM.
-  - Messages: `Hello(protocolVersion, name)`, `MatchSetup(board, matchLength, firstPlayer)`, `Ready`, `Move(round, index, cell)`, `Request(kind)` / `Answer(accepted)`, `NextRound`, `Rematch`, `Leave`.
-  - The host decides the setup and who starts each round. Both phones validate every move with the existing `PlayMoveUseCase`. A move out of turn or out of order ends the game as a connection problem.
-  - `protocolVersion` lets a future v3.x refuse an incompatible friend: "Your friend needs to update XO Game".
+  - `multiplayer/` (built in milestone 2):
+    - `PeerChannel`: an open connection, with `events: Flow<PeerEvent>`, `send` and `close`. Finding and accepting a friend (advertise, discover, connect, accept) is a separate lobby interface that comes with the Nearby code in milestone 3. The match only needs the open channel.
+    - `PeerMessage`, `TwoPhoneRules`, `TwoPhoneState` and `TwoPhoneSession`. `TwoPhoneRules` is a pure state machine run by both phones: state + action or message → new state, messages to send, events. `TwoPhoneSession` runs it over a channel and applies inputs one at a time.
+  - Messages: `Hello(protocolVersion, name)`, `Setup(board, matchLength, firstPlayer)`, `Ready`, `Move(stage, index, cell)`, `Continue(stage)` (next round or rematch, once both sent it), `Request(stage, kind)` / `Answer(stage, accepted)`, `Leave`.
+  - `stage` is a counter both phones raise on every board reset, so each phone can check the friend is on the same board.
+  - The host sends the setup and plays X. Both phones check every move with the existing `PlayMoveUseCase`. Anything that breaks the rules ends the game as "out of sync".
+  - `protocolVersion` must be equal on both phones. Each side then says which phone to update. `Hello` must keep its shape forever.
 - **`:data`**
-  - `nearby/NearbyPeerConnection` on `com.google.android.gms:play-services-nearby` **19.5.1+** (since 19.5.0 it no longer needs core-library desugaring). One `@Singleton`, so the connection survives the lobby → game navigation.
+  - `nearby/`: the lobby (advertise, discover, connect, accept) and `NearbyPeerChannel`, on `com.google.android.gms:play-services-nearby` **19.5.1+** (since 19.5.0 it no longer needs core-library desugaring). One `@Singleton`, so the connection survives the lobby → game navigation.
   - JSON codec (kotlinx.serialization) that ignores unknown fields, so newer versions can add fields.
   - Tested with a fake transport.
 - **`:presentation`**
@@ -143,7 +149,7 @@ The manifest also lists the install-time ones (`BLUETOOTH` / `BLUETOOTH_ADMIN` u
 
 ### Tests
 - Domain: `TwoPhoneMatch` with two in-memory peers wired together. Full single and best-of matches, alternating starts, requests accepted and declined, rematch, disconnect mid-round, version mismatch, out-of-turn and duplicate moves. Also the pre-game ad use case.
-- Data: codec round trips and unknown fields; `NearbyPeerConnection` state handling with a fake.
+- Data: codec round trips and unknown fields; the Nearby lobby and channel state handling with a fake.
 - Presentation (JVM): two `TwoPhonesGameViewModel`s playing each other through the fake pair; the lobby's permission and state handling.
 - Compose UI + accessibility: lobby (host, join list, accept dialog, permission explanation), two-phone game screen, "Connection lost".
 - **Real phones: two are needed.** Emulators can't run Nearby over Bluetooth reliably. Ideally the API 29 phone (location-permission path) plus an Android 12+ phone (Nearby-devices path). Cases: English / Arabic, one phone with simulated Remove ads, disconnects (Bluetooth off, walking out of range, swiping the app away), and a minified release build on both.
@@ -155,8 +161,8 @@ The manifest also lists the install-time ones (`BLUETOOTH` / `BLUETOOTH_ADMIN` u
 Each milestone ends with a working build, tests passing and an emulator (or phone) check, and the user reviews it before anything is committed.
 
 1. **No-ads badge + Remove-ads dialog.** Self-contained; it could ship on its own as 2.1 if two-phone play takes longer.
-2. **Two-phone domain:** `GameMode.TWO_PHONES`, `PeerConnection`, messages, the `TwoPhoneMatch` state machine, stats key, achievement and full JVM tests. No UI yet.
-3. **Nearby connection + lobby:** `play-services-nearby`, `NearbyPeerConnection`, permissions + Bluetooth flow, Home button, lobby (name, host, join, code, accept). Check on two phones: they find each other, connect and exchange names.
+2. **Two-phone domain:** `GameMode.TWO_PHONES`, `PeerChannel`, messages, the `TwoPhoneRules` state machine + `TwoPhoneSession`, stats key, achievement and full JVM tests. No UI yet.
+3. **Nearby connection + lobby:** `play-services-nearby`, the lobby interface (advertise, discover, connect, accept) and its Nearby implementation, `NearbyPeerChannel`, permissions + Bluetooth flow, Home button, lobby (name, host, join, code, accept). `close()` must deliver the last message (the goodbye) before disconnecting. Check on two phones: they find each other, connect and exchange names.
 4. **Two-phone game screen:** ViewModel, turns, rounds, best-of, restart/new-match requests, rematch, disconnects, sounds, stats + Stats screen section.
 5. **Two-phone ads:** pre-game interstitial before the lobby (use case + shared 3-min cap), banners, new ad units.
 6. **Polish + release 3.0:** Arabic / RTL and font-scale-2.0 pass, `AccessibilityTest` additions, version **3.0 / versionCode 30**, minified release build on two phones, `CLAUDE.md` + `docs/RELEASE.md` updates, store texts (en + ar).
@@ -176,7 +182,7 @@ Each milestone ends with a working build, tests passing and an emulator (or phon
 - **Android 7–11 location prompt:** some players will refuse a "location" permission in a game. That's why the explanation screen comes first.
 - **AdMob policy:** an interstitial at the start of an activity the player chose is a natural break. The 3-minute cap keeps it from repeating on every tap.
 
-## 6. Open questions (defaults proposed above)
+## 6. Defaults (accepted 2026-11-06)
 
 1. Host is X and chooses board, match length and who starts.
 2. Restart round / New match in two-phone games need the friend's OK.

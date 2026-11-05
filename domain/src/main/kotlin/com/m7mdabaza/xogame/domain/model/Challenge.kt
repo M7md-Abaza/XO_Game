@@ -74,8 +74,11 @@ enum class Achievement(val target: Int) {
     /** Finish 100 games in any mode. */
     GAMES_100(100),
 
-    /** Finish a two-player game. */
+    /** Finish a two-player game (on one phone). */
     TWO_PLAYER_GAME(1),
+
+    /** Win a two-phone game against a friend. */
+    BEAT_A_FRIEND(1),
 
     /** Solve a daily challenge. */
     FIRST_CHALLENGE(1),
@@ -92,8 +95,9 @@ enum class Achievement(val target: Int) {
             BEAT_MEDIUM -> BoardSize.entries.sumOf { stats[vs, it, Level.MEDIUM].wins }
             BEAT_HARD -> BoardSize.entries.sumOf { stats[vs, it, Level.HARD].wins }
             WIN_STREAK_5 -> stats.all(vs).maxOf { it.bestStreak }
-            GAMES_100 -> stats.played(GameMode.VS_COMPUTER) + stats.played(GameMode.TWO_PLAYERS)
+            GAMES_100 -> stats.playedTotal
             TWO_PLAYER_GAME -> stats.played(GameMode.TWO_PLAYERS)
+            BEAT_A_FRIEND -> stats.all(GameMode.TWO_PHONES).sumOf { it.wins }
             FIRST_CHALLENGE -> challenge.totalSolved
             CHALLENGE_STREAK_7 -> challenge.bestStreak
         }

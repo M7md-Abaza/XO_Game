@@ -101,6 +101,7 @@ class GameViewModel @Inject constructor(
     private val level: Level? = when (mode) {
         GameMode.VS_COMPUTER -> Level.valueOf(checkNotNull(savedStateHandle.get<String>(ARG_LEVEL)) { "Missing $ARG_LEVEL" })
         GameMode.TWO_PLAYERS -> null
+        GameMode.TWO_PHONES -> error("Two-phone games have their own screen")
     }
 
     /** First player of round 1 of the current match; best-of rounds alternate from it. */

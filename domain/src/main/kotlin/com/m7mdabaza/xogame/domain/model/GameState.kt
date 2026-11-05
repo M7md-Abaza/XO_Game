@@ -25,7 +25,7 @@ data class GameState internal constructor(
     val isOver: Boolean
         get() = result != GameResult.InProgress
 
-    /** True when a human may tap a cell now. */
+    /** True when a human may tap a cell on this phone now (in two-phone games: this phone's player). */
     val isHumanTurn: Boolean
         get() = !isOver && (config.mode == GameMode.TWO_PLAYERS || turn == config.humanSymbol)
 
@@ -33,7 +33,7 @@ data class GameState internal constructor(
     val isComputerTurn: Boolean
         get() = !isOver && turn == config.computerSymbol
 
-    /** True when the human won against the computer (always false in two-player games). */
+    /** True when the human won against the computer (always false in the other modes). */
     val humanBeatComputer: Boolean
         get() = config.mode == GameMode.VS_COMPUTER && (result as? GameResult.Win)?.player == config.humanSymbol
 }

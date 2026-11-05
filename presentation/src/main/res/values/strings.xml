@@ -218,6 +218,8 @@
     <string name="achievement_games_100_desc">Finish 100 games.</string>
     <string name="achievement_two_player">Friendly match</string>
     <string name="achievement_two_player_desc">Finish a two-player game.</string>
+    <string name="achievement_beat_friend">Beat a friend</string>
+    <string name="achievement_beat_friend_desc">Win a game against a friend on two phones.</string>
     <string name="achievement_first_challenge">Puzzle solver</string>
     <string name="achievement_first_challenge_desc">Solve a daily challenge.</string>
     <string name="achievement_challenge_streak_7">Daily habit</string>

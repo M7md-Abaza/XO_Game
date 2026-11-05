@@ -30,7 +30,8 @@ class AppAdUnitIds @Inject constructor(
                 BoardSize.FOUR -> R.string.banner_medium_vs_computer
                 BoardSize.EIGHT -> R.string.banner_hard_vs_computer
             }
-            GameMode.TWO_PLAYERS -> when (boardSize) {
+            // Two-phone play uses the two-player units until it gets its own (v3 milestone 5).
+            GameMode.TWO_PLAYERS, GameMode.TWO_PHONES -> when (boardSize) {
                 BoardSize.THREE -> R.string.banner_easy_level
                 BoardSize.FOUR -> R.string.banner_medium_level
                 BoardSize.EIGHT -> R.string.banner_hard_level
@@ -45,7 +46,7 @@ class AppAdUnitIds @Inject constructor(
                 BoardSize.FOUR -> R.string.interstitial_medium_vs_computer
                 BoardSize.EIGHT -> R.string.interstitial_hard_vs_computer
             }
-            GameMode.TWO_PLAYERS -> when (boardSize) {
+            GameMode.TWO_PLAYERS, GameMode.TWO_PHONES -> when (boardSize) {
                 BoardSize.THREE -> R.string.interstitial_easy_level
                 BoardSize.FOUR -> R.string.interstitial_medium_level
                 BoardSize.EIGHT -> R.string.interstitial_hard_level
