@@ -35,7 +35,7 @@ android {
         minSdk = libs.versions.minSdk.get().toInt()
         targetSdk = libs.versions.targetSdk.get().toInt()
         // The Play Store build is versionCode 9 (v1.2); Play needs a higher code than any upload.
-        versionCode = 20
+        versionCode = 21
         versionName = "2.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
