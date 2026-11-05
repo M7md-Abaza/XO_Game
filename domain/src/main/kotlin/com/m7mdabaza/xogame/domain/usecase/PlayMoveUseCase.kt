@@ -26,7 +26,7 @@ class PlayMoveUseCase @Inject constructor(
             state.copy(
                 board = board,
                 history = state.history + Move(cell, player),
-                result = winChecker.resultAfter(board, cell, state.config.level.winLength),
+                result = winChecker.resultAfter(board, cell, state.config.boardSize.winLength),
             ),
         )
     }

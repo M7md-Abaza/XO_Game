@@ -15,6 +15,7 @@ import androidx.test.platform.app.InstrumentationRegistry
 import com.m7mdabaza.xogame.domain.engine.WinChecker
 import com.m7mdabaza.xogame.domain.model.Achievement
 import com.m7mdabaza.xogame.domain.model.AchievementStatus
+import com.m7mdabaza.xogame.domain.model.BoardSize
 import com.m7mdabaza.xogame.domain.model.Cell
 import com.m7mdabaza.xogame.domain.model.ChallengeProgress
 import com.m7mdabaza.xogame.domain.model.GameConfig
@@ -25,6 +26,7 @@ import com.m7mdabaza.xogame.domain.model.LevelStats
 import com.m7mdabaza.xogame.domain.model.MatchLength
 import com.m7mdabaza.xogame.domain.model.MatchState
 import com.m7mdabaza.xogame.domain.model.Stats
+import com.m7mdabaza.xogame.domain.model.StatsKey
 import com.m7mdabaza.xogame.domain.repository.TimeProvider
 import com.m7mdabaza.xogame.domain.usecase.GetDailyChallengeUseCase
 import com.m7mdabaza.xogame.domain.usecase.MoveResult
@@ -40,6 +42,7 @@ import com.m7mdabaza.xogame.presentation.game.GameActions
 import com.m7mdabaza.xogame.presentation.game.GameScreen
 import com.m7mdabaza.xogame.presentation.game.GameUiState
 import com.m7mdabaza.xogame.presentation.game.MatchSettings
+import com.m7mdabaza.xogame.presentation.home.GamePickerContent
 import com.m7mdabaza.xogame.presentation.home.HomeScreen
 import com.m7mdabaza.xogame.presentation.home.HomeUiState
 import com.m7mdabaza.xogame.presentation.settings.SettingsActions
@@ -69,14 +72,15 @@ class AccessibilityTest {
 
     private val play = PlayMoveUseCase(WinChecker())
 
-    private fun game(mode: GameMode, level: Level, vararg moves: Cell): GameState =
-        moves.fold(StartGameUseCase()(GameConfig(mode, level))) { state, cell ->
+    private fun game(mode: GameMode, boardSize: BoardSize, vararg moves: Cell): GameState =
+        moves.fold(StartGameUseCase()(GameConfig(mode, boardSize, if (mode == GameMode.VS_COMPUTER) Level.MEDIUM else null))) { state, cell ->
             (play(state, cell) as MoveResult.Played).state
         }
 
     private fun gameState(game: GameState, showSetup: Boolean = false, match: MatchState = MatchState(MatchLength.BEST_OF_3)) =
         GameUiState(
             mode = game.config.mode,
+            boardSize = game.config.boardSize,
             level = game.config.level,
             settings = MatchSettings(length = match.length),
             game = game,
@@ -95,31 +99,41 @@ class AccessibilityTest {
 
     @Test
     fun home() = check {
-        HomeScreen(HomeUiState(bannerAdUnitId = "", canRequestAds = false), { _, _ -> }, {}, {})
-    }
-
-    private fun checkBoard(level: Level) = check {
-        GameScreen(gameState(game(GameMode.VS_COMPUTER, level, Cell(0, 0))), showBanner = false, actions = GameActions())
+        HomeScreen(HomeUiState(bannerAdUnitId = "", canRequestAds = false), { _, _, _ -> }, {}, {})
     }
 
     @Test
-    fun gameEasy() = checkBoard(Level.EASY)
+    fun gamePickerVsComputer() = check {
+        GamePickerContent(GameMode.VS_COMPUTER, BoardSize.THREE, Level.HARD, {}, {}, { _, _ -> })
+    }
 
     @Test
-    fun gameMedium() = checkBoard(Level.MEDIUM)
+    fun gamePickerTwoPlayers() = check {
+        GamePickerContent(GameMode.TWO_PLAYERS, BoardSize.THREE, Level.EASY, {}, {}, { _, _ -> })
+    }
+
+    private fun checkBoard(boardSize: BoardSize) = check {
+        GameScreen(gameState(game(GameMode.VS_COMPUTER, boardSize, Cell(0, 0))), showBanner = false, actions = GameActions())
+    }
 
     @Test
-    fun gameHard() = checkBoard(Level.HARD)
+    fun game3x3() = checkBoard(BoardSize.THREE)
+
+    @Test
+    fun game4x4() = checkBoard(BoardSize.FOUR)
+
+    @Test
+    fun game8x8() = checkBoard(BoardSize.EIGHT)
 
     @Test
     fun roundOver() = check {
-        val won = game(GameMode.TWO_PLAYERS, Level.EASY, Cell(0, 0), Cell(1, 0), Cell(0, 1), Cell(1, 1), Cell(0, 2))
+        val won = game(GameMode.TWO_PLAYERS, BoardSize.THREE, Cell(0, 0), Cell(1, 0), Cell(0, 1), Cell(1, 1), Cell(0, 2))
         GameScreen(gameState(won, match = MatchState(MatchLength.BEST_OF_3, xWins = 1)), showBanner = false, actions = GameActions())
     }
 
     @Test
     fun setupDialog() = check {
-        GameScreen(gameState(game(GameMode.VS_COMPUTER, Level.EASY), showSetup = true), showBanner = false, actions = GameActions())
+        GameScreen(gameState(game(GameMode.VS_COMPUTER, BoardSize.THREE), showSetup = true), showBanner = false, actions = GameActions())
     }
 
     @Test
@@ -130,7 +144,7 @@ class AccessibilityTest {
     @Test
     fun stats() = check {
         StatsScreen(
-            Stats(mapOf((GameMode.VS_COMPUTER to Level.EASY) to LevelStats(wins = 3, losses = 1, draws = 2, bestStreak = 2))),
+            Stats(mapOf(StatsKey(GameMode.VS_COMPUTER, BoardSize.THREE, Level.EASY) to LevelStats(wins = 3, losses = 1, draws = 2, bestStreak = 2))),
             onBack = {},
             onReset = {},
         )
@@ -189,7 +203,7 @@ class AccessibilityTest {
     @Test
     fun markOnlyChoicesHaveLabels() {
         rule.setContent {
-            XoTheme { GameScreen(gameState(game(GameMode.VS_COMPUTER, Level.EASY), showSetup = true), showBanner = false, actions = GameActions()) }
+            XoTheme { GameScreen(gameState(game(GameMode.VS_COMPUTER, BoardSize.THREE), showSetup = true), showBanner = false, actions = GameActions()) }
         }
         rule.onNodeWithContentDescription("X").assertExists()
         rule.onNodeWithContentDescription("O").assertExists()
@@ -200,7 +214,7 @@ class AccessibilityTest {
         rule.setContent {
             XoTheme {
                 GameScreen(
-                    gameState(game(GameMode.VS_COMPUTER, Level.EASY), match = MatchState(MatchLength.BEST_OF_3, oWins = 2)),
+                    gameState(game(GameMode.VS_COMPUTER, BoardSize.THREE), match = MatchState(MatchLength.BEST_OF_3, oWins = 2)),
                     showBanner = false,
                     actions = GameActions(),
                 )
@@ -216,7 +230,7 @@ class AccessibilityTest {
         rule.setContent {
             XoTheme {
                 GameScreen(
-                    gameState(game(GameMode.TWO_PLAYERS, Level.HARD)),
+                    gameState(game(GameMode.TWO_PLAYERS, BoardSize.EIGHT)),
                     showBanner = false,
                     actions = GameActions(onCellClick = { clicked += it }),
                 )

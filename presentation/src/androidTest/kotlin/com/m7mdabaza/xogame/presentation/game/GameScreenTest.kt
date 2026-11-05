@@ -11,6 +11,7 @@ import androidx.compose.ui.test.performClick
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.m7mdabaza.xogame.domain.engine.WinChecker
+import com.m7mdabaza.xogame.domain.model.BoardSize
 import com.m7mdabaza.xogame.domain.model.Cell
 import com.m7mdabaza.xogame.domain.model.GameConfig
 import com.m7mdabaza.xogame.domain.model.GameMode
@@ -46,7 +47,7 @@ class GameScreenTest {
     private fun isolated(name: String) = androidx.core.text.BidiFormatter.getInstance(false).unicodeWrap(name)
 
     private fun game(mode: GameMode, vararg moves: Cell): GameState =
-        moves.fold(StartGameUseCase()(GameConfig(mode, Level.EASY))) { state, cell ->
+        moves.fold(StartGameUseCase()(GameConfig(mode, BoardSize.THREE, if (mode == GameMode.VS_COMPUTER) Level.EASY else null))) { state, cell ->
             (play(state, cell) as MoveResult.Played).state
         }
 
@@ -56,6 +57,7 @@ class GameScreenTest {
         showSetup: Boolean = false,
     ) = GameUiState(
         mode = game.config.mode,
+        boardSize = game.config.boardSize,
         level = game.config.level,
         settings = MatchSettings(length = match.length),
         game = game,
@@ -87,6 +89,18 @@ class GameScreenTest {
         rule.onNodeWithText(string(R.string.setup_take_turns)).assertIsDisplayed()
         rule.onNodeWithText(string(R.string.setup_start)).performClick()
         assertEquals(MatchSettings(starter = Starter.RANDOM, length = MatchLength.BEST_OF_3), started)
+    }
+
+    @Test
+    fun theTitleShowsTheLevelAndBoardAgainstThePhone() {
+        show(state(game(GameMode.VS_COMPUTER)))
+        rule.onNodeWithText(string(R.string.game_title_level_board, string(R.string.level_easy), "3×3")).assertIsDisplayed()
+    }
+
+    @Test
+    fun theTitleShowsOnlyTheBoardForTwoPlayers() {
+        show(state(game(GameMode.TWO_PLAYERS)))
+        rule.onNodeWithText(string(R.string.board_title, 3)).assertIsDisplayed()
     }
 
     @Test

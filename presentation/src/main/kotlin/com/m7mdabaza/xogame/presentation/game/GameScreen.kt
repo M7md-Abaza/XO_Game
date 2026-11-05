@@ -10,8 +10,8 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
@@ -50,8 +50,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.LiveRegionMode
@@ -77,7 +77,6 @@ import com.m7mdabaza.xogame.domain.model.GameResult
 import com.m7mdabaza.xogame.domain.model.MatchLength
 import com.m7mdabaza.xogame.domain.model.Player
 import com.m7mdabaza.xogame.presentation.R
-import com.m7mdabaza.xogame.presentation.review.rememberInAppReview
 import com.m7mdabaza.xogame.presentation.achievements.titleRes
 import com.m7mdabaza.xogame.presentation.ads.BannerAd
 import com.m7mdabaza.xogame.presentation.ads.ConsentManager
@@ -85,7 +84,9 @@ import com.m7mdabaza.xogame.presentation.ads.InterstitialAdManager
 import com.m7mdabaza.xogame.presentation.ads.RewardedAdManager
 import com.m7mdabaza.xogame.presentation.components.OMark
 import com.m7mdabaza.xogame.presentation.components.XMark
+import com.m7mdabaza.xogame.presentation.home.label
 import com.m7mdabaza.xogame.presentation.home.titleRes
+import com.m7mdabaza.xogame.presentation.review.rememberInAppReview
 import com.m7mdabaza.xogame.presentation.theme.XoTheme
 import kotlinx.coroutines.launch
 
@@ -232,7 +233,7 @@ fun GameScreen(
                             StatusLine(state, sides.padding(top = 12.dp))
                             // The 8×8 board gets almost the full width, so its squares
                             // stay close to the 48 dp touch-target guideline on phones.
-                            val boardSides = if (state.level.boardSize > 4) 4.dp else 16.dp
+                            val boardSides = if (state.boardSize.size > 4) 4.dp else 16.dp
                             Box(
                                 Modifier.weight(1f).fillMaxWidth().padding(horizontal = boardSides),
                                 contentAlignment = Alignment.Center,
@@ -299,8 +300,10 @@ private fun TopBar(state: GameUiState, actions: GameActions) {
             Icon(painterResource(R.drawable.ic_arrow_back), contentDescription = stringResource(R.string.game_back))
         }
         Column(Modifier.weight(1f).padding(horizontal = 4.dp)) {
+            // "Easy · 3×3" against the phone, "3×3 board" for two players.
             Text(
-                stringResource(state.level.titleRes()),
+                state.level?.let { stringResource(R.string.game_title_level_board, stringResource(it.titleRes()), state.boardSize.label()) }
+                    ?: stringResource(R.string.board_title, state.boardSize.size),
                 style = MaterialTheme.typography.titleLarge,
                 modifier = Modifier.semantics { heading() },
             )
@@ -632,13 +635,18 @@ private fun AssistOfferDialog(state: GameUiState, actions: GameActions) {
 @Preview(showSystemUi = true)
 @Composable
 private fun GameScreenPreview() {
-    val config = com.m7mdabaza.xogame.domain.model.GameConfig(GameMode.VS_COMPUTER, com.m7mdabaza.xogame.domain.model.Level.EASY)
+    val config = com.m7mdabaza.xogame.domain.model.GameConfig(
+        GameMode.VS_COMPUTER,
+        com.m7mdabaza.xogame.domain.model.BoardSize.THREE,
+        com.m7mdabaza.xogame.domain.model.Level.EASY,
+    )
     val game = com.m7mdabaza.xogame.domain.usecase.StartGameUseCase()(config)
     XoTheme {
         GameScreen(
             state = GameUiState(
                 mode = GameMode.VS_COMPUTER,
-                level = com.m7mdabaza.xogame.domain.model.Level.EASY,
+                boardSize = config.boardSize,
+                level = config.level,
                 settings = MatchSettings(length = MatchLength.BEST_OF_3),
                 game = game,
                 match = com.m7mdabaza.xogame.domain.model.MatchState(MatchLength.BEST_OF_3, xWins = 1),

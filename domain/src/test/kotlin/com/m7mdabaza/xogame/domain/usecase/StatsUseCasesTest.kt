@@ -1,5 +1,6 @@
 package com.m7mdabaza.xogame.domain.usecase
 
+import com.m7mdabaza.xogame.domain.model.BoardSize
 import com.m7mdabaza.xogame.domain.model.GameMode
 import com.m7mdabaza.xogame.domain.model.Level
 import com.m7mdabaza.xogame.domain.model.LevelStats
@@ -36,29 +37,29 @@ class StatsUseCasesTest {
 
     @Test
     fun `against the computer the record is the human's`() = runTest {
-        val humanX = config(GameMode.VS_COMPUTER, Level.EASY, humanSymbol = Player.X)
+        val humanX = config(GameMode.VS_COMPUTER, BoardSize.THREE, Level.EASY, humanSymbol = Player.X)
         record(newGame(humanX, *xWins))
         record(newGame(humanX, *oWins))
         record(newGame(humanX, *draw))
 
-        val humanO = config(GameMode.VS_COMPUTER, Level.EASY, humanSymbol = Player.O)
+        val humanO = config(GameMode.VS_COMPUTER, BoardSize.THREE, Level.EASY, humanSymbol = Player.O)
         record(newGame(humanO, *oWins)) // the human (O) wins
 
         assertEquals(
             LevelStats(wins = 2, losses = 1, draws = 1, currentStreak = 1, bestStreak = 1),
-            observe().first()[GameMode.VS_COMPUTER, Level.EASY],
+            observe().first()[GameMode.VS_COMPUTER, BoardSize.THREE, Level.EASY],
         )
     }
 
     @Test
     fun `two-player wins are X's and losses are O's`() = runTest {
-        val twoPlayers = config(GameMode.TWO_PLAYERS, Level.EASY)
+        val twoPlayers = config(GameMode.TWO_PLAYERS, BoardSize.THREE)
         record(newGame(twoPlayers, *xWins))
         record(newGame(twoPlayers, *oWins))
-        val stats = observe().first()[GameMode.TWO_PLAYERS, Level.EASY]
+        val stats = observe().first()[GameMode.TWO_PLAYERS, BoardSize.THREE]
         assertEquals(1, stats.wins)
         assertEquals(1, stats.losses)
-        assertEquals(LevelStats(), observe().first()[GameMode.VS_COMPUTER, Level.EASY])
+        assertEquals(LevelStats(), observe().first()[GameMode.VS_COMPUTER, BoardSize.THREE, Level.EASY])
     }
 
     @Test

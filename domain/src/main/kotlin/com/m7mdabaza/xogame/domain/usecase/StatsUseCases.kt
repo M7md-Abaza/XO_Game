@@ -15,7 +15,7 @@ class ObserveStatsUseCase @Inject constructor(
 }
 
 /**
- * Adds a finished round to the record of its mode and level, from player
+ * Adds a finished round to the record of its mode, board and level, from player
  * one's point of view (`GameConfig.humanSymbol`: the human against the
  * computer, X in two-player mode), and updates the win streak.
  */
@@ -28,7 +28,7 @@ class RecordGameResultUseCase @Inject constructor(
             GameResult.Draw -> RoundOutcome.DRAW
             GameResult.InProgress -> throw IllegalArgumentException("The round has not finished")
         }
-        repository.update(state.config.mode, state.config.level) { it.record(outcome) }
+        repository.update(state.config.statsKey) { it.record(outcome) }
     }
 }
 

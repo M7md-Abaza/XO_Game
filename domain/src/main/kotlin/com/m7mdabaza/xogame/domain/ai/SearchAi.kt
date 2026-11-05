@@ -9,7 +9,8 @@ import kotlin.random.Random
  * The game AI, for every board size: an alpha-beta (negamax) search over the
  * "windows" of [SearchBoard].
  *
- * - It always takes a win in one and always blocks the opponent's win in one.
+ * - It always takes a win in one and blocks the opponent's win in one
+ *   (unless [Difficulty.missedBlockChance] makes it overlook the threat).
  * - It recognises a double threat (two winning cells for the opponent) as lost.
  * - Small boards: every empty cell is searched. 3×3 is searched to the end,
  *   so it plays perfectly.
@@ -30,12 +31,22 @@ class SearchAi internal constructor(private val random: Random) {
     fun chooseMove(state: GameState, difficulty: Difficulty): Cell {
         require(!state.isOver) { "The game is over" }
         val search = Search(state, difficulty)
-        val index = search.forcedMoves()?.random(random)
-            ?: if (difficulty.mistakeChance > 0 && random.nextDouble() < difficulty.mistakeChance) {
+        val wins = search.winningMoves()
+        val blocks = if (wins == null) search.blockingMoves() else null
+        val index = when {
+            wins != null -> wins.random(random)
+            blocks != null ->
+                if (difficulty.missedBlockChance > 0 && random.nextDouble() < difficulty.missedBlockChance) {
+                    // Overlooks the threat and plays somewhere else.
+                    search.candidates(state.turn.code, limit = Int.MAX_VALUE).filter { it !in blocks }.randomOrNull(random)
+                        ?: blocks.random(random)
+                } else {
+                    blocks.random(random)
+                }
+            difficulty.mistakeChance > 0 && random.nextDouble() < difficulty.mistakeChance ->
                 search.candidates(state.turn.code, limit = Int.MAX_VALUE).random(random)
-            } else {
-                search.bestMoves().random(random)
-            }
+            else -> search.bestMoves().random(random)
+        }
         return search.cellOf(index)
     }
 
@@ -43,13 +54,13 @@ class SearchAi internal constructor(private val random: Random) {
     internal fun bestMoves(state: GameState, difficulty: Difficulty): List<Cell> {
         require(!state.isOver) { "The game is over" }
         val search = Search(state, difficulty)
-        return (search.forcedMoves() ?: search.bestMoves()).map(search::cellOf)
+        return (search.winningMoves() ?: search.blockingMoves() ?: search.bestMoves()).map(search::cellOf)
     }
 }
 
 private class Search(state: GameState, private val difficulty: Difficulty) {
 
-    private val board = SearchBoard.from(state.board, state.config.level.winLength)
+    private val board = SearchBoard.from(state.board, state.config.boardSize.winLength)
     private val me = state.turn.code
     private val winLength = board.winLength
     private val neighbours = difficulty.neighbourhood?.let(board::neighbours)
@@ -59,10 +70,11 @@ private class Search(state: GameState, private val difficulty: Difficulty) {
 
     fun cellOf(index: Int) = Cell(index / board.size, index % board.size)
 
-    /** Winning cells if there are any, otherwise the cells that block an immediate loss, otherwise null. */
-    fun forcedMoves(): IntArray? =
-        board.winningCells(me).takeIf { it.isNotEmpty() }
-            ?: board.winningCells(opponentOf(me)).takeIf { it.isNotEmpty() }
+    /** The cells that win at once, or null if there are none. */
+    fun winningMoves(): IntArray? = board.winningCells(me).takeIf { it.isNotEmpty() }
+
+    /** The cells that block the opponent's immediate win, or null if there are none. */
+    fun blockingMoves(): IntArray? = board.winningCells(opponentOf(me)).takeIf { it.isNotEmpty() }
 
     /** All root moves with the best search score. */
     fun bestMoves(): IntArray {

@@ -2,8 +2,8 @@ package com.m7mdabaza.xogame.presentation.testing
 
 import com.m7mdabaza.xogame.domain.model.Achievement
 import com.m7mdabaza.xogame.domain.model.AdPolicyState
+import com.m7mdabaza.xogame.domain.model.BoardSize
 import com.m7mdabaza.xogame.domain.model.GameMode
-import com.m7mdabaza.xogame.domain.model.Level
 import com.m7mdabaza.xogame.domain.model.LevelStats
 import com.m7mdabaza.xogame.domain.model.Player
 import com.m7mdabaza.xogame.domain.model.PurchaseResult
@@ -11,6 +11,7 @@ import com.m7mdabaza.xogame.domain.model.RemoveAdsOffer
 import com.m7mdabaza.xogame.domain.model.RestoreResult
 import com.m7mdabaza.xogame.domain.model.Settings
 import com.m7mdabaza.xogame.domain.model.Stats
+import com.m7mdabaza.xogame.domain.model.StatsKey
 import com.m7mdabaza.xogame.domain.repository.AchievementsRepository
 import com.m7mdabaza.xogame.domain.repository.AdPolicyRepository
 import com.m7mdabaza.xogame.domain.repository.ChallengeRepository
@@ -38,8 +39,8 @@ class FakeSettingsRepository(initial: Settings = Settings()) : SettingsRepositor
 class FakeStatsRepository(initial: Stats = Stats()) : StatsRepository {
     override val stats = MutableStateFlow(initial)
 
-    override suspend fun update(mode: GameMode, level: Level, transform: (LevelStats) -> LevelStats) {
-        stats.update { Stats(it.levels + ((mode to level) to transform(it[mode, level]))) }
+    override suspend fun update(key: StatsKey, transform: (LevelStats) -> LevelStats) {
+        stats.update { Stats(it.records + (key to transform(it[key]))) }
     }
 
     override suspend fun reset() {
@@ -131,8 +132,8 @@ class FakeGameFeedback : GameFeedback {
 
 object FakeAdUnitIds : AdUnitIds {
     override val homeBanner = "home"
-    override fun gameBanner(mode: GameMode, level: Level) = "banner-$mode-$level"
-    override fun interstitial(mode: GameMode, level: Level) = "interstitial"
+    override fun gameBanner(mode: GameMode, boardSize: BoardSize) = "banner-$mode-$boardSize"
+    override fun interstitial(mode: GameMode, boardSize: BoardSize) = "interstitial-$mode-$boardSize"
     override val rewarded = "rewarded"
 }
 

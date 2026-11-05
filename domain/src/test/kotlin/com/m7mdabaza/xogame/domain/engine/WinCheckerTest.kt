@@ -1,9 +1,9 @@
 package com.m7mdabaza.xogame.domain.engine
 
 import com.m7mdabaza.xogame.domain.model.Board
+import com.m7mdabaza.xogame.domain.model.BoardSize
 import com.m7mdabaza.xogame.domain.model.Cell
 import com.m7mdabaza.xogame.domain.model.GameResult
-import com.m7mdabaza.xogame.domain.model.Level
 import com.m7mdabaza.xogame.domain.model.Player
 import com.m7mdabaza.xogame.domain.testing.board
 import com.m7mdabaza.xogame.domain.testing.cell
@@ -104,11 +104,11 @@ class WinCheckerTest {
 
     // --- 8×8, 5 in a row ---------------------------------------------------
 
-    private val empty8 = Board.empty(Level.HARD.boardSize)
+    private val empty8 = Board.empty(BoardSize.EIGHT.size)
 
     @Test
     fun `8x8 four in a row is not enough`() {
-        assertNull(checker.findWin(empty8.withAll(List(4) { cell(3, it + 2) }, Player.X), Level.HARD.winLength))
+        assertNull(checker.findWin(empty8.withAll(List(4) { cell(3, it + 2) }, Player.X), BoardSize.EIGHT.winLength))
     }
 
     @Test

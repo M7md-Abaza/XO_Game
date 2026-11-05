@@ -49,12 +49,12 @@ class LevelStatsTest {
     fun `stats default to empty records and sum per mode`() {
         val stats = Stats(
             mapOf(
-                (GameMode.VS_COMPUTER to Level.EASY) to LevelStats(wins = 2, draws = 1),
-                (GameMode.VS_COMPUTER to Level.HARD) to LevelStats(losses = 4),
-                (GameMode.TWO_PLAYERS to Level.EASY) to LevelStats(wins = 1),
+                StatsKey(GameMode.VS_COMPUTER, BoardSize.THREE, Level.EASY) to LevelStats(wins = 2, draws = 1),
+                StatsKey(GameMode.VS_COMPUTER, BoardSize.EIGHT, Level.HARD) to LevelStats(losses = 4),
+                StatsKey(GameMode.TWO_PLAYERS, BoardSize.THREE) to LevelStats(wins = 1),
             ),
         )
-        assertEquals(LevelStats(), stats[GameMode.TWO_PLAYERS, Level.HARD])
+        assertEquals(LevelStats(), stats[GameMode.TWO_PLAYERS, BoardSize.EIGHT])
         assertEquals(7, stats.played(GameMode.VS_COMPUTER))
         assertEquals(1, stats.played(GameMode.TWO_PLAYERS))
     }

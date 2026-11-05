@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.m7mdabaza.xogame.domain.model.AssistAccess
 import com.m7mdabaza.xogame.domain.model.AssistKind
+import com.m7mdabaza.xogame.domain.model.BoardSize
 import com.m7mdabaza.xogame.domain.model.Cell
 import com.m7mdabaza.xogame.domain.model.GameConfig
 import com.m7mdabaza.xogame.domain.model.GameMode
@@ -52,7 +53,7 @@ import javax.inject.Inject
 import kotlin.random.Random
 
 /**
- * One game screen for every mode and level (replaces the six legacy
+ * One game screen for every mode, board and level (replaces the six legacy
  * activities). Owns the match: setup, rounds, the computer's moves, undo,
  * hints and the score. Finished rounds go into the stats, and the setup
  * choices are remembered in the settings as next time's defaults. The whole
@@ -64,7 +65,8 @@ import kotlin.random.Random
  * rewarded ad (see [GetAssistAccessUseCase]). The screen shows the ads when
  * asked through [events] and reports back.
  *
- * The navigation route supplies the `mode` and `level` arguments (enum names).
+ * The navigation route supplies the `mode`, `boardSize` and `level` arguments
+ * (enum names; `level` only against the computer).
  */
 @HiltViewModel
 class GameViewModel @Inject constructor(
@@ -92,7 +94,14 @@ class GameViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val mode = GameMode.valueOf(checkNotNull(savedStateHandle.get<String>(ARG_MODE)) { "Missing $ARG_MODE" })
-    private val level = Level.valueOf(checkNotNull(savedStateHandle.get<String>(ARG_LEVEL)) { "Missing $ARG_LEVEL" })
+    private val boardSize =
+        BoardSize.valueOf(checkNotNull(savedStateHandle.get<String>(ARG_BOARD_SIZE)) { "Missing $ARG_BOARD_SIZE" })
+
+    /** The computer's level; null in two-player mode. */
+    private val level: Level? = when (mode) {
+        GameMode.VS_COMPUTER -> Level.valueOf(checkNotNull(savedStateHandle.get<String>(ARG_LEVEL)) { "Missing $ARG_LEVEL" })
+        GameMode.TWO_PLAYERS -> null
+    }
 
     /** First player of round 1 of the current match; best-of rounds alternate from it. */
     private var matchFirstPlayer = Player.X
@@ -110,11 +119,12 @@ class GameViewModel @Inject constructor(
     val uiState: StateFlow<GameUiState>
 
     init {
-        val banner = adUnitIds.gameBanner(mode, level)
+        val banner = adUnitIds.gameBanner(mode, boardSize)
         val restored = SavedSession.decode(savedStateHandle[KEY_SESSION])?.let { restore(it, banner) }
         val initial = (
             restored ?: GameUiState(
                 mode = mode,
+                boardSize = boardSize,
                 level = level,
                 settings = MatchSettings(),
                 game = startGame(configFor(MatchSettings(), Player.X)),
@@ -123,7 +133,7 @@ class GameViewModel @Inject constructor(
                 hasStarted = false,
                 bannerAdUnitId = banner,
             )
-            ).copy(interstitialAdUnitId = adUnitIds.interstitial(mode, level), rewardedAdUnitId = adUnitIds.rewarded)
+            ).copy(interstitialAdUnitId = adUnitIds.interstitial(mode, boardSize), rewardedAdUnitId = adUnitIds.rewarded)
         _uiState = MutableStateFlow(withDerived(initial))
         uiState = _uiState.asStateFlow()
         save()
@@ -384,7 +394,7 @@ class GameViewModel @Inject constructor(
     }
 
     private fun configFor(settings: MatchSettings, firstPlayer: Player) =
-        GameConfig(mode, level, humanSymbol = settings.playerOne(mode), firstPlayer = firstPlayer)
+        GameConfig(mode, boardSize, level, humanSymbol = settings.playerOne(mode), firstPlayer = firstPlayer)
 
     // --- State and saving -----------------------------------------------------
 
@@ -438,6 +448,7 @@ class GameViewModel @Inject constructor(
         }
         GameUiState(
             mode = mode,
+            boardSize = boardSize,
             level = level,
             settings = settings,
             game = game,
@@ -453,6 +464,7 @@ class GameViewModel @Inject constructor(
     companion object {
         /** Navigation argument names; they must match the `Game` route's properties. */
         const val ARG_MODE = "mode"
+        const val ARG_BOARD_SIZE = "boardSize"
         const val ARG_LEVEL = "level"
 
         internal const val KEY_SESSION = "game_session"

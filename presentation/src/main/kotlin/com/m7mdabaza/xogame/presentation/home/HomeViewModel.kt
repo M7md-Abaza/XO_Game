@@ -3,11 +3,16 @@ package com.m7mdabaza.xogame.presentation.home
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.m7mdabaza.xogame.domain.model.BoardSize
+import com.m7mdabaza.xogame.domain.model.GameMode
+import com.m7mdabaza.xogame.domain.model.Level
 import com.m7mdabaza.xogame.domain.usecase.EvaluateAchievementsUseCase
 import com.m7mdabaza.xogame.domain.usecase.ObserveAdsRemovedUseCase
 import com.m7mdabaza.xogame.domain.usecase.ObserveChallengeProgressUseCase
+import com.m7mdabaza.xogame.domain.usecase.ObserveSettingsUseCase
 import com.m7mdabaza.xogame.domain.usecase.RecordUpdatePromptedUseCase
 import com.m7mdabaza.xogame.domain.usecase.ShouldPromptForUpdateUseCase
+import com.m7mdabaza.xogame.domain.usecase.UpdateSettingsUseCase
 import com.m7mdabaza.xogame.presentation.ads.AdUnitIds
 import com.m7mdabaza.xogame.presentation.ads.ConsentManager
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -27,6 +32,9 @@ data class HomeUiState(
     val challengeSolvedToday: Boolean = false,
     /** Current daily-challenge streak in days. */
     val challengeStreak: Int = 0,
+    /** The last board and level picked against the phone, preselected next time. */
+    val lastBoardSize: BoardSize = BoardSize.THREE,
+    val lastLevel: Level = Level.EASY,
 )
 
 @HiltViewModel
@@ -36,6 +44,8 @@ class HomeViewModel @Inject constructor(
     observeAdsRemoved: ObserveAdsRemovedUseCase,
     observeChallengeProgress: ObserveChallengeProgressUseCase,
     evaluateAchievements: EvaluateAchievementsUseCase,
+    observeSettings: ObserveSettingsUseCase,
+    private val updateSettings: UpdateSettingsUseCase,
     private val shouldPromptForUpdate: ShouldPromptForUpdateUseCase,
     private val recordUpdatePrompted: RecordUpdatePromptedUseCase,
 ) : AndroidViewModel(application) {
@@ -60,6 +70,15 @@ class HomeViewModel @Inject constructor(
                 _uiState.update { it.copy(challengeSolvedToday = p.solvedToday, challengeStreak = p.currentStreak) }
             }
         }
+        viewModelScope.launch {
+            observeSettings().collect { s -> _uiState.update { it.copy(lastBoardSize = s.boardSize, lastLevel = s.level) } }
+        }
+    }
+
+    /** A game was picked: against the phone, its board and level become next time's choice. */
+    fun onGameChosen(mode: GameMode, boardSize: BoardSize, level: Level?) {
+        if (mode != GameMode.VS_COMPUTER || level == null) return
+        viewModelScope.launch { updateSettings { it.copy(boardSize = boardSize, level = level) } }
     }
 
     /** Whether a waiting Play update may be offered now (at most every few days). */

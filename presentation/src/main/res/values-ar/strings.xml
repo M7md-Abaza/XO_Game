@@ -8,14 +8,22 @@
     <string name="home_two_players">لاعبان</string>
     <string name="home_privacy_settings">إعدادات الخصوصية</string>
 
-    <!-- Level picker -->
-    <string name="level_picker_title">اختر المستوى</string>
-    <string name="level_picker_vs_computer">العب ضد الهاتف</string>
-    <string name="level_picker_two_players">العب مع صديق على نفس الجهاز</string>
+    <!-- New game picker -->
+    <string name="picker_title">لعبة جديدة</string>
+    <string name="picker_vs_computer">العب ضد الهاتف</string>
+    <string name="picker_two_players">العب مع صديق على نفس الجهاز</string>
+    <string name="picker_board">اللوحة</string>
+    <string name="picker_level">المستوى</string>
+    <string name="picker_play">العب</string>
     <string name="level_easy">سهل</string>
     <string name="level_medium">متوسط</string>
     <string name="level_hard">صعب</string>
-    <string name="level_rules">لوحة %1$d×%1$d · %2$d على التوالي</string>
+    <string name="level_easy_desc">يرتكب أخطاء كثيرة</string>
+    <string name="level_medium_desc">يخطئ من حين لآخر</string>
+    <string name="level_hard_desc">نادرًا ما يخطئ</string>
+    <string name="level_hard_unbeatable_desc">لا يخسر أبدًا: التعادل نتيجة جيدة</string>
+    <string name="board_title">لوحة %1$d×%1$d</string>
+    <string name="board_win_rule">%1$d على التوالي</string>
 
 
     <!-- Game screen -->
@@ -23,6 +31,7 @@
     <string name="game_new_match">مباراة جديدة</string>
     <string name="game_mode_vs_computer">ضد الهاتف</string>
     <string name="game_mode_two_players">لاعبان</string>
+    <string name="game_title_level_board">%1$s · %2$s</string>
     <string name="game_you">أنت</string>
     <string name="game_phone">الهاتف</string>
     <string name="game_player_default">اللاعب %1$s</string>
@@ -163,11 +172,11 @@
     <string name="achievement_first_win">الفوز الأول</string>
     <string name="achievement_first_win_desc">فُز بمباراة ضد الهاتف.</string>
     <string name="achievement_beat_medium">بداية الجدية</string>
-    <string name="achievement_beat_medium_desc">اهزم الهاتف في المستوى المتوسط.</string>
+    <string name="achievement_beat_medium_desc">اهزم الهاتف في المستوى المتوسط على أي لوحة.</string>
     <string name="achievement_beat_hard">محترف</string>
-    <string name="achievement_beat_hard_desc">اهزم الهاتف في المستوى الصعب.</string>
+    <string name="achievement_beat_hard_desc">اهزم الهاتف في المستوى الصعب على لوحة 4×4 أو 8×8.</string>
     <string name="achievement_streak_5">لا يُوقف</string>
-    <string name="achievement_streak_5_desc">فُز بـ5 مباريات متتالية ضد الهاتف في مستوى واحد.</string>
+    <string name="achievement_streak_5_desc">فُز بـ5 مباريات متتالية ضد الهاتف على نفس اللوحة والمستوى.</string>
     <string name="achievement_games_100">مخلص للعبة</string>
     <string name="achievement_games_100_desc">أنهِ 100 مباراة.</string>
     <string name="achievement_two_player">مباراة ودية</string>

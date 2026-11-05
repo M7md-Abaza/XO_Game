@@ -12,7 +12,7 @@ class StartGameUseCase @Inject constructor() {
     operator fun invoke(config: GameConfig): GameState =
         GameState(
             config = config,
-            board = Board.empty(config.level.boardSize),
+            board = Board.empty(config.boardSize.size),
             history = emptyList(),
             result = GameResult.InProgress,
         )

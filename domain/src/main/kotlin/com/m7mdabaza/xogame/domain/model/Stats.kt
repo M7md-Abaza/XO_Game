@@ -7,9 +7,28 @@ package com.m7mdabaza.xogame.domain.model
 enum class RoundOutcome { WIN, LOSS, DRAW }
 
 /**
- * The record for one mode and level. Against the computer [wins] and
- * [losses] are the human's; in two-player mode they are X's wins and O's wins
- * (the streaks are only shown against the computer).
+ * One record: against the computer on one board at one level, or in
+ * two-player mode on one board ([level] null).
+ */
+data class StatsKey(val mode: GameMode, val boardSize: BoardSize, val level: Level? = null) {
+    init {
+        require((mode == GameMode.VS_COMPUTER) == (level != null)) {
+            "Records against the computer have a level, two-player records don't (mode $mode, level $level)"
+        }
+    }
+
+    companion object {
+        /** Every record: each board at each level against the computer, then each two-player board. */
+        val all: List<StatsKey> =
+            BoardSize.entries.flatMap { board -> Level.entries.map { StatsKey(GameMode.VS_COMPUTER, board, it) } } +
+                BoardSize.entries.map { StatsKey(GameMode.TWO_PLAYERS, it) }
+    }
+}
+
+/**
+ * The record for one [StatsKey]. Against the computer [wins] and [losses]
+ * are the human's; in two-player mode they are X's wins and O's wins (the
+ * streaks are only shown against the computer).
  *
  * A streak counts consecutive wins; a loss or a draw ends it.
  */
@@ -35,11 +54,18 @@ data class LevelStats(
     }
 }
 
-/** Every mode/level record. Missing entries are empty records. */
-data class Stats(val levels: Map<Pair<GameMode, Level>, LevelStats> = emptyMap()) {
+/** Every record. Missing entries are empty records. */
+data class Stats(val records: Map<StatsKey, LevelStats> = emptyMap()) {
 
-    operator fun get(mode: GameMode, level: Level): LevelStats = levels[mode to level] ?: LevelStats()
+    operator fun get(key: StatsKey): LevelStats = records[key] ?: LevelStats()
 
-    /** Rounds finished in [mode] across all levels. */
-    fun played(mode: GameMode): Int = Level.entries.sumOf { get(mode, it).played }
+    /** The record of [boardSize] in [mode]; [level] only (and always) against the computer. */
+    operator fun get(mode: GameMode, boardSize: BoardSize, level: Level? = null): LevelStats =
+        get(StatsKey(mode, boardSize, level))
+
+    /** Every record of [mode] (empty ones included). */
+    fun all(mode: GameMode): List<LevelStats> = StatsKey.all.filter { it.mode == mode }.map(::get)
+
+    /** Rounds finished in [mode] on every board and level. */
+    fun played(mode: GameMode): Int = all(mode).sumOf { it.played }
 }

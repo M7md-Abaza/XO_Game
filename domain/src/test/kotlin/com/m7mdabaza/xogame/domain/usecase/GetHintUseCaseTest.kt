@@ -1,8 +1,8 @@
 package com.m7mdabaza.xogame.domain.usecase
 
 import com.m7mdabaza.xogame.domain.ai.SearchAi
+import com.m7mdabaza.xogame.domain.model.BoardSize
 import com.m7mdabaza.xogame.domain.model.GameMode
-import com.m7mdabaza.xogame.domain.model.Level
 import com.m7mdabaza.xogame.domain.model.Player
 import com.m7mdabaza.xogame.domain.testing.cell
 import com.m7mdabaza.xogame.domain.testing.config
@@ -33,9 +33,9 @@ class GetHintUseCaseTest {
     }
 
     @Test
-    fun `hint on an empty board for every level`() {
-        Level.entries.forEach { level ->
-            val state = start(config(GameMode.VS_COMPUTER, level))
+    fun `hint on an empty board for every board size`() {
+        BoardSize.entries.forEach { boardSize ->
+            val state = start(config(GameMode.VS_COMPUTER, boardSize))
             val move = hint(state)
             assertNotNull(move)
             assertEquals(true, state.board.isEmpty(move!!))

@@ -6,6 +6,7 @@ import com.m7mdabaza.xogame.domain.engine.WinChecker
 import com.m7mdabaza.xogame.domain.model.Achievement
 import com.m7mdabaza.xogame.domain.model.AssistAccess
 import com.m7mdabaza.xogame.domain.model.AssistKind
+import com.m7mdabaza.xogame.domain.model.BoardSize
 import com.m7mdabaza.xogame.domain.model.Cell
 import com.m7mdabaza.xogame.domain.model.GameMode
 import com.m7mdabaza.xogame.domain.model.GameResult
@@ -16,32 +17,33 @@ import com.m7mdabaza.xogame.domain.model.Player
 import com.m7mdabaza.xogame.domain.model.Settings
 import com.m7mdabaza.xogame.domain.model.Starter
 import com.m7mdabaza.xogame.domain.model.Stats
+import com.m7mdabaza.xogame.domain.model.StatsKey
 import com.m7mdabaza.xogame.domain.usecase.ComputerMoveUseCase
 import com.m7mdabaza.xogame.domain.usecase.EvaluateAchievementsUseCase
 import com.m7mdabaza.xogame.domain.usecase.GetAssistAccessUseCase
 import com.m7mdabaza.xogame.domain.usecase.GetHintUseCase
 import com.m7mdabaza.xogame.domain.usecase.ObserveAdsRemovedUseCase
+import com.m7mdabaza.xogame.domain.usecase.ObserveSettingsUseCase
+import com.m7mdabaza.xogame.domain.usecase.PlayMoveUseCase
+import com.m7mdabaza.xogame.domain.usecase.RecordGameResultUseCase
 import com.m7mdabaza.xogame.domain.usecase.RecordInterstitialShownUseCase
 import com.m7mdabaza.xogame.domain.usecase.RecordReviewRequestedUseCase
 import com.m7mdabaza.xogame.domain.usecase.RecordRoundForAdsUseCase
 import com.m7mdabaza.xogame.domain.usecase.ShouldRequestReviewUseCase
 import com.m7mdabaza.xogame.domain.usecase.ShouldShowInterstitialUseCase
-import com.m7mdabaza.xogame.domain.usecase.ObserveSettingsUseCase
-import com.m7mdabaza.xogame.domain.usecase.RecordGameResultUseCase
-import com.m7mdabaza.xogame.domain.usecase.UpdateSettingsUseCase
-import com.m7mdabaza.xogame.domain.usecase.PlayMoveUseCase
 import com.m7mdabaza.xogame.domain.usecase.StartGameUseCase
 import com.m7mdabaza.xogame.domain.usecase.UndoMoveUseCase
-import com.m7mdabaza.xogame.presentation.testing.FakeAdUnitIds
-import com.m7mdabaza.xogame.presentation.testing.FakeGameFeedback
+import com.m7mdabaza.xogame.domain.usecase.UpdateSettingsUseCase
 import com.m7mdabaza.xogame.presentation.testing.FakeAchievementsRepository
 import com.m7mdabaza.xogame.presentation.testing.FakeAdPolicyRepository
+import com.m7mdabaza.xogame.presentation.testing.FakeAdUnitIds
 import com.m7mdabaza.xogame.presentation.testing.FakeChallengeRepository
+import com.m7mdabaza.xogame.presentation.testing.FakeGameFeedback
 import com.m7mdabaza.xogame.presentation.testing.FakePromptsRepository
 import com.m7mdabaza.xogame.presentation.testing.FakePurchaseRepository
 import com.m7mdabaza.xogame.presentation.testing.FakeSettingsRepository
-import com.m7mdabaza.xogame.presentation.testing.FakeTime
 import com.m7mdabaza.xogame.presentation.testing.FakeStatsRepository
+import com.m7mdabaza.xogame.presentation.testing.FakeTime
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
@@ -80,8 +82,15 @@ class GameViewModelTest {
     @After
     fun tearDown() = Dispatchers.resetMain()
 
-    private fun handle(mode: GameMode, level: Level = Level.EASY) =
-        SavedStateHandle(mapOf(GameViewModel.ARG_MODE to mode.name, GameViewModel.ARG_LEVEL to level.name))
+    /** The route's arguments; like the navigation graph, a level only against the computer. */
+    private fun handle(mode: GameMode, boardSize: BoardSize = BoardSize.THREE, level: Level = Level.EASY) =
+        SavedStateHandle(
+            buildMap {
+                put(GameViewModel.ARG_MODE, mode.name)
+                put(GameViewModel.ARG_BOARD_SIZE, boardSize.name)
+                if (mode == GameMode.VS_COMPUTER) put(GameViewModel.ARG_LEVEL, level.name)
+            },
+        )
 
     private fun viewModel(handle: SavedStateHandle, random: Random = Random(1)) = GameViewModel(
         savedStateHandle = handle,
@@ -107,7 +116,8 @@ class GameViewModelTest {
         random = random,
     )
 
-    private fun viewModel(mode: GameMode, level: Level = Level.EASY) = viewModel(handle(mode, level))
+    private fun viewModel(mode: GameMode, boardSize: BoardSize = BoardSize.THREE, level: Level = Level.EASY) =
+        viewModel(handle(mode, boardSize, level))
 
     private val GameViewModel.state get() = uiState.value
 
@@ -128,14 +138,38 @@ class GameViewModelTest {
 
     @Test
     fun `opens with the setup and an empty board`() {
-        val vm = viewModel(GameMode.TWO_PLAYERS, Level.MEDIUM)
+        val vm = viewModel(GameMode.TWO_PLAYERS, BoardSize.FOUR)
         assertEquals(GamePhase.SETUP, vm.state.phase)
         assertFalse(vm.state.hasStarted)
         assertFalse(vm.state.boardEnabled)
         assertEquals(4, vm.state.game.board.size)
-        assertEquals("banner-TWO_PLAYERS-MEDIUM", vm.state.bannerAdUnitId)
+        assertEquals("banner-TWO_PLAYERS-FOUR", vm.state.bannerAdUnitId)
+        assertEquals("interstitial-TWO_PLAYERS-FOUR", vm.state.interstitialAdUnitId)
+        assertNull("no level without the computer", vm.state.level)
         vm.onCellClick(Cell(0, 0))
         assertTrue(vm.state.game.history.isEmpty())
+    }
+
+    @Test
+    fun `against the computer the board and level come from the route, the ad units from the board`() {
+        val vm = viewModel(GameMode.VS_COMPUTER, BoardSize.EIGHT, Level.MEDIUM)
+        assertEquals(BoardSize.EIGHT, vm.state.boardSize)
+        assertEquals(Level.MEDIUM, vm.state.level)
+        assertEquals(8, vm.state.game.board.size)
+        assertEquals(Level.MEDIUM, vm.state.game.config.level)
+        assertEquals("banner-VS_COMPUTER-EIGHT", vm.state.bannerAdUnitId)
+    }
+
+    @Test
+    fun `a level passed for two players is ignored`() {
+        val handle = SavedStateHandle(
+            mapOf(
+                GameViewModel.ARG_MODE to GameMode.TWO_PLAYERS.name,
+                GameViewModel.ARG_BOARD_SIZE to BoardSize.THREE.name,
+                GameViewModel.ARG_LEVEL to Level.HARD.name,
+            ),
+        )
+        assertNull(viewModel(handle).state.game.config.level)
     }
 
     @Test
@@ -382,7 +416,7 @@ class GameViewModelTest {
 
     @Test
     fun `the session survives process death`() {
-        val handle = handle(GameMode.TWO_PLAYERS, Level.MEDIUM)
+        val handle = handle(GameMode.TWO_PLAYERS, BoardSize.FOUR)
         val vm = viewModel(handle)
         vm.onStartMatch(MatchSettings(length = MatchLength.BEST_OF_5, xName = "Sara", starter = Starter.PLAYER_TWO))
         vm.tap(Cell(0, 0), Cell(1, 1), Cell(2, 2))
@@ -462,15 +496,15 @@ class GameViewModelTest {
     }
 
     @Test
-    fun `finished rounds are recorded in the stats of their mode and level`() = runTest(dispatcher) {
-        val vm = viewModel(GameMode.TWO_PLAYERS, Level.EASY)
+    fun `finished rounds are recorded in the stats of their mode and board`() = runTest(dispatcher) {
+        val vm = viewModel(GameMode.TWO_PLAYERS)
         vm.onStartMatch(MatchSettings())
         vm.tap(*xWinsTopRow)
         advanceUntilIdle()
         vm.onNextRound()
         vm.tap(*xWinsTopRow) // X again (single rounds keep the starter)
         advanceUntilIdle()
-        assertEquals(LevelStats(wins = 2, currentStreak = 2, bestStreak = 2), statsRepository.stats.value[GameMode.TWO_PLAYERS, Level.EASY])
+        assertEquals(LevelStats(wins = 2, currentStreak = 2, bestStreak = 2), statsRepository.stats.value[GameMode.TWO_PLAYERS, BoardSize.THREE])
     }
 
     @Test
@@ -481,10 +515,23 @@ class GameViewModelTest {
             vm.onCellClick(vm.state.game.board.emptyCells.last())
             advanceUntilIdle()
         }
-        val stats = statsRepository.stats.value[GameMode.VS_COMPUTER, Level.EASY]
+        val stats = statsRepository.stats.value[GameMode.VS_COMPUTER, BoardSize.THREE, Level.EASY]
         assertEquals(1, stats.played)
         val result = vm.state.game.result
         if (result is GameResult.Win && result.player == Player.O) assertEquals(1, stats.losses)
+    }
+
+    @Test
+    fun `games against the computer are recorded per board and level`() = runTest(dispatcher) {
+        val vm = viewModel(GameMode.VS_COMPUTER, BoardSize.FOUR, Level.HARD)
+        vm.onStartMatch(MatchSettings())
+        while (vm.state.phase == GamePhase.PLAYING) {
+            vm.onCellClick(vm.state.game.board.emptyCells.last())
+            advanceUntilIdle()
+        }
+        val stats = statsRepository.stats.value
+        assertEquals(1, stats[GameMode.VS_COMPUTER, BoardSize.FOUR, Level.HARD].played)
+        assertEquals(1, stats.played(GameMode.VS_COMPUTER))
     }
 
     @Test
@@ -504,7 +551,7 @@ class GameViewModelTest {
 
     @Test
     fun `a two-player win never asks for a Play review`() = runTest(dispatcher) {
-        statsRepository.stats.value = Stats(mapOf((GameMode.TWO_PLAYERS to Level.EASY) to LevelStats(draws = 20)))
+        statsRepository.stats.value = Stats(mapOf(StatsKey(GameMode.TWO_PLAYERS, BoardSize.THREE) to LevelStats(draws = 20)))
         val vm = viewModel(GameMode.TWO_PLAYERS)
         vm.onStartMatch(MatchSettings())
         vm.tap(*xWinsTopRow)

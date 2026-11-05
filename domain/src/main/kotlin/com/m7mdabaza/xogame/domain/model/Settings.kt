@@ -13,8 +13,9 @@ enum class Starter { PLAYER_ONE, PLAYER_TWO, RANDOM }
  * per-app language itself (AppCompat / system settings), so keeping a second
  * copy could only get out of sync.
  *
- * The last five properties are the defaults of the match setup; they are
- * remembered from the last match the user started.
+ * The match-setup properties (match length to names) are the defaults of the
+ * next setup, remembered from the last match the user started. [boardSize] and
+ * [level] are the last choice in the "against the phone" picker.
  */
 data class Settings(
     val soundEnabled: Boolean = true,
@@ -25,4 +26,6 @@ data class Settings(
     val starter: Starter = Starter.PLAYER_ONE,
     val xName: String = "",
     val oName: String = "",
+    val boardSize: BoardSize = BoardSize.THREE,
+    val level: Level = Level.EASY,
 )

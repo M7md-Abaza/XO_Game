@@ -17,5 +17,5 @@ class GetHintUseCase @Inject constructor(
 ) {
 
     operator fun invoke(state: GameState): Cell? =
-        if (state.isHumanTurn) ai.chooseMove(state, DifficultyPolicy.hint(state.config.level)) else null
+        if (state.isHumanTurn) ai.chooseMove(state, DifficultyPolicy.hint(state.config.boardSize)) else null
 }

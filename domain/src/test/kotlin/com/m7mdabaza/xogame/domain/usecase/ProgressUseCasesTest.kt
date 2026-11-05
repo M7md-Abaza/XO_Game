@@ -2,12 +2,14 @@ package com.m7mdabaza.xogame.domain.usecase
 
 import com.m7mdabaza.xogame.domain.engine.WinChecker
 import com.m7mdabaza.xogame.domain.model.Achievement
+import com.m7mdabaza.xogame.domain.model.BoardSize
 import com.m7mdabaza.xogame.domain.model.ChallengeProgress
 import com.m7mdabaza.xogame.domain.model.GameMode
 import com.m7mdabaza.xogame.domain.model.Level
 import com.m7mdabaza.xogame.domain.model.LevelStats
 import com.m7mdabaza.xogame.domain.model.Player
 import com.m7mdabaza.xogame.domain.model.Stats
+import com.m7mdabaza.xogame.domain.model.StatsKey
 import com.m7mdabaza.xogame.domain.repository.TimeProvider
 import com.m7mdabaza.xogame.domain.testing.FakeAchievementsRepository
 import com.m7mdabaza.xogame.domain.testing.FakeChallengeRepository
@@ -87,7 +89,7 @@ class ProgressUseCasesTest {
     private val evaluate = EvaluateAchievementsUseCase(stats, challenges, achievements, time)
     private val observe = ObserveAchievementsUseCase(stats, challenges, achievements, time)
 
-    private fun stats(vararg entries: Pair<Pair<GameMode, Level>, LevelStats>) = Stats(entries.toMap())
+    private fun stats(vararg entries: Pair<StatsKey, LevelStats>) = Stats(entries.toMap())
 
     @Test
     fun `nothing is unlocked at the start`() = runTest {
@@ -97,14 +99,14 @@ class ProgressUseCasesTest {
 
     @Test
     fun `achievements unlock once their target is reached, and only once`() = runTest {
-        stats.stats.value = stats((GameMode.VS_COMPUTER to Level.EASY) to LevelStats(wins = 1, currentStreak = 1, bestStreak = 1))
+        stats.stats.value = stats(StatsKey(GameMode.VS_COMPUTER, BoardSize.THREE, Level.EASY) to LevelStats(wins = 1, currentStreak = 1, bestStreak = 1))
         assertEquals(listOf(Achievement.FIRST_WIN), evaluate())
         assertEquals(emptyList<Achievement>(), evaluate())
 
         stats.stats.value = stats(
-            (GameMode.VS_COMPUTER to Level.EASY) to LevelStats(wins = 5, currentStreak = 5, bestStreak = 5),
-            (GameMode.VS_COMPUTER to Level.HARD) to LevelStats(wins = 1),
-            (GameMode.TWO_PLAYERS to Level.EASY) to LevelStats(draws = 1),
+            StatsKey(GameMode.VS_COMPUTER, BoardSize.THREE, Level.EASY) to LevelStats(wins = 5, currentStreak = 5, bestStreak = 5),
+            StatsKey(GameMode.VS_COMPUTER, BoardSize.EIGHT, Level.HARD) to LevelStats(wins = 1),
+            StatsKey(GameMode.TWO_PLAYERS, BoardSize.THREE) to LevelStats(draws = 1),
         )
         assertEquals(listOf(Achievement.BEAT_HARD, Achievement.WIN_STREAK_5, Achievement.TWO_PLAYER_GAME), evaluate())
 
@@ -114,7 +116,7 @@ class ProgressUseCasesTest {
 
     @Test
     fun `unlocks are kept after the stats are reset, and show progress while locked`() = runTest {
-        stats.stats.value = stats((GameMode.VS_COMPUTER to Level.MEDIUM) to LevelStats(wins = 1, losses = 36))
+        stats.stats.value = stats(StatsKey(GameMode.VS_COMPUTER, BoardSize.FOUR, Level.MEDIUM) to LevelStats(wins = 1, losses = 36))
         evaluate()
         stats.stats.value = Stats()
 
@@ -123,7 +125,7 @@ class ProgressUseCasesTest {
         assertTrue(list.first { it.achievement == Achievement.BEAT_MEDIUM }.isUnlocked)
         assertEquals(time.now, list.first { it.achievement == Achievement.FIRST_WIN }.unlockedAtMillis)
 
-        stats.stats.value = stats((GameMode.TWO_PLAYERS to Level.EASY) to LevelStats(wins = 20, losses = 17))
+        stats.stats.value = stats(StatsKey(GameMode.TWO_PLAYERS, BoardSize.THREE) to LevelStats(wins = 20, losses = 17))
         val games = observe().first().first { it.achievement == Achievement.GAMES_100 }
         assertEquals(37, games.progress)
         assertFalse(games.isUnlocked)
@@ -132,7 +134,7 @@ class ProgressUseCasesTest {
     @Test
     fun `progress is capped at the target`() {
         val progress = Achievement.GAMES_100.progress(
-            stats((GameMode.VS_COMPUTER to Level.EASY) to LevelStats(wins = 500)),
+            stats(StatsKey(GameMode.VS_COMPUTER, BoardSize.THREE, Level.EASY) to LevelStats(wins = 500)),
             ChallengeProgress(emptySet(), today = 0),
         )
         assertEquals(100, progress)

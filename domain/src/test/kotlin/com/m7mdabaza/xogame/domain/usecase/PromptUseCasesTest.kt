@@ -1,9 +1,11 @@
 package com.m7mdabaza.xogame.domain.usecase
 
+import com.m7mdabaza.xogame.domain.model.BoardSize
 import com.m7mdabaza.xogame.domain.model.GameMode
 import com.m7mdabaza.xogame.domain.model.Level
 import com.m7mdabaza.xogame.domain.model.LevelStats
 import com.m7mdabaza.xogame.domain.model.Stats
+import com.m7mdabaza.xogame.domain.model.StatsKey
 import com.m7mdabaza.xogame.domain.repository.TimeProvider
 import com.m7mdabaza.xogame.domain.testing.FakePromptsRepository
 import com.m7mdabaza.xogame.domain.testing.FakeStatsRepository
@@ -27,8 +29,8 @@ class PromptUseCasesTest {
     private fun played(vsComputer: Int, twoPlayers: Int = 0) {
         stats.stats.value = Stats(
             mapOf(
-                (GameMode.VS_COMPUTER to Level.EASY) to LevelStats(wins = vsComputer),
-                (GameMode.TWO_PLAYERS to Level.EASY) to LevelStats(draws = twoPlayers),
+                StatsKey(GameMode.VS_COMPUTER, BoardSize.THREE, Level.EASY) to LevelStats(wins = vsComputer),
+                StatsKey(GameMode.TWO_PLAYERS, BoardSize.THREE) to LevelStats(draws = twoPlayers),
             ),
         )
     }

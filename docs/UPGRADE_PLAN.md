@@ -15,6 +15,7 @@ Branch: `feature/v2-upgrade`
 | 7. Arabic + RTL, accessibility | **Done and committed** (43e98e1). Audited every screen on the emulator in Arabic and at font scale 2.0. Fixed: splash tagline translated; Arabic percent sign; segmented labels no longer cut off (`TextChoices`, one auto-shrinking line); action buttons as equal-width tiles; Stats level name over its rules; Home buttons grow with text; X/O choices labelled for screen readers; scoreboard chips and stat cells read as one item; headings; full-square board touch targets and a wider 8×8 board; player names bidi-isolated in sentences. `AccessibilityTest` runs Google's Accessibility Test Framework on Home, all three boards, a finished round, the setup dialog, Settings and Stats (15 Compose UI tests pass). |
 | 8. Daily challenge + achievements | **Done and committed** (9a9bb67). Daily challenge: an 8×8 "win in 2" puzzle (X to move; the right move makes two winning threats, the phone blocks one, the player takes the other), generated from the date alone by `ai/ChallengeGenerator` (a seeded random game until a clean position with 1–3 solutions appears; nothing stored, same on every phone; a year of puzzles is generated and verified in tests in about 0.6 s). A first move that isn't a solution fails at once; unlimited retries; the first solve of the day counts for the streak (which survives until the end of the next day). Achievements (8, local): first win, beat Medium, beat Hard, 5 wins in a row, 100 games, a two-player game, first challenge, 7-day challenge streak. They unlock from the stats and challenge history, stay unlocked after a stats reset, and are announced with a snackbar when earned in play (Home re-checks silently). `:data`: `challenge` and `achievements` DataStore files. UI: Home trophy icon and Daily challenge button (solved today, streak), Daily challenge and Achievements screens, English + Arabic. Game-screen snackbars now sit above the banner instead of over it. Tests: 117 domain, 25 data, 53 presentation JVM, 19 Compose UI tests (accessibility checks of the new screens included); lint clean. Checked on the API 37 emulator in English, Arabic, dark theme and at font scale 2.0. |
 | 9. Release prep | **Done and committed.** Version 2.0 / versionCode 20 (Play's v1.2 is 9). R8 on for release (minify + shrink resources, 21.7 MB debug → 5 MB release); WorkManager 2.12 pinned in `:app` because the ads SDK's 2.7 crashed the minified build at startup. Play In-App Review (after 5 finished games, at a happy moment: beating the phone or solving the daily puzzle; at most every 90 days) and flexible In-App Updates on Home (offered at most every 3 days, "Restart" snackbar when downloaded), with times in a new `prompts` DataStore. The splash is now Compose (same logo and background as Home), follows the light/dark theme, and the last XML layout, PNG artwork, assets font and ConstraintLayout are gone. Snackbars and the review sheet no longer hold up other screen events. Tests: 122 domain, 26 data, 56 presentation JVM, 24 Compose UI tests (update flow with `FakeAppUpdateManager`, splash accessibility); lint clean except the deliberate targetSdk 36. Release build checked on the API 37 emulator: cold start under 1 s, every screen, Hard AI, restore after process death, daily challenge and streak, rewarded hint, Arabic, dark theme. Release steps and store texts: `docs/RELEASE.md`. Not done here: the pass on the real phone (not connected), and anything that needs a Play install (purchase, update, review), which is listed in `docs/RELEASE.md`. |
+| 10. Board × level | **Done and committed.** The board and the computer's strength are now separate choices (user request, 2026-11-05): 3×3 / 4×4 / 8×8, each at Easy / Medium / Hard against the phone (two-player games pick only a board). Domain `BoardSize` (size + win length) and `Level` (difficulty only); `GameConfig(mode, boardSize, level?)`; `StatsKey` records per mode + board + level (two-player: per board). `DifficultyPolicy.computer(board, level)` / `hint(board)`, calibrated head to head: 3×3 Easy and Medium are beatable (perfect play wins about 18% / 8%), 3×3 Hard is perfect and never loses (user decision); 4×4 is a draw with sensible play, so Easy and Medium also overlook threats (new `Difficulty.missedBlockChance`; a good player wins about 26% / 8%, Hard about 1%); 8×8 each level clearly beats the one below. Picker sheet (layout A, user decision): board cards + Easy/Medium/Hard + Play, last choice remembered in `Settings`; two players tap a board. Game title "Easy · 3×3" / "3×3 board"; Stats: board tabs with a card per level, two-player cards per board; achievements count wins on any board ("5 in a row" on one board and level). Ad units now follow the board (v1's easy/medium/hard screens were the 3×3/4×4/8×8 boards). Unreleased stats from older debug builds are ignored. Tests: 130 domain, 27 data, 59 presentation JVM, 31 Compose UI tests; lint clean in the changed modules. Checked on the API 37 emulator (picker, remembered choice, both modes, stats, Arabic) and as a minified release build (games on 4×4 / 8×8, state restored with "Don't keep activities"). |
 
 How to resume: build with `export JAVA_HOME=~/.jdks/jbr-21.0.11 && ./gradlew assembleDebug test`. Work milestone by milestone; the user reviews each one, and nothing is committed or pushed until the user says so.
 
@@ -32,7 +33,7 @@ How to resume: build with `export JAVA_HOME=~/.jdks/jbr-21.0.11 && ./gradlew ass
 
 Things that must not change:
 - `applicationId` stays `com.m7mdabaza.x_ogame`. Changing it would break Play Store updates.
-- The existing per-screen AdMob unit IDs are kept. They are mapped by mode + level, so AdMob reports stay comparable. (Only `banner_x_or_o_dialog` was dropped in milestone 4, because its dialog no longer exists.)
+- The existing per-screen AdMob unit IDs are kept. They are mapped by mode + board (v1's easy / medium / hard screens were the 3×3 / 4×4 / 8×8 boards; since milestone 10 the computer's level doesn't change the unit), so AdMob reports stay comparable. (Only `banner_x_or_o_dialog` was dropped in milestone 4, because its dialog no longer exists.)
 - UMP consent gates every ad request, as it does today.
 
 ---
@@ -61,13 +62,13 @@ Dependency rule: `presentation → domain ← data`. `:app` depends on all three
 - `Player` (X, O)
 - `Cell(row, col)`
 - `Board` (immutable; size N, cells)
-- `GameConfig(mode, level, humanSymbol, firstPlayer)`
-- `Level` (EASY 3×3 / 3-in-row, MEDIUM 4×4 / 4-in-row, HARD 8×8 / 5-in-row)
+- `GameConfig(mode, boardSize, level?, humanSymbol, firstPlayer)` (level only against the computer)
+- `BoardSize` (THREE 3×3 / 3-in-row, FOUR 4×4 / 4-in-row, EIGHT 8×8 / 5-in-row) and `Level` (EASY / MEDIUM / HARD, the computer's strength). Until milestone 10 a level was also its board.
 - `GameMode` (VS_COMPUTER, TWO_PLAYERS)
 - `GameState` (board, turn, move history, result)
 - `GameResult` (Win(player, winningLine), Draw, InProgress)
 - `MatchState` (best-of-N score)
-- `LevelStats` / `Stats` (per mode/level: wins, losses, draws, current/best win streak; in two-player mode wins/losses are X/O wins)
+- `LevelStats` / `Stats` (per `StatsKey`: mode + board + level, or mode + board in two-player mode: wins, losses, draws, current/best win streak; in two-player mode wins/losses are X/O wins)
 - `Settings` (sound, vibration, theme, and the last setup choices: match length, symbol, who starts, player names). The language is not stored here: Android keeps the per-app language (AppCompat per-app locales).
 
 **Engine**
@@ -79,9 +80,9 @@ Dependency rule: `presentation → domain ← data`. `:app` depends on all three
   - 3×3 is searched to the end (perfect). 4×4 is depth-limited, with moves ordered by a pattern score.
   - On 8×8 it searches only the top-N cells within 2 of existing marks, ranked by the open lines they extend or block (the planned "threat" scoring).
   - Positions it cannot search to the end are scored by counting marks in every 5-cell (k-cell) window still open to one player.
-- `DifficultyPolicy`: search depth, candidate limit and mistake chance per level, for the computer and for hints. The AI picks randomly among equally good moves.
-  - Computer: Easy depth 9 with a 35% mistake chance, Medium depth 4 with 15%, Hard depth 5 / 10 candidates with 5%.
-  - Hints: Easy perfect, Medium depth 6, Hard depth 5 / 12 candidates.
+- `DifficultyPolicy`: search depth, candidate limit, mistake chance and (4×4 only) missed-block chance per board and level for the computer, per board for hints. The AI picks randomly among equally good moves.
+  - Computer, 3×3: Easy depth 9 with 35% mistakes, Medium 15%, Hard perfect (never loses). 4×4: Easy depth 1, 50% mistakes, misses 50% of blocks; Medium depth 4, 20% / 20%; Hard depth 6, 5% mistakes. 8×8: Easy depth 1 / 8 candidates, 35%; Medium depth 3 / 8 candidates, 15%; Hard depth 5 / 10 candidates, 5%.
+  - Hints: 3×3 perfect, 4×4 depth 6, 8×8 depth 5 / 12 candidates.
   - Mistakes never skip a win or a block.
 
 **Repository interfaces**
@@ -197,6 +198,7 @@ Each milestone ends with a working build, tests passing and an emulator check. Y
 9. **Release prep:**
    - In-app review/updates, R8 minify on, versionCode/versionName bump.
    - Update `CLAUDE.md`, final regression on emulator and phone.
+10. **Board × level:** pick the board and, against the phone, the level separately (9 combinations); AI recalibrated per board and level.
 
 ## 6. Resolved questions
 
@@ -206,3 +208,4 @@ Each milestone ends with a working build, tests passing and an emulator check. Y
 4. No undo after a round ends, whether it was won, lost or drawn (user decision, 2026-11-04). Undo works only while a round is being played.
 5. The app is portrait only (user decision, 2026-11-04): both activities use `screenOrientation="portrait"`. Android 16+ may ignore this on large screens (600 dp and wider), so the game screen keeps a side-by-side layout for wide windows.
 6. `banner_x_or_o_dialog` was removed from the app (user decision, 2026-11-04). Remind the user to delete the unit in AdMob (see "AdMob tasks for you").
+7. Board and difficulty are separate choices (user decision, 2026-11-05): 3×3 / 4×4 / 8×8, each at Easy / Medium / Hard against the phone. Picker layout: one sheet with board cards, a level row and Play (layout A). 3×3 Hard is unbeatable; 3×3 Easy and Medium stay beatable, Medium less often.

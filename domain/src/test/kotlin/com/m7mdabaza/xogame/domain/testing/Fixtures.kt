@@ -2,6 +2,7 @@ package com.m7mdabaza.xogame.domain.testing
 
 import com.m7mdabaza.xogame.domain.engine.WinChecker
 import com.m7mdabaza.xogame.domain.model.Board
+import com.m7mdabaza.xogame.domain.model.BoardSize
 import com.m7mdabaza.xogame.domain.model.Cell
 import com.m7mdabaza.xogame.domain.model.GameConfig
 import com.m7mdabaza.xogame.domain.model.GameMode
@@ -36,12 +37,14 @@ fun cell(row: Int, col: Int) = Cell(row, col)
 val play = PlayMoveUseCase(WinChecker())
 val start = StartGameUseCase()
 
+/** A config; against the computer the level defaults to Easy (two-player games have none). */
 fun config(
     mode: GameMode = GameMode.TWO_PLAYERS,
-    level: Level = Level.EASY,
+    boardSize: BoardSize = BoardSize.THREE,
+    level: Level? = if (mode == GameMode.VS_COMPUTER) Level.EASY else null,
     humanSymbol: Player = Player.X,
     firstPlayer: Player = Player.X,
-) = GameConfig(mode, level, humanSymbol, firstPlayer)
+) = GameConfig(mode, boardSize, level, humanSymbol, firstPlayer)
 
 /** Plays [cells] in order (alternating turns), failing the test if any move is rejected. */
 fun GameState.playing(vararg cells: Cell): GameState = cells.fold(this) { state, c ->

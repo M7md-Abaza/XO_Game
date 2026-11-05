@@ -1,8 +1,8 @@
 package com.m7mdabaza.xogame.domain.usecase
 
+import com.m7mdabaza.xogame.domain.model.BoardSize
 import com.m7mdabaza.xogame.domain.model.GameMode
 import com.m7mdabaza.xogame.domain.model.GameResult
-import com.m7mdabaza.xogame.domain.model.Level
 import com.m7mdabaza.xogame.domain.model.Player
 import com.m7mdabaza.xogame.domain.testing.config
 import com.m7mdabaza.xogame.domain.testing.start
@@ -15,10 +15,10 @@ import org.junit.Test
 class StartGameUseCaseTest {
 
     @Test
-    fun `board size follows the level`() {
-        Level.entries.forEach { level ->
-            val state = start(config(level = level))
-            assertEquals(level.boardSize, state.board.size)
+    fun `the board follows the board size`() {
+        BoardSize.entries.forEach { boardSize ->
+            val state = start(config(boardSize = boardSize))
+            assertEquals(boardSize.size, state.board.size)
             assertTrue(state.board.isEmpty)
             assertTrue(state.history.isEmpty())
             assertEquals(GameResult.InProgress, state.result)

@@ -43,6 +43,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.m7mdabaza.xogame.domain.model.BoardSize
 import com.m7mdabaza.xogame.domain.model.GameMode
 import com.m7mdabaza.xogame.domain.model.Level
 import com.m7mdabaza.xogame.presentation.R
@@ -55,7 +56,7 @@ import com.m7mdabaza.xogame.presentation.update.InAppUpdates
 /** Stateful entry point used by the navigation graph. */
 @Composable
 fun HomeRoute(
-    onStartGame: (GameMode, Level) -> Unit,
+    onStartGame: (GameMode, BoardSize, Level?) -> Unit,
     onOpenStats: () -> Unit,
     onOpenSettings: () -> Unit,
     onOpenChallenge: () -> Unit,
@@ -74,7 +75,10 @@ fun HomeRoute(
 
     HomeScreen(
         state = state,
-        onStartGame = onStartGame,
+        onStartGame = { mode, boardSize, level ->
+            viewModel.onGameChosen(mode, boardSize, level)
+            onStartGame(mode, boardSize, level)
+        },
         onOpenStats = onOpenStats,
         onOpenSettings = onOpenSettings,
         onOpenChallenge = onOpenChallenge,
@@ -86,7 +90,7 @@ fun HomeRoute(
 @Composable
 fun HomeScreen(
     state: HomeUiState,
-    onStartGame: (GameMode, Level) -> Unit,
+    onStartGame: (GameMode, BoardSize, Level?) -> Unit,
     onOpenStats: () -> Unit,
     onOpenSettings: () -> Unit,
     onOpenChallenge: () -> Unit = {},
@@ -165,12 +169,14 @@ fun HomeScreen(
     }
 
     pickerMode?.let { mode ->
-        LevelPickerSheet(
+        GamePickerSheet(
             mode = mode,
+            initialBoardSize = state.lastBoardSize,
+            initialLevel = state.lastLevel,
             onDismiss = { pickerMode = null },
-            onLevelSelected = { level ->
+            onStart = { boardSize, level ->
                 pickerMode = null
-                onStartGame(mode, level)
+                onStartGame(mode, boardSize, level)
             },
         )
     }
@@ -230,7 +236,7 @@ private fun HomeScreenPreview() {
     XoTheme {
         HomeScreen(
             state = HomeUiState(bannerAdUnitId = "", canRequestAds = true),
-            onStartGame = { _, _ -> },
+            onStartGame = { _, _, _ -> },
             onOpenStats = {},
             onOpenSettings = {},
         )

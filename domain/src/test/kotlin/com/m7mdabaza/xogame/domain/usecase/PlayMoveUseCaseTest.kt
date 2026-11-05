@@ -1,8 +1,8 @@
 package com.m7mdabaza.xogame.domain.usecase
 
+import com.m7mdabaza.xogame.domain.model.BoardSize
 import com.m7mdabaza.xogame.domain.model.GameMode
 import com.m7mdabaza.xogame.domain.model.GameResult
-import com.m7mdabaza.xogame.domain.model.Level
 import com.m7mdabaza.xogame.domain.model.Move
 import com.m7mdabaza.xogame.domain.model.Player
 import com.m7mdabaza.xogame.domain.testing.board
@@ -72,22 +72,22 @@ class PlayMoveUseCaseTest {
     }
 
     @Test
-    fun `medium needs four in a row`() {
-        val three = newGame(config(level = Level.MEDIUM), cell(0, 0), cell(1, 0), cell(0, 1), cell(1, 1), cell(0, 2))
+    fun `4x4 needs four in a row`() {
+        val three = newGame(config(boardSize = BoardSize.FOUR), cell(0, 0), cell(1, 0), cell(0, 1), cell(1, 1), cell(0, 2))
         assertEquals(GameResult.InProgress, three.result)
         assertEquals(Player.X, (three.playing(cell(1, 2), cell(0, 3)).result as GameResult.Win).player)
     }
 
     @Test
-    fun `hard needs five in a row`() {
-        var state = start(config(level = Level.HARD))
+    fun `8x8 needs five in a row`() {
+        var state = start(config(boardSize = BoardSize.EIGHT))
         repeat(4) { state = state.playing(cell(0, it), cell(7, it)) }
         assertEquals(GameResult.InProgress, state.result)
         assertEquals(GameResult.Win(Player.X, List(5) { cell(0, it) }), state.playing(cell(0, 4)).result)
     }
 
     @Test
-    fun `hard is a draw only when all 64 cells are filled`() {
+    fun `8x8 is a draw only when all 64 cells are filled`() {
         // X where (col / 2 + row) is even: rows read XXOOXXOO (flipped on the next
         // row), columns alternate every cell and both diagonals alternate in
         // pairs, so no line is longer than 2.
@@ -95,7 +95,7 @@ class PlayMoveUseCaseTest {
         val (xs, os) = cells.partition { (it.col / 2 + it.row) % 2 == 0 }
         assertEquals(32, xs.size)
 
-        var state = start(config(level = Level.HARD))
+        var state = start(config(boardSize = BoardSize.EIGHT))
         xs.zip(os).forEach { (x, o) ->
             assertEquals(GameResult.InProgress, state.result)
             state = state.playing(x, o)

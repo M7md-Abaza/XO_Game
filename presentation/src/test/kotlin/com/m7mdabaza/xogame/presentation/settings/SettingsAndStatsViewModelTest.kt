@@ -1,5 +1,6 @@
 package com.m7mdabaza.xogame.presentation.settings
 
+import com.m7mdabaza.xogame.domain.model.BoardSize
 import com.m7mdabaza.xogame.domain.model.GameMode
 import com.m7mdabaza.xogame.domain.model.Level
 import com.m7mdabaza.xogame.domain.model.LevelStats
@@ -8,15 +9,16 @@ import com.m7mdabaza.xogame.domain.model.PurchaseResult
 import com.m7mdabaza.xogame.domain.model.RestoreResult
 import com.m7mdabaza.xogame.domain.model.Settings
 import com.m7mdabaza.xogame.domain.model.Stats
+import com.m7mdabaza.xogame.domain.model.StatsKey
 import com.m7mdabaza.xogame.domain.model.ThemeMode
 import com.m7mdabaza.xogame.domain.usecase.ObserveAdsRemovedUseCase
 import com.m7mdabaza.xogame.domain.usecase.ObserveRemoveAdsOfferUseCase
 import com.m7mdabaza.xogame.domain.usecase.ObserveSettingsUseCase
+import com.m7mdabaza.xogame.domain.usecase.ObserveStatsUseCase
 import com.m7mdabaza.xogame.domain.usecase.PurchaseRemoveAdsUseCase
+import com.m7mdabaza.xogame.domain.usecase.ResetStatsUseCase
 import com.m7mdabaza.xogame.domain.usecase.RestorePurchasesUseCase
 import com.m7mdabaza.xogame.domain.usecase.SimulateRemoveAdsUseCase
-import com.m7mdabaza.xogame.domain.usecase.ObserveStatsUseCase
-import com.m7mdabaza.xogame.domain.usecase.ResetStatsUseCase
 import com.m7mdabaza.xogame.domain.usecase.UpdateSettingsUseCase
 import com.m7mdabaza.xogame.presentation.XoAppViewModel
 import com.m7mdabaza.xogame.presentation.stats.StatsViewModel
@@ -109,10 +111,10 @@ class SettingsAndStatsViewModelTest {
     @Test
     fun `stats screen shows the records and can reset them`() = runTest(dispatcher) {
         val record = LevelStats(wins = 3, losses = 1)
-        statsRepository.stats.value = Stats(mapOf((GameMode.VS_COMPUTER to Level.MEDIUM) to record))
+        statsRepository.stats.value = Stats(mapOf(StatsKey(GameMode.VS_COMPUTER, BoardSize.FOUR, Level.MEDIUM) to record))
         val vm = StatsViewModel(ObserveStatsUseCase(statsRepository), ResetStatsUseCase(statsRepository))
         vm.stats.launchIn(backgroundScope)
-        assertEquals(record, vm.stats.value[GameMode.VS_COMPUTER, Level.MEDIUM])
+        assertEquals(record, vm.stats.value[GameMode.VS_COMPUTER, BoardSize.FOUR, Level.MEDIUM])
 
         vm.reset()
         assertEquals(Stats(), vm.stats.value)

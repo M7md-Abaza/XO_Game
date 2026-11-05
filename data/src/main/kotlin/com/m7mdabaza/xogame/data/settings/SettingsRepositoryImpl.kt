@@ -47,6 +47,8 @@ class SettingsRepositoryImpl @Inject constructor(
             starter = enumOrDefault(this[STARTER], defaults.starter),
             xName = this[X_NAME] ?: defaults.xName,
             oName = this[O_NAME] ?: defaults.oName,
+            boardSize = enumOrDefault(this[BOARD_SIZE], defaults.boardSize),
+            level = enumOrDefault(this[LEVEL], defaults.level),
         )
     }
 
@@ -59,6 +61,8 @@ class SettingsRepositoryImpl @Inject constructor(
         this[STARTER] = settings.starter.name
         this[X_NAME] = settings.xName
         this[O_NAME] = settings.oName
+        this[BOARD_SIZE] = settings.boardSize.name
+        this[LEVEL] = settings.level.name
     }
 
     private companion object {
@@ -70,6 +74,8 @@ class SettingsRepositoryImpl @Inject constructor(
         val STARTER = stringPreferencesKey("starter")
         val X_NAME = stringPreferencesKey("x_name")
         val O_NAME = stringPreferencesKey("o_name")
+        val BOARD_SIZE = stringPreferencesKey("board_size")
+        val LEVEL = stringPreferencesKey("level")
 
         inline fun <reified T : Enum<T>> enumOrDefault(name: String?, default: T): T =
             enumValues<T>().firstOrNull { it.name == name } ?: default

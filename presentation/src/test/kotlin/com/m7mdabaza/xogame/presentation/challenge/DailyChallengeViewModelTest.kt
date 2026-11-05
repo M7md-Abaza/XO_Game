@@ -3,14 +3,15 @@ package com.m7mdabaza.xogame.presentation.challenge
 import com.m7mdabaza.xogame.domain.ai.SearchAi
 import com.m7mdabaza.xogame.domain.engine.WinChecker
 import com.m7mdabaza.xogame.domain.model.Achievement
+import com.m7mdabaza.xogame.domain.model.BoardSize
 import com.m7mdabaza.xogame.domain.model.Cell
-import com.m7mdabaza.xogame.domain.model.GameResult
 import com.m7mdabaza.xogame.domain.model.GameMode
+import com.m7mdabaza.xogame.domain.model.GameResult
 import com.m7mdabaza.xogame.domain.model.GameState
-import com.m7mdabaza.xogame.domain.model.Level
 import com.m7mdabaza.xogame.domain.model.LevelStats
 import com.m7mdabaza.xogame.domain.model.Player
 import com.m7mdabaza.xogame.domain.model.Stats
+import com.m7mdabaza.xogame.domain.model.StatsKey
 import com.m7mdabaza.xogame.domain.repository.TimeProvider
 import com.m7mdabaza.xogame.domain.usecase.ComputerMoveUseCase
 import com.m7mdabaza.xogame.domain.usecase.EvaluateAchievementsUseCase
@@ -184,7 +185,7 @@ class DailyChallengeViewModelTest {
 
     @Test
     fun `solving asks for a Play review once the player has played enough`() = runTest(dispatcher) {
-        stats.stats.value = Stats(mapOf((GameMode.TWO_PLAYERS to Level.EASY) to LevelStats(draws = 10)))
+        stats.stats.value = Stats(mapOf(StatsKey(GameMode.TWO_PLAYERS, BoardSize.THREE) to LevelStats(draws = 10)))
         val vm = viewModel()
         playSolution(vm)
         vm.onCellClick(winningSquare(vm.game)!!)

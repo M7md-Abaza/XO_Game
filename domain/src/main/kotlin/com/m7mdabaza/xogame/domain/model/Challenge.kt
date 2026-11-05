@@ -13,6 +13,9 @@ data class DailyChallenge(
     /** Every first move that forces the win. */
     val solutions: Set<Cell>,
 ) {
+    val boardSize: BoardSize get() = BoardSize.EIGHT
+
+    /** The phone defends at full Hard strength. */
     val level: Level get() = Level.HARD
     val player: Player get() = Player.X
 
@@ -59,13 +62,13 @@ enum class Achievement(val target: Int) {
     /** Win a game against the phone. */
     FIRST_WIN(1),
 
-    /** Beat the phone on Medium. */
+    /** Beat the phone on Medium, on any board. */
     BEAT_MEDIUM(1),
 
-    /** Beat the phone on Hard. */
+    /** Beat the phone on Hard, on any board (3×3 Hard never loses, so 4×4 or 8×8). */
     BEAT_HARD(1),
 
-    /** Win 5 games in a row against the phone on one level. */
+    /** Win 5 games in a row against the phone on one board at one level. */
     WIN_STREAK_5(5),
 
     /** Finish 100 games in any mode. */
@@ -85,10 +88,10 @@ enum class Achievement(val target: Int) {
     fun progress(stats: Stats, challenge: ChallengeProgress): Int {
         val vs = GameMode.VS_COMPUTER
         val value = when (this) {
-            FIRST_WIN -> Level.entries.sumOf { stats[vs, it].wins }
-            BEAT_MEDIUM -> stats[vs, Level.MEDIUM].wins
-            BEAT_HARD -> stats[vs, Level.HARD].wins
-            WIN_STREAK_5 -> Level.entries.maxOf { stats[vs, it].bestStreak }
+            FIRST_WIN -> stats.all(vs).sumOf { it.wins }
+            BEAT_MEDIUM -> BoardSize.entries.sumOf { stats[vs, it, Level.MEDIUM].wins }
+            BEAT_HARD -> BoardSize.entries.sumOf { stats[vs, it, Level.HARD].wins }
+            WIN_STREAK_5 -> stats.all(vs).maxOf { it.bestStreak }
             GAMES_100 -> stats.played(GameMode.VS_COMPUTER) + stats.played(GameMode.TWO_PLAYERS)
             TWO_PLAYER_GAME -> stats.played(GameMode.TWO_PLAYERS)
             FIRST_CHALLENGE -> challenge.totalSolved

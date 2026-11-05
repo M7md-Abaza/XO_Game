@@ -20,12 +20,13 @@ sealed interface Destination {
     data object Home : Destination
 
     /**
-     * A game. [mode] and [level] are `GameMode` / `Level` names; plain strings
-     * so `GameViewModel` can read them from its `SavedStateHandle` (the
-     * property names must match `GameViewModel.ARG_MODE` / `ARG_LEVEL`).
+     * A game. [mode], [boardSize] and [level] are `GameMode` / `BoardSize` /
+     * `Level` names ([level] is null in two-player mode); plain strings so
+     * `GameViewModel` can read them from its `SavedStateHandle` (the property
+     * names must match `GameViewModel.ARG_MODE` / `ARG_BOARD_SIZE` / `ARG_LEVEL`).
      */
     @Serializable
-    data class Game(val mode: String, val level: String) : Destination
+    data class Game(val mode: String, val boardSize: String, val level: String?) : Destination
 
     @Serializable
     data object Stats : Destination
@@ -52,8 +53,8 @@ fun XoNavHost(
     ) {
         composable<Destination.Home> {
             HomeRoute(
-                onStartGame = { mode, level ->
-                    navController.navigate(Destination.Game(mode.name, level.name)) { launchSingleTop = true }
+                onStartGame = { mode, boardSize, level ->
+                    navController.navigate(Destination.Game(mode.name, boardSize.name, level?.name)) { launchSingleTop = true }
                 },
                 onOpenStats = { navController.navigate(Destination.Stats) { launchSingleTop = true } },
                 onOpenSettings = { navController.navigate(Destination.Settings) { launchSingleTop = true } },

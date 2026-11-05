@@ -4,9 +4,11 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.m7mdabaza.xogame.data.settings.SettingsRepositoryImpl
 import com.m7mdabaza.xogame.data.stats.StatsRepositoryImpl
+import com.m7mdabaza.xogame.domain.model.BoardSize
 import com.m7mdabaza.xogame.domain.model.GameMode
 import com.m7mdabaza.xogame.domain.model.Level
 import com.m7mdabaza.xogame.domain.model.LevelStats
@@ -16,6 +18,7 @@ import com.m7mdabaza.xogame.domain.model.RoundOutcome
 import com.m7mdabaza.xogame.domain.model.Settings
 import com.m7mdabaza.xogame.domain.model.Starter
 import com.m7mdabaza.xogame.domain.model.Stats
+import com.m7mdabaza.xogame.domain.model.StatsKey
 import com.m7mdabaza.xogame.domain.model.ThemeMode
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -70,6 +73,8 @@ class RepositoriesTest {
             starter = Starter.RANDOM,
             xName = "Sara",
             oName = "عمر",
+            boardSize = BoardSize.EIGHT,
+            level = Level.MEDIUM,
         )
         SettingsRepositoryImpl(store("settings")).update { changed }
         closeStores()
@@ -105,26 +110,34 @@ class RepositoriesTest {
     }
 
     @Test
-    fun `stats are kept per mode and level and survive reopening the file`() = runTest {
+    fun `stats are kept per mode, board and level and survive reopening the file`() = runTest {
         val repository = StatsRepositoryImpl(store("stats"))
-        repository.update(GameMode.VS_COMPUTER, Level.HARD) { it.record(RoundOutcome.WIN).record(RoundOutcome.WIN) }
-        repository.update(GameMode.VS_COMPUTER, Level.HARD) { it.record(RoundOutcome.DRAW) }
-        repository.update(GameMode.TWO_PLAYERS, Level.EASY) { it.record(RoundOutcome.LOSS) }
+        val eightHard = StatsKey(GameMode.VS_COMPUTER, BoardSize.EIGHT, Level.HARD)
+        repository.update(eightHard) { it.record(RoundOutcome.WIN).record(RoundOutcome.WIN) }
+        repository.update(eightHard) { it.record(RoundOutcome.DRAW) }
+        repository.update(StatsKey(GameMode.VS_COMPUTER, BoardSize.THREE, Level.HARD)) { it.record(RoundOutcome.DRAW) }
+        repository.update(StatsKey(GameMode.TWO_PLAYERS, BoardSize.THREE)) { it.record(RoundOutcome.LOSS) }
         closeStores()
 
         val stats = StatsRepositoryImpl(store("stats")).stats.first()
-        assertEquals(
-            LevelStats(wins = 2, draws = 1, currentStreak = 0, bestStreak = 2),
-            stats[GameMode.VS_COMPUTER, Level.HARD],
-        )
-        assertEquals(LevelStats(losses = 1), stats[GameMode.TWO_PLAYERS, Level.EASY])
-        assertEquals(LevelStats(), stats[GameMode.VS_COMPUTER, Level.EASY])
+        assertEquals(LevelStats(wins = 2, draws = 1, currentStreak = 0, bestStreak = 2), stats[eightHard])
+        assertEquals(LevelStats(draws = 1), stats[GameMode.VS_COMPUTER, BoardSize.THREE, Level.HARD])
+        assertEquals(LevelStats(losses = 1), stats[GameMode.TWO_PLAYERS, BoardSize.THREE])
+        assertEquals(LevelStats(), stats[GameMode.VS_COMPUTER, BoardSize.EIGHT, Level.EASY])
+        assertEquals(LevelStats(), stats[GameMode.TWO_PLAYERS, BoardSize.EIGHT])
+    }
+
+    @Test
+    fun `records from before boards and levels were separate are ignored`() = runTest {
+        val store = store("stats")
+        store.edit { it[intPreferencesKey("VS_COMPUTER_EASY_wins")] = 7 }
+        assertEquals(Stats(), StatsRepositoryImpl(store).stats.first())
     }
 
     @Test
     fun `reset deletes every record`() = runTest {
         val repository = StatsRepositoryImpl(store("stats"))
-        repository.update(GameMode.VS_COMPUTER, Level.EASY) { it.record(RoundOutcome.WIN) }
+        repository.update(StatsKey(GameMode.VS_COMPUTER, BoardSize.FOUR, Level.EASY)) { it.record(RoundOutcome.WIN) }
         repository.reset()
         assertEquals(Stats(), repository.stats.first())
     }

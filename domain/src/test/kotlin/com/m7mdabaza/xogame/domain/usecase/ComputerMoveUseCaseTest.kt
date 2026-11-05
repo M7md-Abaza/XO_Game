@@ -1,6 +1,7 @@
 package com.m7mdabaza.xogame.domain.usecase
 
 import com.m7mdabaza.xogame.domain.ai.SearchAi
+import com.m7mdabaza.xogame.domain.model.BoardSize
 import com.m7mdabaza.xogame.domain.model.GameMode
 import com.m7mdabaza.xogame.domain.model.Level
 import com.m7mdabaza.xogame.domain.model.Player
@@ -20,9 +21,9 @@ class ComputerMoveUseCaseTest {
     private val computerMove = ComputerMoveUseCase(SearchAi(Random(7)))
 
     @Test
-    fun `plays an empty cell on every level, as X or O`() {
-        for (level in Level.entries) for (human in Player.entries) {
-            val state = start(config(GameMode.VS_COMPUTER, level, humanSymbol = human, firstPlayer = human.opponent))
+    fun `plays an empty cell on every board and level, as X or O`() {
+        for (boardSize in BoardSize.entries) for (level in Level.entries) for (human in Player.entries) {
+            val state = start(config(GameMode.VS_COMPUTER, boardSize, level, humanSymbol = human, firstPlayer = human.opponent))
             val move = computerMove(state)
             assertTrue(move in state.board && state.board.isEmpty(move))
             assertEquals(human.opponent, state.playing(move).board[move])

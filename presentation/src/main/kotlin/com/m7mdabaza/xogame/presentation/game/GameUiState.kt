@@ -3,6 +3,7 @@ package com.m7mdabaza.xogame.presentation.game
 import com.m7mdabaza.xogame.domain.model.Achievement
 import com.m7mdabaza.xogame.domain.model.AssistAccess
 import com.m7mdabaza.xogame.domain.model.AssistKind
+import com.m7mdabaza.xogame.domain.model.BoardSize
 import com.m7mdabaza.xogame.domain.model.Cell
 import com.m7mdabaza.xogame.domain.model.GameMode
 import com.m7mdabaza.xogame.domain.model.GameState
@@ -84,7 +85,9 @@ sealed interface GameEvent {
 
 data class GameUiState(
     val mode: GameMode,
-    val level: Level,
+    val boardSize: BoardSize,
+    /** The computer's level; null in two-player mode. */
+    val level: Level?,
     val settings: MatchSettings,
     /** The current round (an empty preview board before the first match starts). */
     val game: GameState,

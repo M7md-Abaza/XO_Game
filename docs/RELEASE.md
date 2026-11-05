@@ -38,7 +38,8 @@ Installs from Play are the only way to test these:
 4. **Review prompt:** shows after 5 finished games, when you beat the phone or solve the daily
    puzzle, and at most every 90 days. Play decides whether the sheet really appears, and you can't
    submit a review from a testing-track install.
-5. Quick pass on a real phone in English and Arabic: every level, two players, the daily challenge,
+5. Quick pass on a real phone in English and Arabic: every board at every level (3×3 Hard never
+   loses), two players on each board, the daily challenge,
    achievements, a rewarded hint and an interstitial (after round 2 of a session).
 
 ## 4. Release
@@ -61,7 +62,8 @@ Installs from Play are the only way to test these:
 ```
 XO Game 2.0, completely redesigned!
 • New look with a dark theme and full Arabic support
-• A smarter computer on every level
+• Choose your board (3×3, 4×4 or 8×8) and how hard the phone plays: Easy, Medium or Hard
+• A smarter computer, unbeatable on 3×3 Hard
 • Daily challenge: a new puzzle every day; keep your streak going
 • Achievements and detailed statistics
 • Best of 3 or best of 5 matches, player names, choose who starts
@@ -74,7 +76,8 @@ XO Game 2.0, completely redesigned!
 ```
 لعبة XO 2.0 بتصميم جديد بالكامل!
 • شكل جديد مع الوضع الداكن ودعم كامل للعربية
-• كمبيوتر أذكى في كل المستويات
+• اختر اللوحة (3×3 أو 4×4 أو 8×8) ومستوى الهاتف: سهل أو متوسط أو صعب
+• كمبيوتر أذكى، لا يُهزم في المستوى الصعب على لوحة 3×3
 • التحدي اليومي: لغز جديد كل يوم، حافظ على سلسلتك
 • إنجازات وإحصائيات مفصّلة
 • مباريات من 3 أو 5 جولات، أسماء اللاعبين، واختيار من يبدأ

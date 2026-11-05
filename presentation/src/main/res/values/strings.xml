@@ -8,15 +8,27 @@
     <string name="home_two_players">Two Players</string>
     <string name="home_privacy_settings">Privacy settings</string>
 
-    <!-- Level picker -->
-    <string name="level_picker_title">Choose The Level</string>
-    <string name="level_picker_vs_computer">Play against the phone</string>
-    <string name="level_picker_two_players">Play with a friend on this device</string>
+    <!-- New game picker (board, and the level against the phone) -->
+    <string name="picker_title">New game</string>
+    <string name="picker_vs_computer">Play against the phone</string>
+    <string name="picker_two_players">Play with a friend on this device</string>
+    <string name="picker_board">Board</string>
+    <string name="picker_level">Difficulty</string>
+    <string name="picker_play">Play</string>
     <string name="level_easy">Easy</string>
     <string name="level_medium">Medium</string>
     <string name="level_hard">Hard</string>
-    <!-- %1$d = board size (e.g. 3 for a 3×3 board), %2$d = marks in a row needed to win -->
-    <string name="level_rules" tools:ignore="PluralsCandidate">%1$d×%1$d board · %2$d in a row</string>
+    <string name="level_easy_desc">Makes plenty of mistakes</string>
+    <string name="level_medium_desc">Slips up now and then</string>
+    <string name="level_hard_desc">Rarely makes a mistake</string>
+    <!-- Hard on the 3×3 board: the phone plays perfectly -->
+    <string name="level_hard_unbeatable_desc">Never loses: a draw is a good result</string>
+    <!-- A board size, e.g. 3×3; %1$d = squares per side -->
+    <string name="board_size" translatable="false">%1$d×%1$d</string>
+    <!-- %1$d = squares per side, e.g. "3×3 board" -->
+    <string name="board_title" tools:ignore="PluralsCandidate">%1$d×%1$d board</string>
+    <!-- %1$d = marks in a row needed to win -->
+    <string name="board_win_rule" tools:ignore="PluralsCandidate">%1$d in a row</string>
 
 
     <!-- Game screen -->
@@ -24,6 +36,8 @@
     <string name="game_new_match">New match</string>
     <string name="game_mode_vs_computer">Against the phone</string>
     <string name="game_mode_two_players">Two players</string>
+    <!-- Game screen title against the phone: %1$s = level (e.g. Easy), %2$s = board (e.g. 3×3) -->
+    <string name="game_title_level_board">%1$s · %2$s</string>
     <string name="game_you">You</string>
     <string name="game_phone">Phone</string>
     <!-- %1$s = the player's mark, X or O -->
@@ -186,11 +200,11 @@
     <string name="achievement_first_win">First win</string>
     <string name="achievement_first_win_desc">Win a game against the phone.</string>
     <string name="achievement_beat_medium">Getting serious</string>
-    <string name="achievement_beat_medium_desc">Beat the phone on Medium.</string>
+    <string name="achievement_beat_medium_desc">Beat the phone on Medium, on any board.</string>
     <string name="achievement_beat_hard">Master</string>
-    <string name="achievement_beat_hard_desc">Beat the phone on Hard.</string>
+    <string name="achievement_beat_hard_desc">Beat the phone on Hard, on the 4×4 or 8×8 board.</string>
     <string name="achievement_streak_5">On fire</string>
-    <string name="achievement_streak_5_desc">Win 5 games in a row against the phone on one level.</string>
+    <string name="achievement_streak_5_desc">Win 5 games in a row against the phone on the same board and level.</string>
     <string name="achievement_games_100">Dedicated</string>
     <string name="achievement_games_100_desc">Finish 100 games.</string>
     <string name="achievement_two_player">Friendly match</string>

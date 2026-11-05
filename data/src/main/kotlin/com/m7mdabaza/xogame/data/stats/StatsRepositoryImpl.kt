@@ -7,10 +7,9 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.intPreferencesKey
 import com.m7mdabaza.xogame.data.di.StatsStore
-import com.m7mdabaza.xogame.domain.model.GameMode
-import com.m7mdabaza.xogame.domain.model.Level
 import com.m7mdabaza.xogame.domain.model.LevelStats
 import com.m7mdabaza.xogame.domain.model.Stats
+import com.m7mdabaza.xogame.domain.model.StatsKey
 import com.m7mdabaza.xogame.domain.repository.StatsRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
@@ -21,8 +20,12 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 /**
- * Stats in their own Preferences DataStore: five int keys per mode and
- * level, e.g. `VS_COMPUTER_EASY_wins`. Absent keys read as 0.
+ * Stats in their own Preferences DataStore: five int keys per record, e.g.
+ * `VS_COMPUTER_EIGHT_HARD_wins` against the phone, or `TWO_PLAYERS_THREE_wins`
+ * (no level) in two-player mode. Absent keys read as 0.
+ *
+ * Unreleased builds before milestone 10 kept one record per level (e.g.
+ * `VS_COMPUTER_EASY_wins`); those keys are never read and go with a reset.
  */
 @Singleton
 class StatsRepositoryImpl @Inject constructor(
@@ -34,25 +37,25 @@ class StatsRepositoryImpl @Inject constructor(
         .map { prefs ->
             Stats(
                 buildMap {
-                    for (mode in GameMode.entries) for (level in Level.entries) {
-                        val record = prefs.read(mode, level)
-                        if (record != LevelStats()) put(mode to level, record)
+                    for (key in StatsKey.all) {
+                        val record = prefs.read(key)
+                        if (record != LevelStats()) put(key, record)
                     }
                 },
             )
         }
         .distinctUntilChanged()
 
-    override suspend fun update(mode: GameMode, level: Level, transform: (LevelStats) -> LevelStats) {
-        store.edit { prefs -> prefs.write(mode, level, transform(prefs.read(mode, level))) }
+    override suspend fun update(key: StatsKey, transform: (LevelStats) -> LevelStats) {
+        store.edit { prefs -> prefs.write(key, transform(prefs.read(key))) }
     }
 
     override suspend fun reset() {
         store.edit { it.clear() }
     }
 
-    private fun Preferences.read(mode: GameMode, level: Level): LevelStats {
-        val keys = Keys(mode, level)
+    private fun Preferences.read(key: StatsKey): LevelStats {
+        val keys = Keys(key)
         return LevelStats(
             wins = this[keys.wins] ?: 0,
             losses = this[keys.losses] ?: 0,
@@ -62,8 +65,8 @@ class StatsRepositoryImpl @Inject constructor(
         )
     }
 
-    private fun MutablePreferences.write(mode: GameMode, level: Level, stats: LevelStats) {
-        val keys = Keys(mode, level)
+    private fun MutablePreferences.write(key: StatsKey, stats: LevelStats) {
+        val keys = Keys(key)
         this[keys.wins] = stats.wins
         this[keys.losses] = stats.losses
         this[keys.draws] = stats.draws
@@ -71,8 +74,8 @@ class StatsRepositoryImpl @Inject constructor(
         this[keys.bestStreak] = stats.bestStreak
     }
 
-    private class Keys(mode: GameMode, level: Level) {
-        private val prefix = "${mode.name}_${level.name}_"
+    private class Keys(key: StatsKey) {
+        private val prefix = listOfNotNull(key.mode.name, key.boardSize.name, key.level?.name).joinToString("_", postfix = "_")
         val wins = intPreferencesKey(prefix + "wins")
         val losses = intPreferencesKey(prefix + "losses")
         val draws = intPreferencesKey(prefix + "draws")

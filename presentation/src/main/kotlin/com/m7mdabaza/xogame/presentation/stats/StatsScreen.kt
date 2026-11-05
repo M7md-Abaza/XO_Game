@@ -40,15 +40,18 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewModelScope
+import com.m7mdabaza.xogame.domain.model.BoardSize
 import com.m7mdabaza.xogame.domain.model.GameMode
 import com.m7mdabaza.xogame.domain.model.Level
 import com.m7mdabaza.xogame.domain.model.LevelStats
 import com.m7mdabaza.xogame.domain.model.Stats
+import com.m7mdabaza.xogame.domain.model.StatsKey
 import com.m7mdabaza.xogame.domain.usecase.ObserveStatsUseCase
 import com.m7mdabaza.xogame.domain.usecase.ResetStatsUseCase
 import com.m7mdabaza.xogame.presentation.R
 import com.m7mdabaza.xogame.presentation.components.ScreenTopBar
 import com.m7mdabaza.xogame.presentation.components.TextChoices
+import com.m7mdabaza.xogame.presentation.home.label
 import com.m7mdabaza.xogame.presentation.home.titleRes
 import com.m7mdabaza.xogame.presentation.theme.XoTheme
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -90,6 +93,7 @@ fun StatsScreen(
     onReset: () -> Unit,
 ) {
     var mode by rememberSaveable { mutableStateOf(GameMode.VS_COMPUTER) }
+    var boardSize by rememberSaveable { mutableStateOf(BoardSize.THREE) }
     var confirmReset by rememberSaveable { mutableStateOf(false) }
 
     Column(
@@ -110,9 +114,37 @@ fun StatsScreen(
                     if (option == GameMode.VS_COMPUTER) R.string.stats_tab_vs_computer else R.string.stats_tab_two_players,
                 )
             }
-            Level.entries.forEach { level ->
-                Spacer(Modifier.height(16.dp))
-                LevelCard(mode, level, stats[mode, level])
+            when (mode) {
+                // One board at a time, with a card per level.
+                GameMode.VS_COMPUTER -> {
+                    Spacer(Modifier.height(12.dp))
+                    TextChoices(BoardSize.entries, boardSize, { boardSize = it }) { it.label() }
+                    Text(
+                        stringResource(R.string.board_win_rule, boardSize.winLength),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(top = 4.dp).align(Alignment.CenterHorizontally),
+                    )
+                    Level.entries.forEach { level ->
+                        Spacer(Modifier.height(16.dp))
+                        RecordCard(
+                            title = stringResource(level.titleRes()),
+                            subtitle = null,
+                            vsComputer = true,
+                            stats = stats[mode, boardSize, level],
+                        )
+                    }
+                }
+                // No levels without the computer: a card per board.
+                GameMode.TWO_PLAYERS -> BoardSize.entries.forEach { board ->
+                    Spacer(Modifier.height(16.dp))
+                    RecordCard(
+                        title = stringResource(R.string.board_title, board.size),
+                        subtitle = stringResource(R.string.board_win_rule, board.winLength),
+                        vsComputer = false,
+                        stats = stats[mode, board],
+                    )
+                }
             }
             Spacer(Modifier.height(24.dp))
             if (stats.played(GameMode.VS_COMPUTER) + stats.played(GameMode.TWO_PLAYERS) > 0) {
@@ -149,25 +181,28 @@ fun StatsScreen(
     }
 }
 
+/** One record: the human's results against the phone (with streaks), or X's and O's wins. */
 @Composable
-private fun LevelCard(mode: GameMode, level: Level, stats: LevelStats) {
+private fun RecordCard(title: String, subtitle: String?, vsComputer: Boolean, stats: LevelStats) {
     Surface(
         shape = RoundedCornerShape(20.dp),
         color = MaterialTheme.colorScheme.surfaceVariant,
         modifier = Modifier.fillMaxWidth(),
     ) {
         Column(Modifier.padding(16.dp)) {
-            // Level name over its rules, so long texts and large fonts wrap cleanly.
+            // Title over its rules, so long texts and large fonts wrap cleanly.
             Text(
-                stringResource(level.titleRes()),
+                title,
                 style = MaterialTheme.typography.titleLarge,
                 modifier = Modifier.semantics { heading() },
             )
-            Text(
-                stringResource(R.string.level_rules, level.boardSize, level.winLength),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
+            if (subtitle != null) {
+                Text(
+                    subtitle,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
             Spacer(Modifier.height(12.dp))
             if (stats.played == 0) {
                 Text(
@@ -175,7 +210,7 @@ private fun LevelCard(mode: GameMode, level: Level, stats: LevelStats) {
                     style = MaterialTheme.typography.bodyLarge,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
-            } else if (mode == GameMode.VS_COMPUTER) {
+            } else if (vsComputer) {
                 StatRow(
                     R.string.stats_played to stats.played.toString(),
                     R.string.stats_wins to stats.wins.toString(),
@@ -232,7 +267,7 @@ private fun StatsScreenPreview() {
         StatsScreen(
             stats = Stats(
                 mapOf(
-                    (GameMode.VS_COMPUTER to Level.EASY) to
+                    StatsKey(GameMode.VS_COMPUTER, BoardSize.THREE, Level.EASY) to
                         LevelStats(wins = 7, losses = 2, draws = 11, currentStreak = 2, bestStreak = 4),
                 ),
             ),

@@ -34,7 +34,7 @@ class StartChallengeUseCase @Inject constructor(
     private val playMove: PlayMoveUseCase,
 ) {
     operator fun invoke(challenge: DailyChallenge): GameState {
-        val config = GameConfig(GameMode.VS_COMPUTER, challenge.level, humanSymbol = challenge.player, firstPlayer = challenge.player)
+        val config = GameConfig(GameMode.VS_COMPUTER, challenge.boardSize, challenge.level, humanSymbol = challenge.player, firstPlayer = challenge.player)
         return challenge.setupMoves.fold(startGame(config)) { state, cell ->
             (playMove(state, cell) as MoveResult.Played).state
         }
