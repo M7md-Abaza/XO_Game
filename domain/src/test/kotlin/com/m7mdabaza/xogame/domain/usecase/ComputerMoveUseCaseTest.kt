@@ -33,7 +33,8 @@ class ComputerMoveUseCaseTest {
     @Test
     fun `computer blocks the human`() {
         // Human X: (0,0) (0,1); computer O: (1,1). O must block (0,2).
-        val state = newGame(config(GameMode.VS_COMPUTER), cell(0, 0), cell(1, 1), cell(0, 1))
+        // Hard: 3×3 Easy is allowed to overlook a threat (see SearchAiTest).
+        val state = newGame(config(GameMode.VS_COMPUTER, level = Level.HARD), cell(0, 0), cell(1, 1), cell(0, 1))
         repeat(20) { assertEquals(cell(0, 2), ComputerMoveUseCase(SearchAi(Random(it)))(state)) }
     }
 

@@ -46,8 +46,15 @@ object DifficultyPolicy {
      * The computer opponent. Easy and Medium are beatable on every board,
      * Medium clearly less often than Easy.
      *
-     * - 3×3: random mistakes only; perfect play beats Easy in about 1 game of
-     *   5 and Medium in about 1 of 12. Hard is a perfect player and never loses.
+     * - 3×3: a win there needs a fork, so a computer that blocks every threat
+     *   is rarely beaten by a casual player. So Easy and Medium make random
+     *   moves and sometimes overlook a threat (user request, 2026-11-05; they
+     *   used to never miss a block, and a beginner who only spots wins and
+     *   blocks won only about 1 game in 10 against Easy and 1 in 25 against
+     *   Medium). Now that beginner beats Easy in more than half the games
+     *   (and loses about 1 in 5), and Medium in about 1 game of 5 (losing
+     *   about 1 in 3). Perfect play beats Easy in about 3 games of 5 and
+     *   Medium in about 1 of 4. Hard is a perfect player and never loses.
      * - 4×4: four in a row there is a draw with sensible play; a computer that
      *   contests every line and blocks every threat almost never loses (about
      *   1 game in 100). So Easy and Medium also make more random moves and
@@ -60,8 +67,8 @@ object DifficultyPolicy {
      */
     fun computer(boardSize: BoardSize, level: Level): Difficulty = when (boardSize) {
         BoardSize.THREE -> when (level) {
-            Level.EASY -> Difficulty(searchDepth = 9, mistakeChance = 0.35)
-            Level.MEDIUM -> Difficulty(searchDepth = 9, mistakeChance = 0.15)
+            Level.EASY -> Difficulty(searchDepth = 9, mistakeChance = 0.5, missedBlockChance = 0.4)
+            Level.MEDIUM -> Difficulty(searchDepth = 9, mistakeChance = 0.25, missedBlockChance = 0.1)
             Level.HARD -> Difficulty(searchDepth = 9)
         }
         BoardSize.FOUR -> when (level) {

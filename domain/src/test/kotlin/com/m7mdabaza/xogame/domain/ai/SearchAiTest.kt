@@ -33,7 +33,7 @@ class SearchAiTest {
     /**
      * Asserts every difficulty, over many random seeds, plays [expected] in
      * [state]. With [isBlock], difficulties allowed to overlook a threat
-     * (4×4 Easy and Medium) are left out; see the missed-block tests.
+     * (Easy and Medium on 3×3 and 4×4) are left out; see the missed-block tests.
      */
     private fun assertAlwaysPlays(expected: Set<Cell>, state: GameState, isBlock: Boolean = false) {
         for ((name, policy) in difficulties) {
@@ -118,17 +118,33 @@ class SearchAiTest {
         assertAlwaysPlays(setOf(cell(2, 6)), state, isBlock = true)
     }
 
-    // --- Missed blocks (4×4 Easy and Medium only) -----------------------------
+    // --- Missed blocks (Easy and Medium on 3×3 and 4×4 only) ------------------
 
     @Test
-    fun `only 4x4 Easy and Medium may miss a block, and hints never do`() {
+    fun `only Easy and Medium on 3x3 and 4x4 may miss a block, and hints never do`() {
         for (size in BoardSize.entries) {
             assertEquals(0.0, DifficultyPolicy.hint(size).missedBlockChance, 0.0)
             for (level in Level.entries) {
                 val misses = DifficultyPolicy.computer(size, level).missedBlockChance > 0
-                assertEquals("$size $level", size == BoardSize.FOUR && level != Level.HARD, misses)
+                assertEquals("$size $level", size != BoardSize.EIGHT && level != Level.HARD, misses)
             }
         }
+    }
+
+    @Test
+    fun `3x3 Easy misses blocks more often than Medium`() {
+        // X: (0,0) (0,1); O: (1,1). O to move must block (0,2).
+        val state = position(BoardSize.THREE, cell(0, 0), cell(1, 1), cell(0, 1))
+        fun missRate(level: Level): Double {
+            val difficulty = DifficultyPolicy.computer(BoardSize.THREE, level)
+            val misses = (0 until 1000).count { seed -> SearchAi(Random(seed)).chooseMove(state, difficulty) != cell(0, 2) }
+            return misses / 1000.0
+        }
+        val easy = missRate(Level.EASY)
+        val medium = missRate(Level.MEDIUM)
+        assertEquals("Easy miss rate", DifficultyPolicy.computer(BoardSize.THREE, Level.EASY).missedBlockChance, easy, 0.05)
+        assertEquals("Medium miss rate", DifficultyPolicy.computer(BoardSize.THREE, Level.MEDIUM).missedBlockChance, medium, 0.05)
+        assertTrue(easy > medium)
     }
 
     @Test
@@ -274,9 +290,23 @@ class SearchAiTest {
     fun `3x3 Easy and Medium are beatable by perfect play, Medium less often`() {
         val easy = record(BoardSize.THREE, 1000, { computerAi(Level.EASY, it) }, ::hintAi)
         val medium = record(BoardSize.THREE, 1000, { computerAi(Level.MEDIUM, it) }, ::hintAi)
-        assertTrue("Easy $easy", easy.lossRate in 0.12..0.25)
-        assertTrue("Medium $medium", medium.lossRate in 0.04..0.12)
+        assertTrue("Easy $easy", easy.lossRate in 0.55..0.70)
+        assertTrue("Medium $medium", medium.lossRate in 0.20..0.33)
         assertTrue("Medium $medium should lose less than Easy $easy", medium.losses * 3 < easy.losses * 2)
+    }
+
+    @Test
+    fun `3x3 against a beginner - Easy loses more often than not, Medium wins more than it loses`() {
+        // Takes a win and blocks a threat when it sees one, otherwise mostly random.
+        val beginner = { seed: Int -> player(Difficulty(searchDepth = 1, mistakeChance = 0.8), seed) }
+        val easy = record(BoardSize.THREE, 1000, { computerAi(Level.EASY, it) }, beginner)
+        assertTrue("Easy $easy should lose more than half its games", easy.lossRate > 0.45)
+        assertTrue("Easy $easy should lose much more than it wins", easy.losses > 2 * easy.wins)
+        assertTrue("Easy $easy should still win some games", easy.wins.toDouble() / easy.games in 0.10..0.30)
+
+        val medium = record(BoardSize.THREE, 1000, { computerAi(Level.MEDIUM, it) }, beginner)
+        assertTrue("Medium $medium should be beaten now and then", medium.lossRate in 0.12..0.28)
+        assertTrue("Medium $medium should win more than it loses", medium.wins > medium.losses)
     }
 
     @Test
