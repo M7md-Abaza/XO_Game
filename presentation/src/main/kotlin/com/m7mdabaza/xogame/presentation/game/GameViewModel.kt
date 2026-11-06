@@ -120,7 +120,7 @@ class GameViewModel @Inject constructor(
     val uiState: StateFlow<GameUiState>
 
     init {
-        val banner = adUnitIds.gameBanner(mode, boardSize)
+        val banner = adUnitIds.gameBanner
         val restored = SavedSession.decode(savedStateHandle[KEY_SESSION])?.let { restore(it, banner) }
         val initial = (
             restored ?: GameUiState(
@@ -134,7 +134,7 @@ class GameViewModel @Inject constructor(
                 hasStarted = false,
                 bannerAdUnitId = banner,
             )
-            ).copy(interstitialAdUnitId = adUnitIds.interstitial(mode, boardSize), rewardedAdUnitId = adUnitIds.rewarded)
+            ).copy(interstitialAdUnitId = adUnitIds.betweenRoundsInterstitial, rewardedAdUnitId = adUnitIds.rewarded)
         _uiState = MutableStateFlow(withDerived(initial))
         uiState = _uiState.asStateFlow()
         save()

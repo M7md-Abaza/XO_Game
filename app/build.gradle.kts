@@ -10,14 +10,9 @@ private val testBanner = "ca-app-pub-3940256099942544/6300978111"
 private val testInterstitial = "ca-app-pub-3940256099942544/1033173712"
 private val testRewarded = "ca-app-pub-3940256099942544/5224354917"
 
-private val bannerPlacements = listOf(
-    "main", "easy_vs_computer", "medium_vs_computer", "hard_vs_computer",
-    "easy_level", "medium_level", "hard_level", "two_phones",
-)
-private val interstitialPlacements = listOf(
-    "easy_vs_computer", "medium_vs_computer", "hard_vs_computer",
-    "easy_level", "medium_level", "hard_level", "two_phones",
-)
+// One AdMob unit per placement (6 in all, user decision 2026-11-06; read by AppAdUnitIds).
+private val bannerPlacements = listOf("main", "game", "two_phones")
+private val interstitialPlacements = listOf("between_rounds", "two_phones")
 
 androidComponents {
     beforeVariants { variantBuilder ->
@@ -51,28 +46,19 @@ android {
             manifestPlaceholders["admobAppId"] = "ca-app-pub-3940256099942544~3347511713"
             bannerPlacements.forEach { resValue("string", "banner_$it", testBanner) }
             interstitialPlacements.forEach { resValue("string", "interstitial_$it", testInterstitial) }
-            resValue("string", "rewarded_vs_computer", testRewarded)
+            resValue("string", "rewarded", testRewarded)
         }
         release {
-            // Real per-screen AdMob IDs (restored from Release_1.1, commit e69ce27)
+            // Real AdMob IDs, one unit per placement. The game banner and the between-round
+            // interstitial reuse v1's 3×3-against-the-phone units (renamed in AdMob); the other
+            // per-board units of v1/v2 are no longer requested (docs/RELEASE.md, section 5).
             manifestPlaceholders["admobAppId"] = "ca-app-pub-4454440016331822~9464823022"
-            resValue("string", "banner_main", "ca-app-pub-4454440016331822/8758794756")
-            resValue("string", "banner_easy_vs_computer", "ca-app-pub-4454440016331822/1754402706")
-            resValue("string", "banner_medium_vs_computer", "ca-app-pub-4454440016331822/1558961582")
-            resValue("string", "banner_hard_vs_computer", "ca-app-pub-4454440016331822/1368931886")
-            resValue("string", "banner_easy_level", "ca-app-pub-4454440016331822/4895022629")
-            resValue("string", "banner_medium_level", "ca-app-pub-4454440016331822/9832682202")
-            resValue("string", "banner_hard_level", "ca-app-pub-4454440016331822/9625153867")
-            resValue("string", "interstitial_easy_vs_computer", "ca-app-pub-4454440016331822/8898874481")
-            resValue("string", "interstitial_medium_vs_computer", "ca-app-pub-4454440016331822/6500297073")
-            resValue("string", "interstitial_hard_vs_computer", "ca-app-pub-4454440016331822/8097991769")
-            resValue("string", "interstitial_easy_level", "ca-app-pub-4454440016331822/3000035763")
-            resValue("string", "interstitial_medium_level", "ca-app-pub-4454440016331822/2369480375")
-            resValue("string", "interstitial_hard_level", "ca-app-pub-4454440016331822/5845690957")
-            resValue("string", "rewarded_vs_computer", "ca-app-pub-4454440016331822/7531570468")
-            // Two-phone play (v3): the lobby + game banner, and the interstitial before the lobby
-            // (named "pre_two_phones_looby" in AdMob).
-            resValue("string", "banner_two_phones", "ca-app-pub-4454440016331822/5545981810")
+            resValue("string", "banner_main", "ca-app-pub-4454440016331822/8758794756") // Home + Daily challenge
+            resValue("string", "banner_game", "ca-app-pub-4454440016331822/1754402706") // game screen, every board
+            resValue("string", "interstitial_between_rounds", "ca-app-pub-4454440016331822/8898874481")
+            resValue("string", "rewarded", "ca-app-pub-4454440016331822/7531570468") // hints and undos
+            resValue("string", "banner_two_phones", "ca-app-pub-4454440016331822/5545981810") // two-phone lobby + game
+            // Before the two-phone lobby; named "pre_two_phones_looby" in AdMob.
             resValue("string", "interstitial_two_phones", "ca-app-pub-4454440016331822/2905349916")
             // R8: shrinks, optimizes and obfuscates. Libraries bring their own keep rules;
             // app-specific ones go in proguard-rules.pro.

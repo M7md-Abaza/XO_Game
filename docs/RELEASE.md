@@ -28,13 +28,21 @@ new AdMob units in the release build: the lobby banner and the pre-lobby interst
 
 ## 2. Before the upload
 
-**AdMob (done 2026-11-06):** the two units for two-phone play exist and are in the `release` block of
-`app/build.gradle.kts`:
-- `banner_two_phones`, format **Banner**, `ca-app-pub-4454440016331822/5545981810` (the two-phone
-  lobby and game screen).
-- `pre_two_phones_looby`, format **Interstitial**, `ca-app-pub-4454440016331822/2905349916` (shown
-  when the player taps Two phones, before the lobby; resource `interstitial_two_phones` in the app).
-  Its frequency capping can stay at "No cap": the app shows it at most every 3 minutes.
+**AdMob (done 2026-11-06):** 3.0 uses **one ad unit per placement, 6 in all** (v1/v2 had one per mode
+and board). All six are in the `release` block of `app/build.gradle.kts`:
+
+| Placement | Resource in the app | AdMob unit (rename to) | ID |
+|---|---|---|---|
+| Home + Daily challenge banner | `banner_main` | Banner Main (keep) | `.../8758794756` |
+| Game screen banner, every mode and board | `banner_game` | Banner EasyVsComputer → **Banner Game** | `.../1754402706` |
+| Interstitial between rounds | `interstitial_between_rounds` | IntEasyVsComputer → **Int BetweenRounds** | `.../8898874481` |
+| Rewarded (hints, undos) | `rewarded` | Reward Hard1 → **Reward Assist** (optional) | `.../7531570468` |
+| Two-phone lobby + game banner | `banner_two_phones` | banner_two_phones (keep) | `.../5545981810` |
+| Interstitial before the two-phone lobby | `interstitial_two_phones` | pre_two_phones_looby (keep) | `.../2905349916` |
+
+(`...` is `ca-app-pub-4454440016331822`.) Renaming a unit in AdMob changes only its label; the ID and
+its history stay. The new names are optional but make the reports readable. The two-phone
+interstitial's frequency capping can stay at "No cap": the app shows it at most every 3 minutes.
 
 **Play Console:**
 - **Data safety:** review the form. Still true from 2.0: the app stores everything on the phone
@@ -99,16 +107,35 @@ Installs from Play are the only way to test purchases and updates:
 
 ## 5. AdMob housekeeping
 
-Two of the app's 18 ad units are unused (checked against the code and its whole git history,
-2026-11-06); the other 16 are all in `app/build.gradle.kts`:
-- **banner more Apps** (`ca-app-pub-4454440016331822/2770868222`): never used by this app. Delete it
-  any time (first make sure no other app of yours uses it).
-- **Banner PopUPXO** (`ca-app-pub-4454440016331822/5478764952`): the banner of v1's "who plays first"
-  popup (`x_or_o_dialog`), removed in v2. Phones still on v1 request it, so delete (or archive) it
-  once few users are left on v1 (Play Console → Statistics, by app version).
+3.0 requests only the 6 units in section 2. The other **12 units** of the app can go, but most are
+still requested by phones on 1.x or 2.0: deleting a unit doesn't crash those versions, they just stop
+showing (and earning from) that ad. So:
 
-- Optional: the Daily challenge screen reuses the Home banner unit (`banner_main`). Create a separate
-  unit if you want it reported on its own, and add it to `app/build.gradle.kts` and `AppAdUnitIds`.
+**Delete any time** (no released version uses it; first make sure no other app of yours does):
+
+| AdMob unit | ID |
+|---|---|
+| banner more Apps | `.../2770868222` |
+
+**Delete (or archive) once few users are left on 1.x / 2.0** (Play Console → Statistics, by app
+version):
+
+| AdMob unit | ID | Used by |
+|---|---|---|
+| Banner PopUPXO | `.../5478764952` | 1.x only ("who plays first" popup) |
+| Banner MeduimVsComputer | `.../1558961582` | 1.x and 2.0 (4×4 against the phone) |
+| Banner HardVsComputer | `.../1368931886` | 1.x and 2.0 (8×8 against the phone) |
+| Banner Easy | `.../4895022629` | 1.x and 2.0 (3×3 two players) |
+| Banner Meduim | `.../9832682202` | 1.x and 2.0 (4×4 two players) |
+| Banner Hard | `.../9625153867` | 1.x and 2.0 (8×8 two players) |
+| IntMeduimVsComputer | `.../6500297073` | 1.x and 2.0 |
+| IntHardVsComputer | `.../8097991769` | 1.x and 2.0 |
+| IntEasy | `.../3000035763` | 1.x and 2.0 |
+| IntMeduim | `.../2369480375` | 1.x and 2.0 |
+| IntHard | `.../5845690957` | 1.x and 2.0 |
+
+(`...` is `ca-app-pub-4454440016331822`.) After that, the app has exactly the 6 units of section 2.
+
 
 ## Store texts
 

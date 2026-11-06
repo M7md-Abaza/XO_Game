@@ -143,21 +143,22 @@ class GameViewModelTest {
         assertFalse(vm.state.hasStarted)
         assertFalse(vm.state.boardEnabled)
         assertEquals(4, vm.state.game.board.size)
-        assertEquals("banner-TWO_PLAYERS-FOUR", vm.state.bannerAdUnitId)
-        assertEquals("interstitial-TWO_PLAYERS-FOUR", vm.state.interstitialAdUnitId)
+        assertEquals("banner-game", vm.state.bannerAdUnitId)
+        assertEquals("interstitial-between-rounds", vm.state.interstitialAdUnitId)
         assertNull("no level without the computer", vm.state.level)
         vm.onCellClick(Cell(0, 0))
         assertTrue(vm.state.game.history.isEmpty())
     }
 
     @Test
-    fun `against the computer the board and level come from the route, the ad units from the board`() {
+    fun `against the computer the board and level come from the route`() {
         val vm = viewModel(GameMode.VS_COMPUTER, BoardSize.EIGHT, Level.MEDIUM)
         assertEquals(BoardSize.EIGHT, vm.state.boardSize)
         assertEquals(Level.MEDIUM, vm.state.level)
         assertEquals(8, vm.state.game.board.size)
         assertEquals(Level.MEDIUM, vm.state.game.config.level)
-        assertEquals("banner-VS_COMPUTER-EIGHT", vm.state.bannerAdUnitId)
+        // One game banner for every mode, board and level.
+        assertEquals("banner-game", vm.state.bannerAdUnitId)
     }
 
     @Test

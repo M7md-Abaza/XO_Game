@@ -20,7 +20,7 @@ Two features:
 How to resume: build with `export JAVA_HOME=~/.jdks/jbr-21.0.11 && ./gradlew assembleDebug test`. Work milestone by milestone. The user reviews each one, and nothing is committed or pushed until the user says so.
 
 **Where we stopped (2026-11-06):** milestones 1–6 are committed. What's left before 3.0 goes to Play:
-- AdMob is done (2026-11-06): the release build has the real two-phone units, `banner_two_phones` (`.../5545981810`) and the interstitial `pre_two_phones_looby` (`.../2905349916`, resource `interstitial_two_phones`); checked in a minified release build on the emulator. Unused units to delete later: see `docs/RELEASE.md` section 5.
+- AdMob is done (2026-11-06): 3.0 uses 6 units, one per placement (user decision), all in the release build and checked in a minified build on the emulator. To do in AdMob: rename "Banner EasyVsComputer" → "Banner Game", "IntEasyVsComputer" → "Int BetweenRounds" (and optionally "Reward Hard1" → "Reward Assist"); delete the 12 unused units later (`docs/RELEASE.md` section 5).
 - A check on two real phones (`docs/RELEASE.md`, section 3), ideally the API 29 phone (location-permission path, Android 7–12) plus an Android 12+ phone.
 - The Play Console tasks in section 4 below and `docs/RELEASE.md` section 2.
 - Still open for the user to decide (from milestone 4): the lobby's "Who starts" default comes from the local game's saved starter, so it can preselect "My friend".
@@ -35,6 +35,7 @@ How to resume: build with `export JAVA_HOME=~/.jdks/jbr-21.0.11 && ./gradlew ass
 | Pre-game interstitial | Shown when the player taps **Two phones** on Home, **before** the lobby, so the opponent never waits. Skipped if any interstitial was shown in the last 3 minutes, and never after Remove ads (user decision, 2026-11-06) |
 | Ads between rounds | None in two-phone games: an ad on one phone would freeze the game on the other (user decision, 2026-11-06) |
 | Hint / undo | **Off** in two-phone games (user decision, 2026-11-06) |
+| Ad units | **6, one per placement** (Home banner, game banner, between-round interstitial, rewarded, two-phone banner, pre-lobby interstitial) instead of one per mode and board; the game banner and between-round interstitial reuse v1's 3×3-vs-phone units. The 12 others are deleted later (`docs/RELEASE.md` section 5) (user decision, 2026-11-06) |
 
 The proposed defaults below (marked **Default**) were accepted by the user on 2026-11-06 ("go ahead" with milestone 2).
 
@@ -177,7 +178,7 @@ Each milestone ends with a working build, tests passing and an emulator (or phon
 ## 4. Tasks for you (outside the code)
 
 - **Two real phones** for milestones 3–6. One of them can be the API 29 phone.
-- **AdMob:** done (2026-11-06). The two-phone units exist and are in the release build. Two old units are unused ("banner more Apps", and "Banner PopUPXO" once few users are left on v1; see `docs/RELEASE.md` section 5).
+- **AdMob:** done (2026-11-06). 6 units, one per placement; rename two (or three) and delete 12 later, see `docs/RELEASE.md` sections 2 and 5.
 - **Play Console:**
   - Data safety: Nearby sends only game moves and the player's name directly between the two phones (nothing to a server), so no new data type is collected. Re-check the form anyway, because the app now asks for location on Android 7–11 and Nearby devices on Android 12+.
   - Store listing: add the two-phone feature to the description (en + ar).

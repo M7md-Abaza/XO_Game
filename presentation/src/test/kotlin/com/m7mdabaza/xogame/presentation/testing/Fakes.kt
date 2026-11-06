@@ -2,8 +2,6 @@ package com.m7mdabaza.xogame.presentation.testing
 
 import com.m7mdabaza.xogame.domain.model.Achievement
 import com.m7mdabaza.xogame.domain.model.AdPolicyState
-import com.m7mdabaza.xogame.domain.model.BoardSize
-import com.m7mdabaza.xogame.domain.model.GameMode
 import com.m7mdabaza.xogame.domain.model.LevelStats
 import com.m7mdabaza.xogame.domain.model.Player
 import com.m7mdabaza.xogame.domain.model.PurchaseResult
@@ -139,8 +137,8 @@ class FakeGameFeedback : GameFeedback {
 
 object FakeAdUnitIds : AdUnitIds {
     override val homeBanner = "home"
-    override fun gameBanner(mode: GameMode, boardSize: BoardSize) = "banner-$mode-$boardSize"
-    override fun interstitial(mode: GameMode, boardSize: BoardSize) = "interstitial-$mode-$boardSize"
+    override val gameBanner = "banner-game"
+    override val betweenRoundsInterstitial = "interstitial-between-rounds"
     override val rewarded = "rewarded"
     override val twoPhonesBanner = "banner-two-phones"
     override val twoPhonesInterstitial = "interstitial-two-phones"
