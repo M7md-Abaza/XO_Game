@@ -83,6 +83,24 @@ sealed interface GameEvent {
     data object RequestReview : GameEvent
 }
 
+/**
+ * The two-phone parts of the game screen. The friend answers restarts and new
+ * matches, and a next round starts once both players tapped it.
+ */
+data class TwoPhonesInfo(
+    /** It's this player's turn and nothing blocks the board. */
+    val canPlay: Boolean = false,
+    /** This player's restart / new-match request waits for the friend's answer. */
+    val waitingForAnswer: Boolean = false,
+    /** This player tapped Next round / Rematch and waits for the friend. */
+    val waitingForFriend: Boolean = false,
+    /** The friend tapped Next round / Rematch first. */
+    val friendReady: Boolean = false,
+    val canContinue: Boolean = false,
+    val canRestart: Boolean = false,
+    val canNewMatch: Boolean = false,
+)
+
 data class GameUiState(
     val mode: GameMode,
     val boardSize: BoardSize,
@@ -111,6 +129,8 @@ data class GameUiState(
     val undoAccess: AssistAccess = AssistAccess.REWARDED_AD,
     /** Asking "watch an ad for a hint/undo?". */
     val assistOffer: AssistKind? = null,
+    /** What only a two-phone game has; null in the other modes. */
+    val twoPhones: TwoPhonesInfo? = null,
 ) {
     val phase: GamePhase
         get() = when {
@@ -122,7 +142,7 @@ data class GameUiState(
 
     /** A human may tap a cell now. */
     val boardEnabled: Boolean
-        get() = phase == GamePhase.PLAYING && game.isHumanTurn && !computerThinking
+        get() = phase == GamePhase.PLAYING && game.isHumanTurn && !computerThinking && (twoPhones?.canPlay ?: true)
 
     val canHint: Boolean
         get() = boardEnabled && !hintLoading && hint == null

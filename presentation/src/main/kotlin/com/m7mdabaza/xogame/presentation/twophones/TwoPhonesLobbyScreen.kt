@@ -478,14 +478,14 @@ private fun Code(code: String, modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun Label(text: String) {
+internal fun Label(text: String) {
     Text(text, style = MaterialTheme.typography.titleMedium, modifier = Modifier.padding(top = 20.dp, bottom = 8.dp))
 }
 
 @Composable
-private fun matchLabel(length: MatchLength): String =
+internal fun matchLabel(length: MatchLength): String =
     if (length == MatchLength.SINGLE) stringResource(R.string.setup_match_single) else stringResource(R.string.setup_match_best_of, length.rounds)
 
 @Composable
-private fun gameSummary(boardSize: BoardSize, matchLength: MatchLength): String =
+internal fun gameSummary(boardSize: BoardSize, matchLength: MatchLength): String =
     stringResource(R.string.twophones_game_summary, stringResource(R.string.board_size, boardSize.size), matchLabel(matchLength))

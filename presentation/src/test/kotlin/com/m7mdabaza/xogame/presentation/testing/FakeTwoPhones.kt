@@ -44,6 +44,39 @@ class FakePeerLobby(override var isAvailable: Boolean = true) : PeerLobby {
     }
 }
 
+/**
+ * Two ends of one in-memory connection, for two real phones' ViewModels:
+ * what one end sends arrives at the other at once, and closing one end
+ * disconnects the other.
+ */
+class PeerChannelPair {
+    val host = End()
+    val guest = End()
+
+    init {
+        host.other = guest
+        guest.other = host
+    }
+
+    class End : PeerChannel {
+        internal lateinit var other: End
+        private val inbox = Channel<PeerEvent>(Channel.UNLIMITED)
+        override val events: Flow<PeerEvent> = inbox.receiveAsFlow()
+        var closed = false
+            private set
+
+        override suspend fun send(message: PeerMessage) {
+            if (!closed) other.inbox.trySend(PeerEvent.Received(message))
+        }
+
+        override fun close() {
+            if (closed) return
+            closed = true
+            other.inbox.trySend(PeerEvent.Disconnected)
+        }
+    }
+}
+
 /** A connection whose friend is the test: [receive] plays the friend's messages; [sent] holds this phone's. */
 class FakePeerChannel : PeerChannel {
     private val inbox = Channel<PeerEvent>(Channel.UNLIMITED)

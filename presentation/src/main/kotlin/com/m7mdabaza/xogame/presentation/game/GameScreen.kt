@@ -33,6 +33,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -187,6 +188,8 @@ data class GameActions(
     val onAssistOfferDismissed: () -> Unit = {},
     /** Open the Remove-ads dialog. */
     val onRemoveAds: () -> Unit = {},
+    /** Two phones: leave the game (the screen asks first). */
+    val onLeave: () -> Unit = {},
 )
 
 /** @param showRemoveAdsBadge show the "No ads" badge in the top bar (see `RemoveAdsUiState.showBadge`). */
@@ -319,14 +322,19 @@ private fun TopBar(state: GameUiState, actions: GameActions, showRemoveAdsBadge:
             )
             Text(
                 stringResource(
-                    if (state.mode == GameMode.VS_COMPUTER) R.string.game_mode_vs_computer else R.string.game_mode_two_players,
+                    when (state.mode) {
+                        GameMode.VS_COMPUTER -> R.string.game_mode_vs_computer
+                        GameMode.TWO_PLAYERS -> R.string.game_mode_two_players
+                        GameMode.TWO_PHONES -> R.string.twophones_title
+                    },
                 ),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
         if (showRemoveAdsBadge) RemoveAdsBadge(onClick = actions.onRemoveAds)
-        IconButton(onClick = actions.onOpenSetup, enabled = state.hasStarted) {
+        // Two phones: a new match is a request, one at a time.
+        IconButton(onClick = actions.onOpenSetup, enabled = state.hasStarted && state.twoPhones?.canNewMatch != false) {
             Icon(painterResource(R.drawable.ic_tune), contentDescription = stringResource(R.string.game_new_match))
         }
     }
@@ -357,7 +365,7 @@ private fun nameOf(state: GameUiState, player: Player): String = when (state.mod
  * returned unchanged.
  */
 @Composable
-private fun isolated(name: String): String {
+internal fun isolated(name: String): String {
     val rtl = LocalLayoutDirection.current == LayoutDirection.Rtl
     return BidiFormatter.getInstance(rtl).unicodeWrap(name)
 }
@@ -426,13 +434,17 @@ private fun StatusLine(state: GameUiState, modifier: Modifier = Modifier) {
     val text = when (state.phase) {
         GamePhase.SETUP -> ""
         GamePhase.PLAYING -> when {
+            state.twoPhones?.waitingForAnswer == true -> waitingForAnswerText(state)
             state.computerThinking -> stringResource(R.string.game_thinking)
             state.hintLoading -> stringResource(R.string.game_hint_loading)
             state.hint != null -> stringResource(R.string.game_hint_shown)
             state.mode == GameMode.VS_COMPUTER -> stringResource(R.string.game_turn_you)
+            state.mode == GameMode.TWO_PHONES && state.game.turn == state.settings.humanSymbol -> stringResource(R.string.game_turn_you)
             else -> stringResource(R.string.game_turn_player, isolated(nameOf(state, state.game.turn)))
         }
-        GamePhase.ROUND_OVER, GamePhase.MATCH_OVER -> roundResultText(state)
+        // A new-match request after a round: the friend answers before anything else happens.
+        GamePhase.ROUND_OVER, GamePhase.MATCH_OVER ->
+            if (state.twoPhones?.waitingForAnswer == true) waitingForAnswerText(state) else roundResultText(state)
     }
     Text(
         text,
@@ -445,10 +457,15 @@ private fun StatusLine(state: GameUiState, modifier: Modifier = Modifier) {
 }
 
 @Composable
+private fun waitingForAnswerText(state: GameUiState): String =
+    stringResource(R.string.twophones_waiting_answer, isolated(nameOf(state, state.settings.humanSymbol.opponent)))
+
+@Composable
 private fun roundResultText(state: GameUiState): String = when (val result = state.game.result) {
     is GameResult.Win -> when {
         state.mode == GameMode.TWO_PLAYERS -> stringResource(R.string.game_result_player_wins, isolated(nameOf(state, result.player)))
         result.player == state.settings.humanSymbol -> stringResource(R.string.game_result_you_win)
+        state.mode == GameMode.TWO_PHONES -> stringResource(R.string.game_result_player_wins, isolated(nameOf(state, result.player)))
         else -> stringResource(R.string.game_result_phone_wins)
     }
     else -> stringResource(R.string.game_result_draw)
@@ -461,6 +478,7 @@ private fun matchResultText(state: GameUiState): String {
         winner == null -> stringResource(R.string.game_match_draw)
         state.mode == GameMode.TWO_PLAYERS -> stringResource(R.string.game_match_player_wins, isolated(nameOf(state, winner)))
         winner == state.settings.humanSymbol -> stringResource(R.string.game_match_you_win)
+        state.mode == GameMode.TWO_PHONES -> stringResource(R.string.game_match_player_wins, isolated(nameOf(state, winner)))
         else -> stringResource(R.string.game_match_phone_wins)
     }
 }
@@ -468,6 +486,11 @@ private fun matchResultText(state: GameUiState): String {
 /** Undo / hint / restart while playing; the next-round button once a round is over. */
 @Composable
 private fun BottomPanel(state: GameUiState, actions: GameActions) {
+    val twoPhones = state.twoPhones
+    if (twoPhones != null) {
+        TwoPhonesBottomPanel(state, twoPhones, actions)
+        return
+    }
     AnimatedContent(
         targetState = state.phase == GamePhase.PLAYING || state.phase == GamePhase.SETUP,
         // Same height for both states, so the board doesn't jump when a round ends
@@ -506,20 +529,77 @@ private fun BottomPanel(state: GameUiState, actions: GameActions) {
             }
         } else {
             Button(onClick = actions.onNextRound, modifier = Modifier.heightIn(min = 56.dp).widthIn(min = 220.dp)) {
-                Text(
-                    stringResource(
-                        when {
-                            state.phase == GamePhase.MATCH_OVER -> R.string.game_new_match
-                            state.match.length == MatchLength.SINGLE -> R.string.game_play_again
-                            else -> R.string.game_next_round
-                        },
-                    ),
-                    style = MaterialTheme.typography.titleMedium,
-                )
+                Text(nextRoundLabel(state), style = MaterialTheme.typography.titleMedium)
             }
         }
     }
 }
+
+/**
+ * Two phones: no undo or hint. Restart (asks the friend) and Leave while
+ * playing; after a round, Next round / Rematch, which waits for the friend.
+ */
+@Composable
+private fun TwoPhonesBottomPanel(state: GameUiState, info: TwoPhonesInfo, actions: GameActions) {
+    AnimatedContent(
+        targetState = state.phase == GamePhase.PLAYING,
+        modifier = Modifier.fillMaxWidth().heightIn(min = 72.dp),
+        contentAlignment = Alignment.Center,
+        label = "twoPhonesBottomPanel",
+    ) { playing ->
+        if (playing) {
+            Row(
+                Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                ActionButton(
+                    R.drawable.ic_refresh,
+                    stringResource(R.string.game_restart),
+                    info.canRestart && state.game.history.isNotEmpty(),
+                    actions.onRestartRound,
+                )
+                ActionButton(R.drawable.ic_logout, stringResource(R.string.twophones_leave), enabled = true, onClick = actions.onLeave)
+            }
+        } else {
+            val friend = isolated(nameOf(state, state.settings.humanSymbol.opponent))
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Button(
+                    onClick = actions.onNextRound,
+                    enabled = info.canContinue,
+                    modifier = Modifier.heightIn(min = 56.dp).widthIn(min = 220.dp),
+                ) {
+                    if (info.waitingForFriend) {
+                        CircularProgressIndicator(Modifier.size(20.dp), strokeWidth = 2.dp, color = LocalContentColor.current)
+                        Spacer(Modifier.width(12.dp))
+                    }
+                    Text(
+                        if (info.waitingForFriend) stringResource(R.string.twophones_waiting_friend, friend) else nextRoundLabel(state),
+                        style = MaterialTheme.typography.titleMedium,
+                    )
+                }
+                if (info.friendReady) {
+                    Text(
+                        stringResource(R.string.twophones_friend_ready, friend),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.padding(top = 4.dp).semantics { liveRegion = LiveRegionMode.Polite },
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun nextRoundLabel(state: GameUiState): String = stringResource(
+    when {
+        state.phase == GamePhase.MATCH_OVER -> if (state.mode == GameMode.TWO_PHONES) R.string.twophones_rematch else R.string.game_new_match
+        state.match.length == MatchLength.SINGLE -> R.string.game_play_again
+        else -> R.string.game_next_round
+    },
+)
 
 /**
  * An equal-width tile with the icon above the label, so the three actions fit
@@ -592,14 +672,19 @@ private fun MatchOverDialog(state: GameUiState, actions: GameActions) {
             )
         },
         confirmButton = {
-            Button(onClick = actions.onNextRound) { Text(stringResource(R.string.game_new_match)) }
+            // Two phones: the rematch waits for the friend; the bottom panel shows that.
+            Button(onClick = { dismissed = true; actions.onNextRound() }, enabled = state.twoPhones?.canContinue != false) {
+                Text(nextRoundLabel(state))
+            }
         },
         dismissButton = {
             TextButton(
                 onClick = { dismissed = true; actions.onOpenSetup() },
+                enabled = state.twoPhones?.canNewMatch != false,
                 colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.secondary),
             ) {
-                Text(stringResource(R.string.game_settings))
+                // Two phones: a new match with other choices, if the friend agrees.
+                Text(stringResource(if (state.mode == GameMode.TWO_PHONES) R.string.game_new_match else R.string.game_settings))
             }
         },
     )

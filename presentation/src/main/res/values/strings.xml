@@ -119,6 +119,7 @@
     <string name="stats_title">Statistics</string>
     <string name="stats_tab_vs_computer">Vs phone</string>
     <string name="stats_tab_two_players">Two players</string>
+    <string name="stats_tab_two_phones">Two phones</string>
     <string name="stats_no_games">No games yet</string>
     <string name="stats_played">Played</string>
     <string name="stats_wins">Wins</string>
@@ -133,7 +134,7 @@
     <string name="stats_o_wins">O wins</string>
     <string name="stats_reset">Reset statistics</string>
     <string name="stats_reset_title">Reset statistics?</string>
-    <string name="stats_reset_message">This deletes the results of both modes and can\'t be undone.</string>
+    <string name="stats_reset_message">This deletes all your results and can\'t be undone.</string>
     <string name="stats_reset_confirm">Reset</string>
 
 
@@ -380,10 +381,6 @@
     <string name="twophones_error_host_gone">That game isn\'t there any more.</string>
     <string name="twophones_error_failed">Couldn\'t connect. Try again with the phones close together.</string>
 
-    <!-- %1$s = the friend's name -->
-    <string name="twophones_connected">Connected with %1$s</string>
-    <!-- %1$s = X or O -->
-    <string name="twophones_you_play">You play %1$s</string>
     <string name="twophones_leave">Leave</string>
     <string name="twophones_back_home">Back to Home</string>
     <!-- %1$s = the friend's name -->
@@ -392,4 +389,22 @@
     <string name="twophones_end_update_this">Your friend has a newer XO Game. Update this phone to play together.</string>
     <string name="twophones_end_friend_update">Your friend has an older XO Game. Ask them to update it.</string>
     <string name="twophones_end_out_of_sync">Something went wrong with the connection. Start a new game.</string>
+
+    <!-- Two-phone game. %1$s = the friend's name -->
+    <string name="twophones_waiting_answer">Waiting for %1$s\'s answer…</string>
+    <string name="twophones_waiting_friend">Waiting for %1$s…</string>
+    <string name="twophones_friend_ready">%1$s is ready</string>
+    <string name="twophones_rematch">Rematch</string>
+    <string name="twophones_request_declined">%1$s said no.</string>
+    <string name="twophones_request_restart_title">%1$s wants to restart the round</string>
+    <string name="twophones_request_restart_text">The board is cleared and the score stays.</string>
+    <string name="twophones_request_new_match_title">%1$s wants a new match</string>
+    <string name="twophones_request_new_match_text">The score starts again from 0.</string>
+    <string name="twophones_new_match_you_start">You start</string>
+    <string name="twophones_new_match_friend_starts">%1$s starts</string>
+    <string name="twophones_new_match_note">%1$s has to agree first. The score starts again from 0.</string>
+    <string name="twophones_ask">Ask</string>
+    <string name="twophones_leave_title">Leave the game?</string>
+    <string name="twophones_leave_text">The game ends for %1$s too.</string>
+    <string name="twophones_stay">Stay</string>
 </resources>

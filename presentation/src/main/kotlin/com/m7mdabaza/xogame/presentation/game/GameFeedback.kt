@@ -11,7 +11,10 @@ enum class RoundSound { WIN, LOSE, DRAW }
  * Milestone 5 gates both on the sound and vibration settings.
  */
 interface GameFeedback {
-    /** A mark was placed. [byComputer] moves make a sound but don't vibrate. */
+    /**
+     * A mark was placed. [byComputer] moves make a sound but don't vibrate; so
+     * do the friend's moves in a two-phone game.
+     */
     fun move(player: Player, byComputer: Boolean)
 
     fun roundEnded(sound: RoundSound)

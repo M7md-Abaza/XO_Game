@@ -99,6 +99,7 @@
     <string name="stats_title">الإحصائيات</string>
     <string name="stats_tab_vs_computer">ضد الهاتف</string>
     <string name="stats_tab_two_players">لاعبان</string>
+    <string name="stats_tab_two_phones">هاتفان</string>
     <string name="stats_no_games">لا توجد مباريات بعد</string>
     <string name="stats_played">لُعبت</string>
     <string name="stats_wins">فوز</string>
@@ -112,7 +113,7 @@
     <string name="stats_o_wins">فوز O</string>
     <string name="stats_reset">إعادة ضبط الإحصائيات</string>
     <string name="stats_reset_title">إعادة ضبط الإحصائيات؟</string>
-    <string name="stats_reset_message">سيؤدي هذا إلى حذف نتائج الوضعين، ولا يمكن التراجع عنه.</string>
+    <string name="stats_reset_message">سيؤدي هذا إلى حذف كل نتائجك، ولا يمكن التراجع عنه.</string>
     <string name="stats_reset_confirm">إعادة الضبط</string>
 
 
@@ -371,8 +372,6 @@
     <string name="twophones_error_host_gone">لم تعد هذه اللعبة متاحة.</string>
     <string name="twophones_error_failed">تعذّر الاتصال. حاول مرة أخرى والهاتفان متقاربان.</string>
 
-    <string name="twophones_connected">متصل مع %1$s</string>
-    <string name="twophones_you_play">أنت تلعب بـ %1$s</string>
     <string name="twophones_leave">مغادرة</string>
     <string name="twophones_back_home">العودة للرئيسية</string>
     <string name="twophones_end_friend_left">غادر %1$s اللعبة.</string>
@@ -380,4 +379,21 @@
     <string name="twophones_end_update_this">لدى صديقك إصدار أحدث من XO Game. حدّث هذا الهاتف لتلعبا معًا.</string>
     <string name="twophones_end_friend_update">لدى صديقك إصدار أقدم من XO Game. اطلب منه تحديثه.</string>
     <string name="twophones_end_out_of_sync">حدث خطأ في الاتصال. ابدأ لعبة جديدة.</string>
+
+    <string name="twophones_waiting_answer">في انتظار رد %1$s…</string>
+    <string name="twophones_waiting_friend">في انتظار %1$s…</string>
+    <string name="twophones_friend_ready">%1$s جاهز</string>
+    <string name="twophones_rematch">إعادة المباراة</string>
+    <string name="twophones_request_declined">رفض %1$s الطلب.</string>
+    <string name="twophones_request_restart_title">يريد %1$s إعادة الجولة</string>
+    <string name="twophones_request_restart_text">تُمسح اللوحة وتبقى النتيجة كما هي.</string>
+    <string name="twophones_request_new_match_title">يريد %1$s مباراة جديدة</string>
+    <string name="twophones_request_new_match_text">تبدأ النتيجة من جديد من 0.</string>
+    <string name="twophones_new_match_you_start">أنت تبدأ</string>
+    <string name="twophones_new_match_friend_starts">يبدأ %1$s</string>
+    <string name="twophones_new_match_note">يجب أن يوافق %1$s أولًا. تبدأ النتيجة من جديد من 0.</string>
+    <string name="twophones_ask">إرسال الطلب</string>
+    <string name="twophones_leave_title">مغادرة اللعبة؟</string>
+    <string name="twophones_leave_text">ستنتهي اللعبة عند %1$s أيضًا.</string>
+    <string name="twophones_stay">البقاء</string>
 </resources>

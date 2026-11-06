@@ -6,26 +6,14 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
-import com.m7mdabaza.xogame.domain.engine.WinChecker
 import com.m7mdabaza.xogame.domain.model.BoardSize
 import com.m7mdabaza.xogame.domain.model.MatchLength
 import com.m7mdabaza.xogame.domain.model.Player
 import com.m7mdabaza.xogame.domain.model.Settings
 import com.m7mdabaza.xogame.domain.model.Starter
-import com.m7mdabaza.xogame.domain.multiplayer.ConnectedPeer
-import com.m7mdabaza.xogame.domain.multiplayer.EndReason
-import com.m7mdabaza.xogame.domain.multiplayer.LobbyState
-import com.m7mdabaza.xogame.domain.multiplayer.PROTOCOL_VERSION
-import com.m7mdabaza.xogame.domain.multiplayer.PeerMessage
-import com.m7mdabaza.xogame.domain.multiplayer.PeerRole
-import com.m7mdabaza.xogame.domain.multiplayer.TwoPhonePhase
-import com.m7mdabaza.xogame.domain.multiplayer.TwoPhoneRules
 import com.m7mdabaza.xogame.domain.multiplayer.TwoPhoneSetup
 import com.m7mdabaza.xogame.domain.usecase.ObserveSettingsUseCase
-import com.m7mdabaza.xogame.domain.usecase.PlayMoveUseCase
-import com.m7mdabaza.xogame.domain.usecase.StartGameUseCase
 import com.m7mdabaza.xogame.domain.usecase.UpdateSettingsUseCase
-import com.m7mdabaza.xogame.presentation.testing.FakePeerChannel
 import com.m7mdabaza.xogame.presentation.testing.FakePeerLobby
 import com.m7mdabaza.xogame.presentation.testing.FakeSettingsRepository
 import kotlinx.coroutines.Dispatchers
@@ -36,7 +24,6 @@ import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
-import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
@@ -49,8 +36,6 @@ class TwoPhonesViewModelTest {
     private val settings = FakeSettingsRepository(
         Settings(myName = "Ahmed", boardSize = BoardSize.EIGHT, matchLength = MatchLength.BEST_OF_3, starter = Starter.PLAYER_TWO),
     )
-    private val rules = TwoPhoneRules(StartGameUseCase(), PlayMoveUseCase(WinChecker()))
-    private val setup = TwoPhoneSetup(BoardSize.THREE, MatchLength.SINGLE, Player.X)
 
     @Before
     fun setUp() = Dispatchers.setMain(UnconfinedTestDispatcher())
@@ -128,63 +113,6 @@ class TwoPhonesViewModelTest {
         inStore(store) { lobbyViewModel() }
         store.clear()
         assertEquals(listOf("stop"), lobby.calls)
-    }
-
-    // --- Game ------------------------------------------------------------------------------
-
-    @Test
-    fun `without a connection the game says it's gone`() {
-        val vm = TwoPhonesGameViewModel(lobby, rules)
-        assertTrue(vm.connectionMissing)
-        assertNull(vm.match.value)
-    }
-
-    private fun connected(role: PeerRole = PeerRole.HOST): FakePeerChannel {
-        val channel = FakePeerChannel()
-        lobby.state.value = LobbyState.Connected(
-            ConnectedPeer(channel, role, myName = "Ahmed", friendName = "Sara", setup = setup.takeIf { role == PeerRole.HOST }),
-        )
-        return channel
-    }
-
-    @Test
-    fun `the host says hello with its name, sends the match and starts when the guest is ready`() {
-        val channel = connected()
-        val vm = TwoPhonesGameViewModel(lobby, rules)
-        assertEquals(listOf(PeerMessage.Hello(PROTOCOL_VERSION, "Ahmed"), PeerMessage.Setup(setup)), channel.sent)
-        assertEquals(TwoPhonePhase.CONNECTING, vm.match.value?.phase)
-
-        channel.receive(PeerMessage.Hello(PROTOCOL_VERSION, "Sara"))
-        channel.receive(PeerMessage.Ready)
-        assertEquals(TwoPhonePhase.PLAYING, vm.match.value?.phase)
-        assertEquals("Sara", vm.match.value?.friendName)
-    }
-
-    @Test
-    fun `leaving says goodbye and closes the connection`() {
-        val channel = connected(PeerRole.GUEST)
-        val vm = TwoPhonesGameViewModel(lobby, rules)
-        vm.onLeave()
-        assertEquals(PeerMessage.Leave, channel.sent.last())
-        assertEquals(EndReason.YOU_LEFT, vm.match.value?.endReason)
-        assertTrue(channel.closed)
-    }
-
-    @Test
-    fun `a dropped connection ends the game`() {
-        val channel = connected()
-        val vm = TwoPhonesGameViewModel(lobby, rules)
-        channel.disconnect()
-        assertEquals(EndReason.CONNECTION_LOST, vm.match.value?.endReason)
-    }
-
-    @Test
-    fun `the game screen going away closes the connection`() {
-        val channel = connected()
-        val store = ViewModelStore()
-        inStore(store) { TwoPhonesGameViewModel(lobby, rules) }
-        store.clear()
-        assertTrue(channel.closed)
     }
 
     // --- Permissions -----------------------------------------------------------------------

@@ -8,6 +8,8 @@ import androidx.compose.ui.test.isRoot
 import androidx.compose.ui.test.junit4.accessibility.enableAccessibilityChecks
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
+import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.test.tryPerformAccessibilityChecks
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -155,6 +157,27 @@ class AccessibilityTest {
             onBack = {},
             onReset = {},
         )
+    }
+
+    /** The three-way mode switch and the two-phone cards (own results, with streaks). */
+    @Test
+    fun statsTwoPhones() {
+        rule.setContent {
+            XoTheme {
+                Surface {
+                    StatsScreen(
+                        Stats(mapOf(StatsKey(GameMode.TWO_PHONES, BoardSize.FOUR) to LevelStats(wins = 2, losses = 1, currentStreak = 1, bestStreak = 2))),
+                        onBack = {},
+                        onReset = {},
+                    )
+                }
+            }
+        }
+        rule.onNodeWithText(string(R.string.stats_tab_two_phones)).performClick()
+        // Each stat cell reads as one item, "Best streak: 2".
+        rule.onNodeWithContentDescription("${string(R.string.stats_best_streak)}: 2").assertExists()
+        rule.enableAccessibilityChecks()
+        rule.onAllNodes(isRoot()).tryPerformAccessibilityChecks()
     }
 
     @Test

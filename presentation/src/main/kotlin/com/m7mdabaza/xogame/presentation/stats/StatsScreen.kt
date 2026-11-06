@@ -109,10 +109,13 @@ fun StatsScreen(
                 .padding(horizontal = 24.dp)
                 .padding(bottom = 24.dp),
         ) {
-            // The two-phone records get their tab with the two-phone game (v3 milestone 4).
-            TextChoices(listOf(GameMode.VS_COMPUTER, GameMode.TWO_PLAYERS), mode, { mode = it }) { option ->
+            TextChoices(GameMode.entries, mode, { mode = it }) { option ->
                 stringResource(
-                    if (option == GameMode.VS_COMPUTER) R.string.stats_tab_vs_computer else R.string.stats_tab_two_players,
+                    when (option) {
+                        GameMode.VS_COMPUTER -> R.string.stats_tab_vs_computer
+                        GameMode.TWO_PLAYERS -> R.string.stats_tab_two_players
+                        GameMode.TWO_PHONES -> R.string.stats_tab_two_phones
+                    },
                 )
             }
             when (mode) {
@@ -131,22 +134,22 @@ fun StatsScreen(
                         RecordCard(
                             title = stringResource(level.titleRes()),
                             subtitle = null,
-                            vsComputer = true,
+                            ownResults = true,
                             stats = stats[mode, boardSize, level],
                         )
                     }
                 }
-                // No levels without the computer: a card per board.
-                GameMode.TWO_PLAYERS -> BoardSize.entries.forEach { board ->
+                // No levels without the computer: a card per board. On two phones the results are
+                // this player's own, with streaks; on one phone they are X's and O's wins.
+                GameMode.TWO_PLAYERS, GameMode.TWO_PHONES -> BoardSize.entries.forEach { board ->
                     Spacer(Modifier.height(16.dp))
                     RecordCard(
                         title = stringResource(R.string.board_title, board.size),
                         subtitle = stringResource(R.string.board_win_rule, board.winLength),
-                        vsComputer = false,
+                        ownResults = mode == GameMode.TWO_PHONES,
                         stats = stats[mode, board],
                     )
                 }
-                GameMode.TWO_PHONES -> Unit
             }
             Spacer(Modifier.height(24.dp))
             if (stats.playedTotal > 0) {
@@ -183,9 +186,9 @@ fun StatsScreen(
     }
 }
 
-/** One record: the human's results against the phone (with streaks), or X's and O's wins. */
+/** One record: this player's own results (against the phone or a friend's phone, with streaks), or X's and O's wins. */
 @Composable
-private fun RecordCard(title: String, subtitle: String?, vsComputer: Boolean, stats: LevelStats) {
+private fun RecordCard(title: String, subtitle: String?, ownResults: Boolean, stats: LevelStats) {
     Surface(
         shape = RoundedCornerShape(20.dp),
         color = MaterialTheme.colorScheme.surfaceVariant,
@@ -212,7 +215,7 @@ private fun RecordCard(title: String, subtitle: String?, vsComputer: Boolean, st
                     style = MaterialTheme.typography.bodyLarge,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
-            } else if (vsComputer) {
+            } else if (ownResults) {
                 StatRow(
                     R.string.stats_played to stats.played.toString(),
                     R.string.stats_wins to stats.wins.toString(),
