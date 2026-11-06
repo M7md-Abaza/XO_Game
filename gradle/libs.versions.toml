@@ -33,6 +33,7 @@ javaxInject = "1"
 
 # Google
 playServicesAds = "25.5.0"
+playServicesNearby = "19.5.1"
 ump = "4.0.0"
 
 # Tests
@@ -72,6 +73,7 @@ kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-c
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines" }
 
 play-services-ads = { module = "com.google.android.gms:play-services-ads", version.ref = "playServicesAds" }
+play-services-nearby = { module = "com.google.android.gms:play-services-nearby", version.ref = "playServicesNearby" }
 billing-ktx = { module = "com.android.billingclient:billing-ktx", version.ref = "billing" }
 androidx-work-runtime = { module = "androidx.work:work-runtime", version.ref = "work" }
 play-review-ktx = { module = "com.google.android.play:review-ktx", version.ref = "playReview" }

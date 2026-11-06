@@ -6,12 +6,16 @@ import com.m7mdabaza.xogame.domain.model.MatchLength
 import com.m7mdabaza.xogame.domain.model.MatchState
 import com.m7mdabaza.xogame.domain.model.Player
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
@@ -26,10 +30,14 @@ private class MemoryChannel : PeerChannel {
         private set
     val sent = mutableListOf<PeerMessage>()
 
+    /** How long each send takes (virtual time), like a radio. */
+    var sendMillis = 0L
+
     override val events: Flow<PeerEvent> = inbox.receiveAsFlow()
 
     override suspend fun send(message: PeerMessage) {
         if (closed) return
+        if (sendMillis > 0) delay(sendMillis)
         sent += message
         other.inbox.send(PeerEvent.Received(message))
     }
@@ -59,12 +67,29 @@ class TwoPhoneSessionTest {
 
     private class Phones(val host: TwoPhoneSession, val guest: TwoPhoneSession, val hostChannel: MemoryChannel, val guestChannel: MemoryChannel)
 
-    private fun TestScope.connect(scope: CoroutineScope = backgroundScope): Phones {
+    private fun TestScope.connect(hostScope: CoroutineScope = backgroundScope): Phones {
         val (hostChannel, guestChannel) = MemoryChannel.pair()
-        val host = TwoPhoneSession(hostChannel, twoPhoneRules, scope, PeerRole.HOST, "Ahmed", setup)
-        val guest = TwoPhoneSession(guestChannel, twoPhoneRules, scope, PeerRole.GUEST, "Sara", null)
+        val host = TwoPhoneSession(hostChannel, twoPhoneRules, hostScope, PeerRole.HOST, "Ahmed", setup)
+        val guest = TwoPhoneSession(guestChannel, twoPhoneRules, backgroundScope, PeerRole.GUEST, "Sara", null)
         runCurrent()
         return Phones(host, guest, hostChannel, guestChannel)
+    }
+
+    @Test
+    fun `the goodbye still goes out when the screen closes right after leaving`() = runTest {
+        // The host's screen: its scope ends when the player leaves.
+        val screen = CoroutineScope(backgroundScope.coroutineContext + Job())
+        val phones = connect(hostScope = screen)
+        phones.hostChannel.sendMillis = 100
+        phones.host.leave()
+        runCurrent() // the leave is applied; the goodbye is on its way
+        assertEquals(EndReason.YOU_LEFT, phones.host.state.value.endReason)
+        screen.cancel()
+        phones.host.close()
+        advanceTimeBy(200)
+        runCurrent()
+        assertEquals(EndReason.FRIEND_LEFT, phones.guest.state.value.endReason)
+        assertTrue(phones.hostChannel.closed)
     }
 
     @Test

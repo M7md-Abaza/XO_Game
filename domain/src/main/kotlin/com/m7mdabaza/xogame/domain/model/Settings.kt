@@ -20,6 +20,9 @@ enum class Starter { PLAYER_ONE, PLAYER_TWO, RANDOM }
  * [challengeReminder]: the daily-challenge reminder notification (see
  * `ReminderSchedule`). On by default; Android 13+ also needs the notification
  * permission, which the app asks for once on Home.
+ *
+ * [myName]: this player's name in two-phone games (the friend sees it); blank
+ * until they enter one in the two-phone lobby.
  */
 data class Settings(
     val soundEnabled: Boolean = true,
@@ -33,4 +36,5 @@ data class Settings(
     val boardSize: BoardSize = BoardSize.THREE,
     val level: Level = Level.EASY,
     val challengeReminder: Boolean = true,
+    val myName: String = "",
 )

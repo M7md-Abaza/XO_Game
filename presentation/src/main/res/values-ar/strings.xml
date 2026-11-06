@@ -324,4 +324,60 @@
     <string name="reminder_comeback_3_text">أثبت له أنك ما زلت البطل مع لغز اليوم.</string>
     <string name="reminder_comeback_4_title">ألغاز جديدة كل يوم 🎁</string>
     <string name="reminder_comeback_4_text">فاتك بعضها. عُد وابدأ بتحدي اليوم!</string>
+
+
+    <string name="home_two_phones">هاتفان</string>
+    <string name="home_two_phones_unavailable">اللعب على هاتفين يحتاج خدمات Google Play، وهي غير موجودة على هذا الهاتف.</string>
+    <string name="twophones_title">هاتفان</string>
+    <string name="twophones_intro">العب مع صديق قريب منك، كلٌّ على هاتفه. تعمل اللعبة عبر البلوتوث دون الحاجة إلى الإنترنت.</string>
+    <string name="twophones_your_name">اسمك</string>
+    <string name="twophones_name_hint">سيرى صديقك هذا الاسم.</string>
+    <string name="twophones_host">استضف لعبة</string>
+    <string name="twophones_host_summary">اختر اللوحة ثم انتظر صديقك</string>
+    <string name="twophones_join">انضم إلى لعبة</string>
+    <string name="twophones_join_summary">ابحث عن لعبة صديقك القريبة</string>
+    <string name="twophones_starter_me">أنا</string>
+    <string name="twophones_starter_friend">صديقي</string>
+    <string name="twophones_start_hosting">ابدأ الاستضافة</string>
+    <string name="twophones_waiting">في انتظار صديق…</string>
+    <string name="twophones_waiting_hint">على هاتف صديقك: هاتفان ← انضم إلى لعبة. أبقِ الهاتفين متقاربين.</string>
+    <string name="twophones_game_summary">%1$s · %2$s</string>
+    <string name="twophones_stop">إيقاف</string>
+    <string name="twophones_request_title">طلب انضمام من %1$s</string>
+    <string name="twophones_request_code">تأكد أن الهاتفين يعرضان هذا الرمز:</string>
+    <string name="twophones_accept">قبول</string>
+    <string name="twophones_decline">رفض</string>
+    <string name="twophones_connecting">جارٍ الاتصال…</string>
+    <string name="twophones_searching">جارٍ البحث عن ألعاب قريبة…</string>
+    <string name="twophones_searching_hint">يضغط صديقك: هاتفان ← استضف لعبة. أبقِ الهاتفين متقاربين.</string>
+    <string name="twophones_host_other_version">إصدار مختلف من التطبيق. حدّث الهاتفين.</string>
+    <string name="twophones_joining">في انتظار قبول %1$s…</string>
+    <string name="twophones_code_label">الرمز</string>
+    <string name="twophones_unnamed">لاعب</string>
+
+    <string name="twophones_permission_title">اسمح بالأجهزة القريبة</string>
+    <string name="twophones_permission_text">للعثور على هاتف صديقك يستخدم XO Game البلوتوث، لذا يطلب Android السماح له برؤية الأجهزة القريبة.</string>
+    <string name="twophones_permission_text_location">للعثور على هاتف صديقك يستخدم XO Game البلوتوث، وهذا يتطلب إذن الموقع على هذا الإصدار من Android. لا يستخدم التطبيق موقعك ولا يحفظه أبدًا.</string>
+    <string name="twophones_permission_allow">السماح</string>
+    <string name="twophones_permission_denied">الإذن متوقف. فعّله من إعدادات التطبيق لتلعب على هاتفين.</string>
+    <string name="twophones_open_settings">فتح الإعدادات</string>
+    <string name="twophones_bluetooth_off">البلوتوث متوقف. شغّله للعثور على صديقك.</string>
+    <string name="twophones_location_off">الموقع متوقف. يحتاجه هذا الإصدار من Android للعثور على الهواتف القريبة.</string>
+    <string name="twophones_turn_on">تشغيل</string>
+
+    <string name="twophones_error_not_available">لا يمكن لهذا الهاتف الاتصال بالهواتف القريبة.</string>
+    <string name="twophones_error_radio_off">تعذّر استخدام البلوتوث. تأكد أنه يعمل ومسموح به.</string>
+    <string name="twophones_error_declined">رفض صديقك الطلب.</string>
+    <string name="twophones_error_host_gone">لم تعد هذه اللعبة متاحة.</string>
+    <string name="twophones_error_failed">تعذّر الاتصال. حاول مرة أخرى والهاتفان متقاربان.</string>
+
+    <string name="twophones_connected">متصل مع %1$s</string>
+    <string name="twophones_you_play">أنت تلعب بـ %1$s</string>
+    <string name="twophones_leave">مغادرة</string>
+    <string name="twophones_back_home">العودة للرئيسية</string>
+    <string name="twophones_end_friend_left">غادر %1$s اللعبة.</string>
+    <string name="twophones_end_connection_lost">انقطع الاتصال.</string>
+    <string name="twophones_end_update_this">لدى صديقك إصدار أحدث من XO Game. حدّث هذا الهاتف لتلعبا معًا.</string>
+    <string name="twophones_end_friend_update">لدى صديقك إصدار أقدم من XO Game. اطلب منه تحديثه.</string>
+    <string name="twophones_end_out_of_sync">حدث خطأ في الاتصال. ابدأ لعبة جديدة.</string>
 </resources>

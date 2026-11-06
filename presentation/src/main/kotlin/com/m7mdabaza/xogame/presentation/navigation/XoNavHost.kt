@@ -13,6 +13,8 @@ import com.m7mdabaza.xogame.presentation.game.GameRoute
 import com.m7mdabaza.xogame.presentation.home.HomeRoute
 import com.m7mdabaza.xogame.presentation.settings.SettingsRoute
 import com.m7mdabaza.xogame.presentation.stats.StatsRoute
+import com.m7mdabaza.xogame.presentation.twophones.TwoPhonesGameRoute
+import com.m7mdabaza.xogame.presentation.twophones.TwoPhonesLobbyRoute
 import kotlinx.serialization.Serializable
 
 /** Type-safe navigation destinations. */
@@ -40,6 +42,14 @@ sealed interface Destination {
 
     @Serializable
     data object Achievements : Destination
+
+    /** Find a friend nearby (two phones). */
+    @Serializable
+    data object TwoPhonesLobby : Destination
+
+    /** A two-phone game over the connection the lobby made. */
+    @Serializable
+    data object TwoPhonesGame : Destination
 }
 
 /**
@@ -68,6 +78,7 @@ fun XoNavHost(
                 onOpenSettings = { navController.navigate(Destination.Settings) { launchSingleTop = true } },
                 onOpenChallenge = { navController.navigate(Destination.DailyChallenge) { launchSingleTop = true } },
                 onOpenAchievements = { navController.navigate(Destination.Achievements) { launchSingleTop = true } },
+                onOpenTwoPhones = { navController.navigate(Destination.TwoPhonesLobby) { launchSingleTop = true } },
             )
         }
         composable<Destination.Game> {
@@ -84,6 +95,21 @@ fun XoNavHost(
         }
         composable<Destination.Achievements> {
             AchievementsRoute(onBack = { navController.popBackStack(Destination.Home, inclusive = false) })
+        }
+        composable<Destination.TwoPhonesLobby> {
+            TwoPhonesLobbyRoute(
+                onBack = { navController.popBackStack(Destination.Home, inclusive = false) },
+                // The lobby goes away: Back from the game returns to Home.
+                onConnected = {
+                    navController.navigate(Destination.TwoPhonesGame) {
+                        popUpTo<Destination.Home>()
+                        launchSingleTop = true
+                    }
+                },
+            )
+        }
+        composable<Destination.TwoPhonesGame> {
+            TwoPhonesGameRoute(onExit = { navController.popBackStack(Destination.Home, inclusive = false) })
         }
     }
     // After NavHost, so the graph is set.

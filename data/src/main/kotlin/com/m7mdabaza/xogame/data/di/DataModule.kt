@@ -9,12 +9,16 @@ import com.m7mdabaza.xogame.data.ads.AdPolicyRepositoryImpl
 import com.m7mdabaza.xogame.data.ads.SystemTimeProvider
 import com.m7mdabaza.xogame.data.billing.BillingGateway
 import com.m7mdabaza.xogame.data.billing.PlayBillingGateway
+import com.m7mdabaza.xogame.data.nearby.NearbyGateway
+import com.m7mdabaza.xogame.data.nearby.NearbyPeerLobby
+import com.m7mdabaza.xogame.data.nearby.PlayNearbyGateway
 import com.m7mdabaza.xogame.data.billing.PurchaseRepositoryImpl
 import com.m7mdabaza.xogame.data.progress.AchievementsRepositoryImpl
 import com.m7mdabaza.xogame.data.progress.ChallengeRepositoryImpl
 import com.m7mdabaza.xogame.data.prompts.PromptsRepositoryImpl
 import com.m7mdabaza.xogame.data.settings.SettingsRepositoryImpl
 import com.m7mdabaza.xogame.data.stats.StatsRepositoryImpl
+import com.m7mdabaza.xogame.domain.multiplayer.PeerLobby
 import com.m7mdabaza.xogame.domain.repository.AchievementsRepository
 import com.m7mdabaza.xogame.domain.repository.AdPolicyRepository
 import com.m7mdabaza.xogame.domain.repository.ChallengeRepository
@@ -79,6 +83,12 @@ internal abstract class DataModule {
 
     @Binds
     abstract fun bindBillingGateway(impl: PlayBillingGateway): BillingGateway
+
+    @Binds
+    abstract fun bindPeerLobby(impl: NearbyPeerLobby): PeerLobby
+
+    @Binds
+    abstract fun bindNearbyGateway(impl: PlayNearbyGateway): NearbyGateway
 
     @Binds
     abstract fun bindTimeProvider(impl: SystemTimeProvider): TimeProvider

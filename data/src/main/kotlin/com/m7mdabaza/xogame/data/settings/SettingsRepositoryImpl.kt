@@ -50,6 +50,7 @@ class SettingsRepositoryImpl @Inject constructor(
             boardSize = enumOrDefault(this[BOARD_SIZE], defaults.boardSize),
             level = enumOrDefault(this[LEVEL], defaults.level),
             challengeReminder = this[CHALLENGE_REMINDER] ?: defaults.challengeReminder,
+            myName = this[MY_NAME] ?: defaults.myName,
         )
     }
 
@@ -65,6 +66,7 @@ class SettingsRepositoryImpl @Inject constructor(
         this[BOARD_SIZE] = settings.boardSize.name
         this[LEVEL] = settings.level.name
         this[CHALLENGE_REMINDER] = settings.challengeReminder
+        this[MY_NAME] = settings.myName
     }
 
     private companion object {
@@ -79,6 +81,7 @@ class SettingsRepositoryImpl @Inject constructor(
         val BOARD_SIZE = stringPreferencesKey("board_size")
         val LEVEL = stringPreferencesKey("level")
         val CHALLENGE_REMINDER = booleanPreferencesKey("challenge_reminder")
+        val MY_NAME = stringPreferencesKey("my_name")
 
         inline fun <reified T : Enum<T>> enumOrDefault(name: String?, default: T): T =
             enumValues<T>().firstOrNull { it.name == name } ?: default

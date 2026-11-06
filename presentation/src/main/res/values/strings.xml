@@ -329,4 +329,67 @@
     <string name="reminder_comeback_3_text">Show it you\'re still the champion with today\'s puzzle.</string>
     <string name="reminder_comeback_4_title">Fresh puzzles every day 🎁</string>
     <string name="reminder_comeback_4_text">You\'ve missed a few. Jump back in with today\'s challenge!</string>
+
+
+    <!-- Two phones: each player on their own phone, connected nearby (Bluetooth) -->
+    <string name="home_two_phones">Two phones</string>
+    <string name="home_two_phones_unavailable">Two-phone play needs Google Play services, which this phone doesn\'t have.</string>
+    <string name="twophones_title">Two phones</string>
+    <string name="twophones_intro">Play with a friend nearby, each on your own phone. It works over Bluetooth, no internet needed.</string>
+    <string name="twophones_your_name">Your name</string>
+    <string name="twophones_name_hint">Your friend sees this name.</string>
+    <string name="twophones_host">Host a game</string>
+    <string name="twophones_host_summary">Choose the board, then wait for your friend</string>
+    <string name="twophones_join">Join a game</string>
+    <string name="twophones_join_summary">Find your friend\'s game nearby</string>
+    <string name="twophones_starter_me">Me</string>
+    <string name="twophones_starter_friend">My friend</string>
+    <string name="twophones_start_hosting">Start hosting</string>
+    <string name="twophones_waiting">Waiting for a friend…</string>
+    <string name="twophones_waiting_hint">On your friend\'s phone: Two phones → Join a game. Keep the phones close.</string>
+    <!-- %1$s = board (3×3), %2$s = match length (Best of 3) -->
+    <string name="twophones_game_summary">%1$s · %2$s</string>
+    <string name="twophones_stop">Stop</string>
+    <!-- %1$s = the friend's name -->
+    <string name="twophones_request_title">%1$s wants to join</string>
+    <string name="twophones_request_code">Check that both phones show this code:</string>
+    <string name="twophones_accept">Accept</string>
+    <string name="twophones_decline">Decline</string>
+    <string name="twophones_connecting">Connecting…</string>
+    <string name="twophones_searching">Looking for games nearby…</string>
+    <string name="twophones_searching_hint">Your friend taps Two phones → Host a game. Keep the phones close.</string>
+    <string name="twophones_host_other_version">Another app version. Update both phones.</string>
+    <!-- %1$s = the host's name -->
+    <string name="twophones_joining">Waiting for %1$s to accept…</string>
+    <string name="twophones_code_label">Code</string>
+    <string name="twophones_unnamed">Player</string>
+
+    <string name="twophones_permission_title">Allow nearby devices</string>
+    <string name="twophones_permission_text">To find your friend\'s phone, XO Game uses Bluetooth, so Android asks to let it see nearby devices.</string>
+    <string name="twophones_permission_text_location">To find your friend\'s phone, XO Game uses Bluetooth. On this Android version that needs the location permission; the app never uses or saves where you are.</string>
+    <string name="twophones_permission_allow">Allow</string>
+    <string name="twophones_permission_denied">The permission is off. Turn it on in the app\'s settings to play on two phones.</string>
+    <string name="twophones_open_settings">Open settings</string>
+    <string name="twophones_bluetooth_off">Bluetooth is off. Turn it on to find your friend.</string>
+    <string name="twophones_location_off">Location is off. This Android version needs it to find nearby phones.</string>
+    <string name="twophones_turn_on">Turn on</string>
+
+    <string name="twophones_error_not_available">This phone can\'t connect to nearby phones.</string>
+    <string name="twophones_error_radio_off">Couldn\'t use Bluetooth. Check that it\'s on and allowed.</string>
+    <string name="twophones_error_declined">Your friend said no.</string>
+    <string name="twophones_error_host_gone">That game isn\'t there any more.</string>
+    <string name="twophones_error_failed">Couldn\'t connect. Try again with the phones close together.</string>
+
+    <!-- %1$s = the friend's name -->
+    <string name="twophones_connected">Connected with %1$s</string>
+    <!-- %1$s = X or O -->
+    <string name="twophones_you_play">You play %1$s</string>
+    <string name="twophones_leave">Leave</string>
+    <string name="twophones_back_home">Back to Home</string>
+    <!-- %1$s = the friend's name -->
+    <string name="twophones_end_friend_left">%1$s left the game.</string>
+    <string name="twophones_end_connection_lost">The connection was lost.</string>
+    <string name="twophones_end_update_this">Your friend has a newer XO Game. Update this phone to play together.</string>
+    <string name="twophones_end_friend_update">Your friend has an older XO Game. Ask them to update it.</string>
+    <string name="twophones_end_out_of_sync">Something went wrong with the connection. Start a new game.</string>
 </resources>

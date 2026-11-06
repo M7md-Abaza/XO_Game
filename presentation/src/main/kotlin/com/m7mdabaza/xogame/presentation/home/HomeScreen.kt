@@ -1,8 +1,11 @@
 package com.m7mdabaza.xogame.presentation.home
 
 import androidx.annotation.DrawableRes
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -15,8 +18,9 @@ import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
-import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FilledTonalButton
@@ -30,6 +34,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -55,6 +60,7 @@ import com.m7mdabaza.xogame.presentation.purchase.RemoveAdsViewModel
 import com.m7mdabaza.xogame.presentation.reminder.AskNotificationPermissionOnce
 import com.m7mdabaza.xogame.presentation.theme.XoTheme
 import com.m7mdabaza.xogame.presentation.update.InAppUpdates
+import kotlinx.coroutines.launch
 
 /** Stateful entry point used by the navigation graph. */
 @Composable
@@ -64,6 +70,7 @@ fun HomeRoute(
     onOpenSettings: () -> Unit,
     onOpenChallenge: () -> Unit,
     onOpenAchievements: () -> Unit,
+    onOpenTwoPhones: () -> Unit,
     viewModel: HomeViewModel = hiltViewModel(),
     removeAdsViewModel: RemoveAdsViewModel = hiltViewModel(),
 ) {
@@ -94,6 +101,7 @@ fun HomeRoute(
         snackbar = snackbar,
         showRemoveAdsBadge = removeAds.showBadge,
         onRemoveAds = removeAdsViewModel::openDialog,
+        onOpenTwoPhones = onOpenTwoPhones,
     )
 }
 
@@ -109,8 +117,11 @@ fun HomeScreen(
     snackbar: SnackbarHostState = remember { SnackbarHostState() },
     showRemoveAdsBadge: Boolean = false,
     onRemoveAds: () -> Unit = {},
+    onOpenTwoPhones: () -> Unit = {},
 ) {
     var pickerMode by rememberSaveable { mutableStateOf<GameMode?>(null) }
+    val scope = rememberCoroutineScope()
+    val unavailable = stringResource(R.string.home_two_phones_unavailable)
 
     Box(
         Modifier
@@ -145,38 +156,64 @@ fun HomeScreen(
                 }
             }
 
-            Spacer(Modifier.weight(1f))
-            XoLogo()
-            Spacer(Modifier.height(16.dp))
-            Text(
-                text = stringResource(R.string.home_tagline),
-                style = MaterialTheme.typography.headlineSmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-            Spacer(Modifier.height(48.dp))
+            // The logo and buttons, centred a little above the middle; they scroll when the
+            // screen is too short for them (small phones, large fonts).
+            BoxWithConstraints(Modifier.weight(1f).fillMaxWidth()) {
+                Column(
+                    Modifier
+                        .fillMaxWidth()
+                        .verticalScroll(rememberScrollState())
+                        .heightIn(min = maxHeight)
+                        .padding(vertical = 16.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center,
+                ) {
+                    XoLogo()
+                    Spacer(Modifier.height(16.dp))
+                    Text(
+                        text = stringResource(R.string.home_tagline),
+                        style = MaterialTheme.typography.headlineSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                    Spacer(Modifier.height(40.dp))
 
-            ModeButton(
-                text = stringResource(R.string.home_one_player),
-                icon = R.drawable.ic_person,
-                containerColor = MaterialTheme.colorScheme.primary,
-                contentColor = MaterialTheme.colorScheme.onPrimary,
-                onClick = { pickerMode = GameMode.VS_COMPUTER },
-            )
-            Spacer(Modifier.height(16.dp))
-            ModeButton(
-                text = stringResource(R.string.home_two_players),
-                icon = R.drawable.ic_group,
-                containerColor = MaterialTheme.colorScheme.secondary,
-                contentColor = MaterialTheme.colorScheme.onSecondary,
-                onClick = { pickerMode = GameMode.TWO_PLAYERS },
-            )
-            Spacer(Modifier.height(16.dp))
-            ChallengeButton(solvedToday = state.challengeSolvedToday, streak = state.challengeStreak, onClick = onOpenChallenge)
-
-            // The free space above the banner also holds messages (such as "update ready"),
-            // so they never cover the ad; a tall one may grow upwards over the buttons.
-            Box(Modifier.weight(1.3f).fillMaxWidth(), contentAlignment = Alignment.BottomCenter) {
-                SnackbarHost(snackbar, Modifier.wrapContentHeight(Alignment.Bottom, unbounded = true))
+                    ModeButton(
+                        text = stringResource(R.string.home_one_player),
+                        icon = R.drawable.ic_person,
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary,
+                        onClick = { pickerMode = GameMode.VS_COMPUTER },
+                    )
+                    Spacer(Modifier.height(16.dp))
+                    ModeButton(
+                        text = stringResource(R.string.home_two_players),
+                        icon = R.drawable.ic_group,
+                        containerColor = MaterialTheme.colorScheme.secondary,
+                        contentColor = MaterialTheme.colorScheme.onSecondary,
+                        onClick = { pickerMode = GameMode.TWO_PLAYERS },
+                    )
+                    Spacer(Modifier.height(16.dp))
+                    ModeButton(
+                        text = stringResource(R.string.home_two_phones),
+                        icon = R.drawable.ic_bluetooth,
+                        containerColor = MaterialTheme.colorScheme.surface,
+                        contentColor = MaterialTheme.colorScheme.onSurface,
+                        border = BorderStroke(2.dp, MaterialTheme.colorScheme.secondary),
+                        onClick = {
+                            if (state.twoPhonesAvailable) {
+                                onOpenTwoPhones()
+                            } else {
+                                scope.launch { snackbar.showSnackbar(unavailable) }
+                            }
+                        },
+                    )
+                    Spacer(Modifier.height(16.dp))
+                    ChallengeButton(solvedToday = state.challengeSolvedToday, streak = state.challengeStreak, onClick = onOpenChallenge)
+                    // Lifts the group a little above the middle.
+                    Spacer(Modifier.height(32.dp))
+                }
+                // Messages (such as "update ready") show above the banner, never over it.
+                SnackbarHost(snackbar, Modifier.align(Alignment.BottomCenter))
             }
             if (state.canRequestAds && !state.adsRemoved) {
                 BannerAd(adUnitId = state.bannerAdUnitId)
@@ -205,11 +242,13 @@ private fun ModeButton(
     containerColor: Color,
     contentColor: Color,
     onClick: () -> Unit,
+    border: BorderStroke? = null,
 ) {
     Button(
         onClick = onClick,
         shape = CircleShape,
         colors = ButtonDefaults.buttonColors(containerColor = containerColor, contentColor = contentColor),
+        border = border,
         elevation = ButtonDefaults.buttonElevation(defaultElevation = 4.dp, pressedElevation = 1.dp),
         modifier = Modifier
             .widthIn(min = 260.dp)

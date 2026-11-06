@@ -2,6 +2,7 @@ package com.m7mdabaza.xogame.domain.multiplayer
 
 import com.m7mdabaza.xogame.domain.model.Cell
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -9,6 +10,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 /**
  * Runs [TwoPhoneRules] over an open [PeerChannel] for as long as [scope]
@@ -68,23 +70,35 @@ class TwoPhoneSession(
 
     fun answer(accept: Boolean) = input { rules.answer(it, accept) }
 
-    /** Says goodbye to the friend and closes the connection. */
+    /**
+     * Says goodbye to the friend and closes the connection. Once [state] shows
+     * the game ended, the goodbye goes out even if [scope] is cancelled.
+     */
     fun leave() = input { rules.leave(it) }
 
-    /** Closes the connection without a goodbye (the screen is gone); the friend sees the connection lost. */
-    fun close() = channel.close()
+    /**
+     * Closes the connection without a goodbye (the screen is gone); the friend
+     * sees the connection lost. Does nothing once the game is ending anyway.
+     */
+    fun close() {
+        if (closed) return
+        closed = true
+        channel.close()
+    }
 
     private fun input(transition: (TwoPhoneState) -> TwoPhoneStep) {
         inputs.trySend(transition)
     }
 
     private suspend fun apply(step: TwoPhoneStep) {
+        // Marked before anything suspends, so a close() from the screen can't cut off the goodbye.
+        val ending = step.state.isEnded && !closed
+        if (ending) closed = true
         _state.value = step.state
-        step.events.forEach { _events.send(it) }
-        step.send.forEach { channel.send(it) }
-        if (step.state.isEnded && !closed) {
-            closed = true
-            channel.close()
+        step.events.forEach { _events.trySend(it) }
+        withContext(NonCancellable) {
+            step.send.forEach { channel.send(it) }
+            if (ending) channel.close()
         }
     }
 }

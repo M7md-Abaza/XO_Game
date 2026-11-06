@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.m7mdabaza.xogame.domain.model.BoardSize
 import com.m7mdabaza.xogame.domain.model.GameMode
 import com.m7mdabaza.xogame.domain.model.Level
+import com.m7mdabaza.xogame.domain.multiplayer.PeerLobby
 import com.m7mdabaza.xogame.domain.usecase.EvaluateAchievementsUseCase
 import com.m7mdabaza.xogame.domain.usecase.ObserveAdsRemovedUseCase
 import com.m7mdabaza.xogame.domain.usecase.ObserveChallengeProgressUseCase
@@ -37,6 +38,8 @@ data class HomeUiState(
     /** The last board and level picked against the phone, preselected next time. */
     val lastBoardSize: BoardSize = BoardSize.THREE,
     val lastLevel: Level = Level.EASY,
+    /** This phone can play over two phones (it has Google Play services). */
+    val twoPhonesAvailable: Boolean = true,
 )
 
 @HiltViewModel
@@ -52,12 +55,14 @@ class HomeViewModel @Inject constructor(
     private val recordUpdatePrompted: RecordUpdatePromptedUseCase,
     private val shouldAskNotificationPermission: ShouldAskNotificationPermissionUseCase,
     private val recordNotificationPermissionAsked: RecordNotificationPermissionAskedUseCase,
+    peerLobby: PeerLobby,
 ) : AndroidViewModel(application) {
 
     private val _uiState = MutableStateFlow(
         HomeUiState(
             bannerAdUnitId = adUnitIds.homeBanner,
             canRequestAds = ConsentManager.canRequestAds(application),
+            twoPhonesAvailable = peerLobby.isAvailable,
         )
     )
     val uiState: StateFlow<HomeUiState> = _uiState.asStateFlow()

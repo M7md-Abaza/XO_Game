@@ -43,6 +43,15 @@
             </intent-filter>
         </activity>
 
+        <!--
+          The Nearby library also ships the Exposure Notifications wake-up service, which this app
+          doesn't use (it's for government COVID apps); keep it out of the app.
+        -->
+        <service
+            android:name="com.google.android.gms.nearby.exposurenotification.WakeUpService"
+            tools:ignore="MissingClass"
+            tools:node="remove" />
+
         <!-- Lets AppCompat remember the per-app language below Android 13 (the system does it on 13+). -->
         <service
             android:name="androidx.appcompat.app.AppLocalesMetadataHolderService"
