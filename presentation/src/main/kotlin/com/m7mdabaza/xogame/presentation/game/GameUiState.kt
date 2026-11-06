@@ -99,6 +99,8 @@ data class TwoPhonesInfo(
     val canContinue: Boolean = false,
     val canRestart: Boolean = false,
     val canNewMatch: Boolean = false,
+    /** The game is over for good (the friend left, the connection dropped): no turn to show. */
+    val ended: Boolean = false,
 )
 
 data class GameUiState(

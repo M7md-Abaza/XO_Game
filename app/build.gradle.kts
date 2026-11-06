@@ -34,9 +34,9 @@ android {
         applicationId = "com.m7mdabaza.x_ogame"
         minSdk = libs.versions.minSdk.get().toInt()
         targetSdk = libs.versions.targetSdk.get().toInt()
-        // The Play Store build is versionCode 9 (v1.2); Play needs a higher code than any upload.
-        versionCode = 21
-        versionName = "2.0"
+        // Play needs a higher code than any upload (v1.2 was 9; 2.0 used 20 and 21).
+        versionCode = 30
+        versionName = "3.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 

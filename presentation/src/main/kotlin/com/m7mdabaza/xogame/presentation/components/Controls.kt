@@ -71,14 +71,14 @@ fun <T> TextChoices(
     SegmentedChoices(options, selected, onSelect, modifier) { option ->
         // One line that shrinks only as far as needed, so labels
         // aren't cut off or broken mid-word and the segments keep one height. Font
-        // scaling is nonlinear, so at large scales even 9 sp stays bigger than the
-        // normal label size.
+        // scaling is nonlinear, so at large scales even 7 sp stays about the normal label
+        // size (Arabic "Best of 3" in a dialog at font scale 2.0 needs it).
         val style = LocalTextStyle.current
         Text(
             text(option),
             maxLines = 1,
             textAlign = TextAlign.Center,
-            autoSize = TextAutoSize.StepBased(minFontSize = 9.sp, maxFontSize = style.fontSize),
+            autoSize = TextAutoSize.StepBased(minFontSize = 7.sp, maxFontSize = style.fontSize),
         )
     }
 }

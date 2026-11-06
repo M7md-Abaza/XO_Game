@@ -372,7 +372,7 @@ internal fun isolated(name: String): String {
 
 @Composable
 private fun Scoreboard(state: GameUiState, modifier: Modifier = Modifier) {
-    val active = if (state.phase == GamePhase.PLAYING) state.game.turn else null
+    val active = if (state.phase == GamePhase.PLAYING && state.twoPhones?.ended != true) state.game.turn else null
     Column(modifier, horizontalAlignment = Alignment.CenterHorizontally) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             PlayerChip(Player.X, nameOf(state, Player.X), state.match.xWins, active == Player.X, Modifier.weight(1f))
@@ -434,6 +434,8 @@ private fun StatusLine(state: GameUiState, modifier: Modifier = Modifier) {
     val text = when (state.phase) {
         GamePhase.SETUP -> ""
         GamePhase.PLAYING -> when {
+            // Two phones: the game ended mid-round; the end dialog says why.
+            state.twoPhones?.ended == true -> ""
             state.twoPhones?.waitingForAnswer == true -> waitingForAnswerText(state)
             state.computerThinking -> stringResource(R.string.game_thinking)
             state.hintLoading -> stringResource(R.string.game_hint_loading)

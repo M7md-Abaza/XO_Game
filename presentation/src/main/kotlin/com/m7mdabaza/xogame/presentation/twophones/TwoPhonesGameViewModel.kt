@@ -203,6 +203,7 @@ internal fun TwoPhoneState.toUiState(bannerAdUnitId: String = "", adsRemoved: Bo
             canContinue = canContinue,
             canRestart = canRequest(RequestKind.RestartRound),
             canNewMatch = canRequest(RequestKind.NewMatch(setup)),
+            ended = isEnded,
         ),
     )
     return TwoPhonesUiState(this, gameUi)

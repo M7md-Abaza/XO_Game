@@ -2,6 +2,11 @@ package com.m7mdabaza.xogame.presentation.twophones
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -18,6 +23,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -35,10 +41,12 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -341,7 +349,11 @@ private fun LeaveDialog(friend: String, onLeave: () -> Unit, onStay: () -> Unit)
     )
 }
 
-/** Chooses a new match to ask the friend for; it starts if they accept. */
+/**
+ * Chooses a new match to ask the friend for; it starts if they accept. Wider
+ * than an AlertDialog (like the match setup), so the three-way choices keep
+ * their whole labels at large font sizes ("Best of 3" vs "Best of 5").
+ */
 @Composable
 private fun NewMatchDialog(
     current: TwoPhoneSetup,
@@ -353,11 +365,24 @@ private fun NewMatchDialog(
     var boardSize by rememberSaveable { mutableStateOf(current.boardSize) }
     var matchLength by rememberSaveable { mutableStateOf(current.matchLength) }
     var starter by rememberSaveable { mutableStateOf(if (iStart) Starter.PLAYER_ONE else Starter.PLAYER_TWO) }
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text(stringResource(R.string.game_new_match)) },
-        text = {
-            Column(Modifier.verticalScroll(rememberScrollState())) {
+    Dialog(onDismissRequest = onDismiss, properties = DialogProperties(usePlatformDefaultWidth = false)) {
+        Surface(
+            shape = RoundedCornerShape(28.dp),
+            color = MaterialTheme.colorScheme.surface,
+            modifier = Modifier
+                .padding(16.dp)
+                .widthIn(max = 480.dp),
+        ) {
+            Column(
+                Modifier
+                    .verticalScroll(rememberScrollState())
+                    .padding(20.dp),
+            ) {
+                Text(
+                    stringResource(R.string.game_new_match),
+                    style = MaterialTheme.typography.headlineSmall,
+                    modifier = Modifier.semantics { heading() },
+                )
                 Label(stringResource(R.string.picker_board))
                 TextChoices(BoardSize.entries, boardSize, { boardSize = it }) { stringResource(R.string.board_size, it.size) }
                 Label(stringResource(R.string.setup_match))
@@ -378,16 +403,16 @@ private fun NewMatchDialog(
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(top = 16.dp),
                 )
+                Spacer(Modifier.height(24.dp))
+                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End, verticalAlignment = Alignment.CenterVertically) {
+                    TextButton(
+                        onClick = onDismiss,
+                        colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.secondary),
+                    ) { Text(stringResource(R.string.setup_cancel)) }
+                    Spacer(Modifier.width(8.dp))
+                    Button(onClick = { onAsk(boardSize, matchLength, starter) }) { Text(stringResource(R.string.twophones_ask)) }
+                }
             }
-        },
-        confirmButton = {
-            Button(onClick = { onAsk(boardSize, matchLength, starter) }) { Text(stringResource(R.string.twophones_ask)) }
-        },
-        dismissButton = {
-            TextButton(
-                onClick = onDismiss,
-                colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.secondary),
-            ) { Text(stringResource(R.string.setup_cancel)) }
-        },
-    )
+        }
+    }
 }

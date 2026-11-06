@@ -363,6 +363,7 @@ class TwoPhonesGameViewModelTest {
         assertEquals(1, host.game.game.history.size)
         assertFalse(guest.game.boardEnabled)
         assertFalse(host.info.canRestart)
+        assertTrue(host.info.ended)
     }
 
     @Test

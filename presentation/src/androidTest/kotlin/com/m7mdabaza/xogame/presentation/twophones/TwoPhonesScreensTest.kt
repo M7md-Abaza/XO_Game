@@ -3,9 +3,13 @@ package com.m7mdabaza.xogame.presentation.twophones
 import androidx.annotation.StringRes
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.hasAnyAncestor
 import androidx.compose.ui.test.assertIsNotEnabled
@@ -20,6 +24,8 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextReplacement
 import androidx.compose.ui.test.tryPerformAccessibilityChecks
+import androidx.compose.ui.unit.Density
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.m7mdabaza.xogame.domain.engine.WinChecker
@@ -292,8 +298,57 @@ class TwoPhonesScreensTest {
         var exited = 0
         game(playing().iPlay(0, 0).friendSends(PeerMessage.Leave), TwoPhonesGameActions(onExit = { exited++ }))
         rule.onNodeWithText(string(R.string.twophones_end_friend_left, "Sara")).assertExists()
+        // Nobody's turn any more behind the dialog.
+        rule.onNodeWithText(string(R.string.game_turn_player, "Sara")).assertDoesNotExist()
         inDialog(string(R.string.twophones_back_home)).performClick()
         assertEquals(1, exited)
+    }
+
+    /** Large text in a right-to-left layout: the board and both buttons still fit on a phone screen. */
+    @Test
+    fun atFontScale2RightToLeftTheGameStillFits() {
+        rule.setContent {
+            XoTheme {
+                CompositionLocalProvider(
+                    LocalDensity provides Density(LocalDensity.current.density, fontScale = 2f),
+                    LocalLayoutDirection provides LayoutDirection.Rtl,
+                ) {
+                    Surface { TwoPhonesGameScreen(playing().iPlay(0, 0).toUiState(), TwoPhonesGameActions()) }
+                }
+            }
+        }
+        // In a right-to-left layout the Latin name is wrapped in bidi marks (see `isolated`).
+        val sara = androidx.core.text.BidiFormatter.getInstance(true).unicodeWrap("Sara")
+        rule.onNodeWithText(string(R.string.game_turn_player, sara)).assertIsDisplayed()
+        rule.onNodeWithText(string(R.string.game_restart)).assertIsDisplayed()
+        rule.onNodeWithText(string(R.string.twophones_leave)).assertIsDisplayed()
+        cell(3, 3, string(R.string.game_cell_empty)).assertIsDisplayed()
+        checkAccessibility()
+    }
+
+    @Test
+    fun atFontScale2TheFriendsRequestKeepsItsButtons() {
+        rule.setContent {
+            XoTheme {
+                CompositionLocalProvider(LocalDensity provides Density(LocalDensity.current.density, fontScale = 2f)) {
+                    Surface {
+                        TwoPhonesGameScreen(
+                            playing().friendSends(PeerMessage.Request(0, RequestKind.NewMatch(setup))).toUiState(),
+                            TwoPhonesGameActions(),
+                        )
+                    }
+                }
+            }
+        }
+        inDialog(string(R.string.twophones_accept)).assertIsDisplayed()
+        inDialog(string(R.string.twophones_decline)).assertIsDisplayed()
+    }
+
+    @Test
+    fun accessibilityLeaveDialog() {
+        game(playing())
+        rule.onNodeWithText(string(R.string.twophones_leave)).performClick()
+        checkAccessibility()
     }
 
     @Test
