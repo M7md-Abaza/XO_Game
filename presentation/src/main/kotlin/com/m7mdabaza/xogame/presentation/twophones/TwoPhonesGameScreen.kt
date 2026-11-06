@@ -31,6 +31,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.LiveRegionMode
@@ -51,6 +52,7 @@ import com.m7mdabaza.xogame.domain.multiplayer.TwoPhoneSetup
 import com.m7mdabaza.xogame.domain.multiplayer.TwoPhoneState
 import com.m7mdabaza.xogame.presentation.R
 import com.m7mdabaza.xogame.presentation.achievements.titleRes
+import com.m7mdabaza.xogame.presentation.ads.ConsentManager
 import com.m7mdabaza.xogame.presentation.components.ScreenTopBar
 import com.m7mdabaza.xogame.presentation.components.TextChoices
 import com.m7mdabaza.xogame.presentation.game.GameActions
@@ -70,6 +72,8 @@ fun TwoPhonesGameRoute(
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val removeAds by removeAdsViewModel.uiState.collectAsStateWithLifecycle()
     val resources = LocalResources.current
+    val context = LocalContext.current
+    val canRequestAds = remember { ConsentManager.canRequestAds(context) }
     val snackbar = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
     val friend by rememberUpdatedState(state.match?.let { friendName(it) }.orEmpty())
@@ -100,6 +104,7 @@ fun TwoPhonesGameRoute(
         state = state,
         snackbar = snackbar,
         showRemoveAdsBadge = removeAds.showBadge,
+        showBanner = canRequestAds,
         actions = TwoPhonesGameActions(
             onCellClick = viewModel::onCellClick,
             onContinue = viewModel::onContinue,
@@ -143,6 +148,8 @@ fun TwoPhonesGameScreen(
     actions: TwoPhonesGameActions,
     snackbar: SnackbarHostState = remember { SnackbarHostState() },
     showRemoveAdsBadge: Boolean = false,
+    // UMP allows ad requests; the banner also needs `GameUiState.adsRemoved` to be false.
+    showBanner: Boolean = false,
 ) {
     val match = state.match
     val game = state.game
@@ -158,8 +165,7 @@ fun TwoPhonesGameScreen(
 
     GameScreen(
         state = game,
-        // Two-phone banners come with milestone 5.
-        showBanner = false,
+        showBanner = showBanner,
         snackbar = snackbar,
         showRemoveAdsBadge = showRemoveAdsBadge,
         actions = GameActions(

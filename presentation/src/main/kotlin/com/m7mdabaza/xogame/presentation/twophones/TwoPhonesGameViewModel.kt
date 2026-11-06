@@ -20,7 +20,9 @@ import com.m7mdabaza.xogame.domain.multiplayer.TwoPhoneSession
 import com.m7mdabaza.xogame.domain.multiplayer.TwoPhoneSetup
 import com.m7mdabaza.xogame.domain.multiplayer.TwoPhoneState
 import com.m7mdabaza.xogame.domain.usecase.EvaluateAchievementsUseCase
+import com.m7mdabaza.xogame.domain.usecase.ObserveAdsRemovedUseCase
 import com.m7mdabaza.xogame.domain.usecase.RecordGameResultUseCase
+import com.m7mdabaza.xogame.presentation.ads.AdUnitIds
 import com.m7mdabaza.xogame.presentation.game.GameFeedback
 import com.m7mdabaza.xogame.presentation.game.GameUiState
 import com.m7mdabaza.xogame.presentation.game.MatchSettings
@@ -34,7 +36,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -67,8 +69,10 @@ sealed interface TwoPhonesGameEvent {
 /**
  * A two-phone game over the connection the lobby made: the match runs in a
  * [TwoPhoneSession] (the same rules on both phones), this phone's results go
- * into the stats, and it plays the sounds. No ads, undo or hints here.
- * Without a connection (the app was restarted) [TwoPhonesUiState.match] stays null.
+ * into the stats, and it plays the sounds. A banner (until Remove ads), but
+ * no interstitials: an ad on one phone would keep the friend waiting. No
+ * undo or hints. Without a connection (the app was restarted)
+ * [TwoPhonesUiState.match] stays null.
  */
 @HiltViewModel
 class TwoPhonesGameViewModel @Inject constructor(
@@ -78,15 +82,19 @@ class TwoPhonesGameViewModel @Inject constructor(
     private val evaluateAchievements: EvaluateAchievementsUseCase,
     private val feedback: GameFeedback,
     private val random: Random,
+    adUnitIds: AdUnitIds,
+    observeAdsRemoved: ObserveAdsRemovedUseCase,
 ) : ViewModel() {
 
     private val session: TwoPhoneSession? = (lobby.state.value as? LobbyState.Connected)?.peer?.let { peer ->
         TwoPhoneSession(peer.channel, rules, viewModelScope, peer.role, peer.myName, peer.setup)
     }
 
+    private val banner = adUnitIds.twoPhonesBanner
+
     val uiState: StateFlow<TwoPhonesUiState> = session?.state
-        ?.map(TwoPhoneState::toUiState)
-        ?.stateIn(viewModelScope, SharingStarted.Eagerly, session.state.value.toUiState())
+        ?.combine(observeAdsRemoved()) { match, adsRemoved -> match.toUiState(banner, adsRemoved) }
+        ?.stateIn(viewModelScope, SharingStarted.Eagerly, session.state.value.toUiState(banner, adsRemoved = false))
         ?: MutableStateFlow(TwoPhonesUiState()).asStateFlow()
 
     private val _events = Channel<TwoPhonesGameEvent>(Channel.BUFFERED)
@@ -161,8 +169,11 @@ class TwoPhonesGameViewModel @Inject constructor(
     }
 }
 
-/** This phone's view of the match, as the screen shows it; the board appears once the match started. */
-internal fun TwoPhoneState.toUiState(): TwoPhonesUiState {
+/**
+ * This phone's view of the match, as the screen shows it; the board appears
+ * once the match started. [bannerAdUnitId] shows until [adsRemoved].
+ */
+internal fun TwoPhoneState.toUiState(bannerAdUnitId: String = "", adsRemoved: Boolean = false): TwoPhonesUiState {
     val setup = setup
     val game = game
     val match = match
@@ -182,8 +193,8 @@ internal fun TwoPhoneState.toUiState(): TwoPhonesUiState {
         match = match,
         showSetup = false,
         hasStarted = true,
-        // Two-phone banners come with milestone 5.
-        bannerAdUnitId = "",
+        bannerAdUnitId = bannerAdUnitId,
+        adsRemoved = adsRemoved,
         twoPhones = TwoPhonesInfo(
             canPlay = canPlay,
             waitingForAnswer = myRequest != null,

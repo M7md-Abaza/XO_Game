@@ -145,7 +145,7 @@
     <string name="restore_error">تعذّر الاتصال بـ Google Play. حاول مرة أخرى.</string>
     <string name="remove_ads_badge">بلا إعلانات</string>
     <string name="remove_ads_benefit_banners">بلا لافتات إعلانية</string>
-    <string name="remove_ads_benefit_interstitials">بلا إعلانات بين الجولات</string>
+    <string name="remove_ads_benefit_interstitials">بلا إعلانات بملء الشاشة</string>
     <string name="remove_ads_benefit_assists">تلميح وتراجع مجانيان في كل جولة</string>
     <string name="remove_ads_one_time">شراء لمرة واحدة. على هاتف جديد، استخدم «استعادة المشتريات».</string>
     <string name="remove_ads_dialog_buy">اشترِ مقابل %1$s</string>

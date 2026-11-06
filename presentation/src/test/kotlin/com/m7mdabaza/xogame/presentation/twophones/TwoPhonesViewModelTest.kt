@@ -12,9 +12,12 @@ import com.m7mdabaza.xogame.domain.model.Player
 import com.m7mdabaza.xogame.domain.model.Settings
 import com.m7mdabaza.xogame.domain.model.Starter
 import com.m7mdabaza.xogame.domain.multiplayer.TwoPhoneSetup
+import com.m7mdabaza.xogame.domain.usecase.ObserveAdsRemovedUseCase
 import com.m7mdabaza.xogame.domain.usecase.ObserveSettingsUseCase
 import com.m7mdabaza.xogame.domain.usecase.UpdateSettingsUseCase
+import com.m7mdabaza.xogame.presentation.testing.FakeAdUnitIds
 import com.m7mdabaza.xogame.presentation.testing.FakePeerLobby
+import com.m7mdabaza.xogame.presentation.testing.FakePurchaseRepository
 import com.m7mdabaza.xogame.presentation.testing.FakeSettingsRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -33,6 +36,7 @@ import kotlin.random.Random
 class TwoPhonesViewModelTest {
 
     private val lobby = FakePeerLobby()
+    private val purchases = FakePurchaseRepository()
     private val settings = FakeSettingsRepository(
         Settings(myName = "Ahmed", boardSize = BoardSize.EIGHT, matchLength = MatchLength.BEST_OF_3, starter = Starter.PLAYER_TWO),
     )
@@ -44,7 +48,7 @@ class TwoPhonesViewModelTest {
     fun tearDown() = Dispatchers.resetMain()
 
     private fun lobbyViewModel(random: Random = Random(0)) =
-        TwoPhonesLobbyViewModel(lobby, ObserveSettingsUseCase(settings), UpdateSettingsUseCase(settings), random)
+        TwoPhonesLobbyViewModel(lobby, ObserveSettingsUseCase(settings), UpdateSettingsUseCase(settings), random, FakeAdUnitIds, ObserveAdsRemovedUseCase(purchases))
 
     /** Creates a ViewModel in a store, so the test can clear it like the screen going away. */
     private inline fun <reified T : ViewModel> inStore(store: ViewModelStore, noinline create: () -> T): T =
@@ -105,6 +109,15 @@ class TwoPhonesViewModelTest {
         vm.onStop()
         assertEquals(listOf("search", "join host-1", "answer true", "stop"), lobby.calls)
         assertEquals("Ahmed", lobby.searchedAs)
+    }
+
+    @Test
+    fun `the lobby has the two-phone banner until Remove ads`() {
+        val vm = lobbyViewModel()
+        assertEquals(FakeAdUnitIds.twoPhonesBanner, vm.bannerAdUnitId)
+        assertFalse(vm.adsRemoved.value)
+        purchases.adsRemoved.value = true
+        assertTrue(vm.adsRemoved.value)
     }
 
     @Test

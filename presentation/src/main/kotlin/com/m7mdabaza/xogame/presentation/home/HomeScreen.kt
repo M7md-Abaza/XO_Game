@@ -1,5 +1,6 @@
 package com.m7mdabaza.xogame.presentation.home
 
+import androidx.activity.compose.LocalActivity
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -31,6 +32,7 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -52,6 +54,7 @@ import com.m7mdabaza.xogame.domain.model.GameMode
 import com.m7mdabaza.xogame.domain.model.Level
 import com.m7mdabaza.xogame.presentation.R
 import com.m7mdabaza.xogame.presentation.ads.BannerAd
+import com.m7mdabaza.xogame.presentation.ads.InterstitialAdManager
 import com.m7mdabaza.xogame.presentation.components.BrandBackground
 import com.m7mdabaza.xogame.presentation.components.XoLogo
 import com.m7mdabaza.xogame.presentation.purchase.RemoveAdsBadge
@@ -88,6 +91,32 @@ fun HomeRoute(
         onPauseOrDispose { }
     }
 
+    // The two-phone interstitial comes before the lobby, so the friend never waits for it.
+    // Loaded ahead of time; if it isn't ready when the player taps, the lobby opens without it.
+    val activity = LocalActivity.current
+    val twoPhonesAd = remember(activity, state.twoPhonesInterstitialAdUnitId) {
+        activity?.let { InterstitialAdManager(it, state.twoPhonesInterstitialAdUnitId) }
+    }
+    LaunchedEffect(twoPhonesAd, state.adsRemoved, state.canRequestAds, state.twoPhonesAvailable) {
+        if (!state.adsRemoved && state.canRequestAds && state.twoPhonesAvailable) twoPhonesAd?.load()
+    }
+    val scope = rememberCoroutineScope()
+    var openingTwoPhones by remember { mutableStateOf(false) }
+    val openTwoPhones = {
+        // One tap at a time: the ad (or the lobby) is already on its way.
+        if (!openingTwoPhones) {
+            openingTwoPhones = true
+            scope.launch {
+                val finish = { shown: Boolean ->
+                    if (shown) viewModel.onTwoPhonesInterstitialShown()
+                    openingTwoPhones = false
+                    onOpenTwoPhones()
+                }
+                if (twoPhonesAd != null && viewModel.shouldShowTwoPhonesInterstitial()) twoPhonesAd.show(finish) else finish(false)
+            }
+        }
+    }
+
     HomeScreen(
         state = state,
         onStartGame = { mode, boardSize, level ->
@@ -101,7 +130,7 @@ fun HomeRoute(
         snackbar = snackbar,
         showRemoveAdsBadge = removeAds.showBadge,
         onRemoveAds = removeAdsViewModel::openDialog,
-        onOpenTwoPhones = onOpenTwoPhones,
+        onOpenTwoPhones = openTwoPhones,
     )
 }
 

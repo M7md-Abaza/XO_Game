@@ -25,15 +25,18 @@ import com.m7mdabaza.xogame.domain.multiplayer.TwoPhonePhase
 import com.m7mdabaza.xogame.domain.multiplayer.TwoPhoneRules
 import com.m7mdabaza.xogame.domain.multiplayer.TwoPhoneSetup
 import com.m7mdabaza.xogame.domain.usecase.EvaluateAchievementsUseCase
+import com.m7mdabaza.xogame.domain.usecase.ObserveAdsRemovedUseCase
 import com.m7mdabaza.xogame.domain.usecase.PlayMoveUseCase
 import com.m7mdabaza.xogame.domain.usecase.RecordGameResultUseCase
 import com.m7mdabaza.xogame.domain.usecase.StartGameUseCase
 import com.m7mdabaza.xogame.presentation.game.GamePhase
 import com.m7mdabaza.xogame.presentation.testing.FakeAchievementsRepository
+import com.m7mdabaza.xogame.presentation.testing.FakeAdUnitIds
 import com.m7mdabaza.xogame.presentation.testing.FakeChallengeRepository
 import com.m7mdabaza.xogame.presentation.testing.FakeGameFeedback
 import com.m7mdabaza.xogame.presentation.testing.FakePeerChannel
 import com.m7mdabaza.xogame.presentation.testing.FakePeerLobby
+import com.m7mdabaza.xogame.presentation.testing.FakePurchaseRepository
 import com.m7mdabaza.xogame.presentation.testing.FakeStatsRepository
 import com.m7mdabaza.xogame.presentation.testing.FakeTime
 import com.m7mdabaza.xogame.presentation.testing.PeerChannelPair
@@ -82,6 +85,7 @@ class TwoPhonesGameViewModelTest {
         val stats = FakeStatsRepository()
         val achievements = FakeAchievementsRepository()
         val feedback = FakeGameFeedback()
+        val purchases = FakePurchaseRepository()
         val store = ViewModelStore()
         val vm: TwoPhonesGameViewModel = ViewModelProvider.create(
             store,
@@ -94,6 +98,8 @@ class TwoPhonesGameViewModelTest {
                         EvaluateAchievementsUseCase(stats, FakeChallengeRepository(), achievements, FakeTime()),
                         feedback,
                         random,
+                        FakeAdUnitIds,
+                        ObserveAdsRemovedUseCase(purchases),
                     )
                 }
             },
@@ -174,10 +180,25 @@ class TwoPhonesGameViewModelTest {
             EvaluateAchievementsUseCase(FakeStatsRepository(), FakeChallengeRepository(), FakeAchievementsRepository(), FakeTime()),
             FakeGameFeedback(),
             Random(0),
+            FakeAdUnitIds,
+            ObserveAdsRemovedUseCase(FakePurchaseRepository()),
         )
         assertTrue(vm.uiState.value.connectionMissing)
         assertTrue(vm.uiState.value.isEnded)
         assertNull(vm.uiState.value.game)
+    }
+
+    @Test
+    fun `the game has the two-phone banner until this phone buys Remove ads`() {
+        val (host, guest) = connect()
+        assertEquals(FakeAdUnitIds.twoPhonesBanner, host.game.bannerAdUnitId)
+        assertFalse(host.game.adsRemoved)
+
+        host.purchases.adsRemoved.value = true
+        assertTrue(host.game.adsRemoved)
+        // Each phone has its own purchase: the friend still sees the banner.
+        assertFalse(guest.game.adsRemoved)
+        assertEquals(GamePhase.PLAYING, host.game.phase)
     }
 
     // --- Playing ---------------------------------------------------------------------------

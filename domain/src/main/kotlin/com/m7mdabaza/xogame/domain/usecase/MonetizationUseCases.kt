@@ -41,6 +41,26 @@ class ShouldShowInterstitialUseCase @Inject constructor(
     }
 }
 
+/**
+ * Whether to show an interstitial when the player taps Two phones, before
+ * the lobby (so the friend never waits for it). Never after Remove ads, and
+ * not within [ShouldShowInterstitialUseCase.MIN_MILLIS_BETWEEN] of any
+ * interstitial: it shares the between-round clock, so the two never stack.
+ * Rounds don't count here. (Consent is checked where the ad is loaded.)
+ */
+class ShouldShowPreGameInterstitialUseCase @Inject constructor(
+    private val adPolicy: AdPolicyRepository,
+    private val purchases: PurchaseRepository,
+    private val time: TimeProvider,
+) {
+    suspend operator fun invoke(): Boolean {
+        if (purchases.adsRemoved.first()) return false
+        val last = adPolicy.state.first().lastInterstitialAtMillis
+        return last == null || time.nowMillis() - last >= ShouldShowInterstitialUseCase.MIN_MILLIS_BETWEEN
+    }
+}
+
+/** An interstitial was shown (between rounds or before the two-phone lobby): restarts the shared clock. */
 class RecordInterstitialShownUseCase @Inject constructor(
     private val adPolicy: AdPolicyRepository,
     private val time: TimeProvider,

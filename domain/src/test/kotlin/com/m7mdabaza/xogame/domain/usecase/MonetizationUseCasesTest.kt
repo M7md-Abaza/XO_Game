@@ -74,6 +74,43 @@ class MonetizationUseCasesTest {
         assertFalse(shouldShow())
     }
 
+    // --- Before the two-phone lobby ----------------------------------------------------
+
+    private val shouldShowPreGame = ShouldShowPreGameInterstitialUseCase(adPolicy, purchases, time)
+
+    @Test
+    fun `the pre-game ad needs no rounds, only three minutes since any interstitial`() = runTest {
+        assertTrue("first tap of the session", shouldShowPreGame())
+        recordShown()
+        time.now += ShouldShowInterstitialUseCase.MIN_MILLIS_BETWEEN - 1
+        assertFalse("too soon", shouldShowPreGame())
+        time.now += 1
+        assertTrue(shouldShowPreGame())
+    }
+
+    @Test
+    fun `the pre-game ad and the between-round ad share one clock`() = runTest {
+        // A between-round ad just now: no pre-game ad on the next tap.
+        rounds(2)
+        recordShown()
+        assertFalse(shouldShowPreGame())
+
+        // A pre-game ad: the next between-round one waits for the time and two new rounds.
+        time.now += 10 * ShouldShowInterstitialUseCase.MIN_MILLIS_BETWEEN
+        assertTrue(shouldShowPreGame())
+        recordShown()
+        rounds(2)
+        assertFalse(shouldShow())
+        time.now += ShouldShowInterstitialUseCase.MIN_MILLIS_BETWEEN
+        assertTrue(shouldShow())
+    }
+
+    @Test
+    fun `no pre-game ad after Remove ads`() = runTest {
+        purchases.adsRemoved.value = true
+        assertFalse(shouldShowPreGame())
+    }
+
     // --- Assists ---------------------------------------------------------------------
 
     private val access = GetAssistAccessUseCase()

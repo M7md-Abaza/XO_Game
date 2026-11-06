@@ -11,14 +11,18 @@ import com.m7mdabaza.xogame.domain.multiplayer.MAX_PEER_NAME_LENGTH
 import com.m7mdabaza.xogame.domain.multiplayer.PeerLobby
 import com.m7mdabaza.xogame.domain.multiplayer.PeerRole
 import com.m7mdabaza.xogame.domain.multiplayer.TwoPhoneSetup
+import com.m7mdabaza.xogame.domain.usecase.ObserveAdsRemovedUseCase
 import com.m7mdabaza.xogame.domain.usecase.ObserveSettingsUseCase
 import com.m7mdabaza.xogame.domain.usecase.UpdateSettingsUseCase
+import com.m7mdabaza.xogame.presentation.ads.AdUnitIds
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -46,11 +50,18 @@ class TwoPhonesLobbyViewModel @Inject constructor(
     private val observeSettings: ObserveSettingsUseCase,
     private val updateSettings: UpdateSettingsUseCase,
     private val random: Random,
+    adUnitIds: AdUnitIds,
+    observeAdsRemoved: ObserveAdsRemovedUseCase,
 ) : ViewModel() {
 
     val lobbyState: StateFlow<LobbyState> = lobby.state
 
     val errors: Flow<LobbyError> = lobby.errors
+
+    val bannerAdUnitId: String = adUnitIds.twoPhonesBanner
+
+    /** Remove ads was bought: no banner. */
+    val adsRemoved: StateFlow<Boolean> = observeAdsRemoved().stateIn(viewModelScope, SharingStarted.Eagerly, false)
 
     private val _form = MutableStateFlow(LobbyForm())
     val form: StateFlow<LobbyForm> = _form.asStateFlow()

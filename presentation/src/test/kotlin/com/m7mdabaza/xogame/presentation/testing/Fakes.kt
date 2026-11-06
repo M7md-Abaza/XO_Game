@@ -142,6 +142,8 @@ object FakeAdUnitIds : AdUnitIds {
     override fun gameBanner(mode: GameMode, boardSize: BoardSize) = "banner-$mode-$boardSize"
     override fun interstitial(mode: GameMode, boardSize: BoardSize) = "interstitial-$mode-$boardSize"
     override val rewarded = "rewarded"
+    override val twoPhonesBanner = "banner-two-phones"
+    override val twoPhonesInterstitial = "interstitial-two-phones"
 }
 
 class FakePromptsRepository : PromptsRepository {

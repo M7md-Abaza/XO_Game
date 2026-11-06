@@ -12,11 +12,11 @@ private val testRewarded = "ca-app-pub-3940256099942544/5224354917"
 
 private val bannerPlacements = listOf(
     "main", "easy_vs_computer", "medium_vs_computer", "hard_vs_computer",
-    "easy_level", "medium_level", "hard_level",
+    "easy_level", "medium_level", "hard_level", "two_phones",
 )
 private val interstitialPlacements = listOf(
     "easy_vs_computer", "medium_vs_computer", "hard_vs_computer",
-    "easy_level", "medium_level", "hard_level",
+    "easy_level", "medium_level", "hard_level", "two_phones",
 )
 
 androidComponents {
@@ -70,6 +70,12 @@ android {
             resValue("string", "interstitial_medium_level", "ca-app-pub-4454440016331822/2369480375")
             resValue("string", "interstitial_hard_level", "ca-app-pub-4454440016331822/5845690957")
             resValue("string", "rewarded_vs_computer", "ca-app-pub-4454440016331822/7531570468")
+            // Two-phone play (v3). TODO before release 3.0: replace with the new units
+            // banner_two_phones / interstitial_two_phones once they exist in AdMob; until then
+            // they reuse the Home banner and the 3×3 two-player interstitial (a blank ID would
+            // crash the app at startup).
+            resValue("string", "banner_two_phones", "ca-app-pub-4454440016331822/8758794756")
+            resValue("string", "interstitial_two_phones", "ca-app-pub-4454440016331822/3000035763")
             // R8: shrinks, optimizes and obfuscates. Libraries bring their own keep rules;
             // app-specific ones go in proguard-rules.pro.
             isMinifyEnabled = true

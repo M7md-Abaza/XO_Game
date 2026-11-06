@@ -76,6 +76,8 @@ import com.m7mdabaza.xogame.domain.multiplayer.LobbyState
 import com.m7mdabaza.xogame.domain.multiplayer.NearbyHost
 import com.m7mdabaza.xogame.domain.multiplayer.TwoPhoneSetup
 import com.m7mdabaza.xogame.presentation.R
+import com.m7mdabaza.xogame.presentation.ads.BannerAd
+import com.m7mdabaza.xogame.presentation.ads.ConsentManager
 import com.m7mdabaza.xogame.presentation.components.ScreenTopBar
 import com.m7mdabaza.xogame.presentation.components.TextChoices
 import kotlinx.coroutines.launch
@@ -92,11 +94,13 @@ fun TwoPhonesLobbyRoute(
 ) {
     val lobbyState by viewModel.lobbyState.collectAsStateWithLifecycle()
     val form by viewModel.form.collectAsStateWithLifecycle()
+    val adsRemoved by viewModel.adsRemoved.collectAsStateWithLifecycle()
     val context = LocalContext.current
     val activity = LocalActivity.current
     val resources = LocalResources.current
     val snackbar = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
+    val canRequestAds = remember { ConsentManager.canRequestAds(context) }
 
     // A refusal Android won't ask about again (or "don't ask again") sends the player to the app's settings.
     var blocked by rememberSaveable { mutableStateOf(false) }
@@ -136,6 +140,7 @@ fun TwoPhonesLobbyRoute(
         form = form,
         gate = gate,
         snackbar = snackbar,
+        bannerAdUnitId = viewModel.bannerAdUnitId.takeIf { canRequestAds && !adsRemoved },
         actions = LobbyActions(
             onBack = onBack,
             onNameChange = viewModel::onNameChange,
@@ -190,6 +195,7 @@ data class LobbyActions(
     val onGateAction: () -> Unit = {},
 )
 
+/** @param bannerAdUnitId the banner at the bottom; null for none (Remove ads, no consent, tests). */
 @Composable
 fun TwoPhonesLobbyScreen(
     lobbyState: LobbyState,
@@ -197,6 +203,7 @@ fun TwoPhonesLobbyScreen(
     gate: LobbyGate,
     actions: LobbyActions,
     snackbar: SnackbarHostState = remember { SnackbarHostState() },
+    bannerAdUnitId: String? = null,
 ) {
     // Back steps out of hosting, searching or the host form before leaving the screen.
     val busy = lobbyState is LobbyState.Hosting || lobbyState is LobbyState.Searching || lobbyState is LobbyState.Joining
@@ -208,34 +215,38 @@ fun TwoPhonesLobbyScreen(
         }
     }
 
-    Box(
+    Column(
         Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
             .safeDrawingPadding(),
     ) {
-        Column(Modifier.fillMaxSize()) {
-            ScreenTopBar(stringResource(R.string.twophones_title), onBack = actions.onBack)
-            Column(
-                Modifier
-                    .verticalScroll(rememberScrollState())
-                    .padding(horizontal = 24.dp)
-                    .padding(bottom = 24.dp),
-            ) {
-                if (gate != LobbyGate.READY) {
-                    GateCard(gate, actions.onGateAction)
-                } else {
-                    when (lobbyState) {
-                        LobbyState.Idle -> if (form.choosingHostSetup) HostForm(form, actions) else Choices(form, actions)
-                        is LobbyState.Hosting -> Waiting(lobbyState.setup, actions.onStop)
-                        is LobbyState.Searching -> Searching(lobbyState.hosts, actions)
-                        is LobbyState.Joining -> Joining(lobbyState.host, lobbyState.code, actions.onStop)
-                        is LobbyState.Connected -> Busy(stringResource(R.string.twophones_connecting))
+        Box(Modifier.weight(1f).fillMaxWidth()) {
+            Column(Modifier.fillMaxSize()) {
+                ScreenTopBar(stringResource(R.string.twophones_title), onBack = actions.onBack)
+                Column(
+                    Modifier
+                        .verticalScroll(rememberScrollState())
+                        .padding(horizontal = 24.dp)
+                        .padding(bottom = 24.dp),
+                ) {
+                    if (gate != LobbyGate.READY) {
+                        GateCard(gate, actions.onGateAction)
+                    } else {
+                        when (lobbyState) {
+                            LobbyState.Idle -> if (form.choosingHostSetup) HostForm(form, actions) else Choices(form, actions)
+                            is LobbyState.Hosting -> Waiting(lobbyState.setup, actions.onStop)
+                            is LobbyState.Searching -> Searching(lobbyState.hosts, actions)
+                            is LobbyState.Joining -> Joining(lobbyState.host, lobbyState.code, actions.onStop)
+                            is LobbyState.Connected -> Busy(stringResource(R.string.twophones_connecting))
+                        }
                     }
                 }
             }
+            // Inside the content area, so a message never covers the banner below it.
+            SnackbarHost(snackbar, Modifier.align(Alignment.BottomCenter))
         }
-        SnackbarHost(snackbar, Modifier.align(Alignment.BottomCenter))
+        if (bannerAdUnitId != null) BannerAd(adUnitId = bannerAdUnitId)
     }
 
     val request = (lobbyState as? LobbyState.Hosting)?.request

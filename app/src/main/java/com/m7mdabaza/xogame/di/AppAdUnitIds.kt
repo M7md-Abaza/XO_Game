@@ -14,7 +14,8 @@ import javax.inject.Inject
  *
  * The units are named after v1's screens: `easy`, `medium` and `hard` were
  * the 3×3, 4×4 and 8×8 boards, so each board keeps its v1 unit (whatever the
- * computer's level) and AdMob reports stay comparable.
+ * computer's level) and AdMob reports stay comparable. Two-phone play has
+ * its own units for every board.
  */
 class AppAdUnitIds @Inject constructor(
     @ApplicationContext private val context: Context,
@@ -23,37 +24,48 @@ class AppAdUnitIds @Inject constructor(
     override val homeBanner: String
         get() = context.getString(R.string.banner_main)
 
-    override fun gameBanner(mode: GameMode, boardSize: BoardSize): String = context.getString(
-        when (mode) {
-            GameMode.VS_COMPUTER -> when (boardSize) {
+    override fun gameBanner(mode: GameMode, boardSize: BoardSize): String = when (mode) {
+        GameMode.VS_COMPUTER -> context.getString(
+            when (boardSize) {
                 BoardSize.THREE -> R.string.banner_easy_vs_computer
                 BoardSize.FOUR -> R.string.banner_medium_vs_computer
                 BoardSize.EIGHT -> R.string.banner_hard_vs_computer
-            }
-            // Two-phone play uses the two-player units until it gets its own (v3 milestone 5).
-            GameMode.TWO_PLAYERS, GameMode.TWO_PHONES -> when (boardSize) {
+            },
+        )
+        GameMode.TWO_PLAYERS -> context.getString(
+            when (boardSize) {
                 BoardSize.THREE -> R.string.banner_easy_level
                 BoardSize.FOUR -> R.string.banner_medium_level
                 BoardSize.EIGHT -> R.string.banner_hard_level
-            }
-        }
-    )
+            },
+        )
+        GameMode.TWO_PHONES -> twoPhonesBanner
+    }
 
-    override fun interstitial(mode: GameMode, boardSize: BoardSize): String = context.getString(
-        when (mode) {
-            GameMode.VS_COMPUTER -> when (boardSize) {
+    override fun interstitial(mode: GameMode, boardSize: BoardSize): String = when (mode) {
+        GameMode.VS_COMPUTER -> context.getString(
+            when (boardSize) {
                 BoardSize.THREE -> R.string.interstitial_easy_vs_computer
                 BoardSize.FOUR -> R.string.interstitial_medium_vs_computer
                 BoardSize.EIGHT -> R.string.interstitial_hard_vs_computer
-            }
-            GameMode.TWO_PLAYERS, GameMode.TWO_PHONES -> when (boardSize) {
+            },
+        )
+        GameMode.TWO_PLAYERS -> context.getString(
+            when (boardSize) {
                 BoardSize.THREE -> R.string.interstitial_easy_level
                 BoardSize.FOUR -> R.string.interstitial_medium_level
                 BoardSize.EIGHT -> R.string.interstitial_hard_level
-            }
-        }
-    )
+            },
+        )
+        GameMode.TWO_PHONES -> twoPhonesInterstitial
+    }
 
     override val rewarded: String
         get() = context.getString(R.string.rewarded_vs_computer)
+
+    override val twoPhonesBanner: String
+        get() = context.getString(R.string.banner_two_phones)
+
+    override val twoPhonesInterstitial: String
+        get() = context.getString(R.string.interstitial_two_phones)
 }
