@@ -13,10 +13,9 @@ Checked before release (2026-11-06, v3 milestone 6): all JVM tests (182 domain, 
 presentation) and 71 Compose UI tests (with accessibility checks and a font scale 2.0 / right-to-left
 check of the two-phone game); lint without errors; a minified release APK (5.4 MB) on two API 37
 emulators: consent, the pre-game interstitial, banners, host / join with the code, a round, a
-new-match request accepted, leaving, in Arabic at font scale 2.0, with no crash.
-
-**Before building the bundle:** the release build still reuses two existing AdMob units for two-phone
-play (see section 2, AdMob). Replace them first.
+new-match request accepted, leaving, in Arabic at font scale 2.0, with no crash. Then, with the two
+new AdMob units in the release build: the lobby banner and the pre-lobby interstitial load from them
+(as test ads on the emulator).
 
 ## 1. Build the bundle
 
@@ -29,16 +28,13 @@ play (see section 2, AdMob). Replace them first.
 
 ## 2. Before the upload
 
-**AdMob (required for 3.0):**
-- Create two ad units in AdMob → Apps → XO Game → Ad units:
-  - `banner_two_phones`, format **Banner** (the two-phone lobby and game screen; the app shows it
-    as a large anchored adaptive banner).
-  - `interstitial_two_phones`, format **Interstitial** (shown when the player taps Two phones,
-    before the lobby).
-- Put their IDs into the `release` block of `app/build.gradle.kts`
-  (`resValue("string", "banner_two_phones", ...)` and `resValue("string", "interstitial_two_phones", ...)`)
-  and remove the TODO there. Until then they reuse the Home banner and the 3×3 two-player
-  interstitial, so AdMob would count two-phone ads under those units.
+**AdMob (done 2026-11-06):** the two units for two-phone play exist and are in the `release` block of
+`app/build.gradle.kts`:
+- `banner_two_phones`, format **Banner**, `ca-app-pub-4454440016331822/5545981810` (the two-phone
+  lobby and game screen).
+- `pre_two_phones_looby`, format **Interstitial**, `ca-app-pub-4454440016331822/2905349916` (shown
+  when the player taps Two phones, before the lobby; resource `interstitial_two_phones` in the app).
+  Its frequency capping can stay at "No cap": the app shows it at most every 3 minutes.
 
 **Play Console:**
 - **Data safety:** review the form. Still true from 2.0: the app stores everything on the phone
@@ -103,8 +99,14 @@ Installs from Play are the only way to test purchases and updates:
 
 ## 5. AdMob housekeeping
 
-- Delete (or archive) the banner unit of v1's "who plays first" dialog: `x_or_o_dialog`,
-  `ca-app-pub-4454440016331822/5478764952`, once few users are left on v1.
+Two of the app's 18 ad units are unused (checked against the code and its whole git history,
+2026-11-06); the other 16 are all in `app/build.gradle.kts`:
+- **banner more Apps** (`ca-app-pub-4454440016331822/2770868222`): never used by this app. Delete it
+  any time (first make sure no other app of yours uses it).
+- **Banner PopUPXO** (`ca-app-pub-4454440016331822/5478764952`): the banner of v1's "who plays first"
+  popup (`x_or_o_dialog`), removed in v2. Phones still on v1 request it, so delete (or archive) it
+  once few users are left on v1 (Play Console → Statistics, by app version).
+
 - Optional: the Daily challenge screen reuses the Home banner unit (`banner_main`). Create a separate
   unit if you want it reported on its own, and add it to `app/build.gradle.kts` and `AppAdUnitIds`.
 
